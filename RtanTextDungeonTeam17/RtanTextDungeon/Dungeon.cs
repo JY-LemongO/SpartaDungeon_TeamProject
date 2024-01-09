@@ -4,24 +4,28 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RtanTextDungeon.Define;
 
 namespace RtanTextDungeon
 {    
     internal class Dungeon
     {
         // 인게임에서 사용될 Player
-        private Player player;
+        private Player player = null;
         // 인게임에서 상점 이용에 쓰일 아이템 목록을 가지고 있는 Shop 필드
-        private Shop shop;        
+        private Shop shop = null;
+
 
         #region 게임시작
-        public void EnterGame(Player player, Shop shop)
+        public void EnterGame(Shop shop)
         {
             if (this.player == null)
-                this.player = player;
+                CharacterCreation();
             if (this.shop == null)
                 this.shop = shop;
 
+            
+            
             while (true)
             {
                 Console.WriteLine("===============================================================================================");
@@ -84,6 +88,60 @@ namespace RtanTextDungeon
             }
         }
         #endregion
+
+        #region 캐릭터 생성
+        public void CharacterCreation()
+        {
+            string name = string.Empty;
+            string input = string.Empty;
+
+            while(true)
+            {
+                Console.Clear();
+                Console.WriteLine("===== 캐릭터 생성 =====");
+                Console.WriteLine("이름을 입력하십시오.");
+
+                name = Console.ReadLine();
+
+                if (name == "")
+                {
+                    Console.WriteLine("입력 값이 없습니다.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                Console.Clear();
+                Console.WriteLine("===== 캐릭터 생성 =====");
+                Console.WriteLine($"입력하신 이름은 {name} 입니다.");
+
+                Console.WriteLine("1. 저장");
+                Console.WriteLine("2. 취소");
+
+                Console.Write("");
+                input = Console.ReadLine();
+
+                switch(input)
+                {
+                    case "1":
+                        break;
+                    case "2":
+                        continue;
+                    default:
+                        continue;
+                }
+
+                Console.Clear();
+                Console.WriteLine("===== 캐릭터 생성 =====");
+                Console.WriteLine($"이름 : {name}");
+                Console.ReadLine();
+                Console.Clear();
+                break;
+            }
+                     
+            player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500);
+        }
+        #endregion
+
 
         #region 상태창
         private void Status()
