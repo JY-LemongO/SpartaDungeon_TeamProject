@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RtanTextDungeon
 {
-    internal class Monster
+    internal class Monster : IDamagable
     {
         public string   Name    { get; private set; }
         public int      Lv      { get; private set; }        
@@ -38,7 +38,9 @@ namespace RtanTextDungeon
         public Monster(int lv, Define.MonsterType type)
         {
             Lv      = lv;            
-            _type   = type;
+            Atk     = ATKs[(int)type];
+            Hp      = HPs[(int)type];
+            _type = type;
 
             switch (_type)
             {
@@ -51,20 +53,24 @@ namespace RtanTextDungeon
                 case Define.MonsterType.SkeletonWizard:
                     Name = "스켈레톤 마법사";
                     break;
-            }
-
-            Setup(_type);            
+            }            
         }
-
-        // _type 에 따라 Atk, Hp 셋업
-        private void Setup(Define.MonsterType type)
-        {
-            Atk = ATKs[(int)type];
-            Hp  = HPs[(int)type];
-        }
+        
+        public void Dead() => IsDead = true;
 
         public void GetDamage(float damage) => Hp -= damage;
 
-        public void Dead() => IsDead = true;
+        public void ShowText()
+        {
+            if (IsDead)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"Lv.{Lv} {Name}\t\tDead");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.WriteLine($"Lv.{Lv} {Name}\t\tHP {Hp}");
+        }
     }
 }
