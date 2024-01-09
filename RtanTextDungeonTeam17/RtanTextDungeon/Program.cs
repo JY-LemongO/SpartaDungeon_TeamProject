@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace RtanTextDungeon
 {
-    internal class Program
+    internal class Program  // test 주석
     {
         static void Main(string[] args)
         {
