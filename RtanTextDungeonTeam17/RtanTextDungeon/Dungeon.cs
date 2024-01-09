@@ -359,11 +359,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("=================================\n");
 
-                Console.WriteLine("난이도를 선택하세요.\n");
-                Console.WriteLine("(1) : [쉬움]\t| 방어력 [10] 이상 권장 \n" +
-                    "(2) : [보통]\t| 방어력 [25] 이상 권장\n" +
-                    "(3) : [어려움]\t| 방어력 [70] 이상 권장\n\n" +
-                    "(B) : [마을로 돌아가기]\n");
+                Console.WriteLine("(1) 전투 시작");
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 if (hpZero)
@@ -381,14 +377,9 @@ namespace RtanTextDungeon
                 Console.Clear();
                 switch (input)
                 {
-                    case "1":
-                    case "2":
-                    case "3":
+                    case "1":                    
                         if (player.Hp > 0)
-                        {
-                            int inputNum = int.Parse(input);
-                            EnterDungeon(player, (Define.DungeonDiff)(inputNum - 1));
-                        }
+                            EnterDungeon();
                         else
                             hpZero = true;
                         break;                        
@@ -410,89 +401,16 @@ namespace RtanTextDungeon
         #endregion
 
         #region 던전
-        private void EnterDungeon(Player player, Define.DungeonDiff diff)
+        private void EnterDungeon()
         {
-            Console.WriteLine(" _____                                            ");
-            Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
-            Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
-            Console.WriteLine("|_____/ |_____||__|__||___  ||_____||_____||__|__|");
-            Console.WriteLine("                      |_____|                     \n\n");
+            Console.WriteLine("" +
+                "'||'''|,            ||      ||    '||`        \r\n" +
+                " ||   ||            ||      ||     ||         \r\n" +
+                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
+                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
+                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  ");            
 
-            int[] recommendDEF = [ 10, 25, 70 ];
-            int[] rewards = [ 500, 1500, 2500 ];
-            int[] exp = [5, 15, 50];
-            string[] difficulties = { "쉬움", "보통", "어려움" };
-
-            int randomDamage = new Random().Next(20, 36);
-            float randomAdditionalGold = 1 + new Random().Next(player.Atk, player.Atk * 2 + 1) * 0.01f;
-
-            int prevHp = player.Hp;
-            int getDamage = (randomDamage + (recommendDEF[(int)diff] - player.Def)) < 0 ? 0 : (randomDamage + (recommendDEF[(int)diff] - player.Def));
-            int getGold = (int)(rewards[(int)diff] * randomAdditionalGold);
-            int getEXP = exp[(int)diff];
-            int fail = new Random().Next(0, 10);
-
-            Console.WriteLine("-------------------------------------------\n");
-            if (player.Def < recommendDEF[(int)diff] && fail < 4)
-            {
-                // 실패 시 보상x 받는 데미지 절반
-                player.GetDamage(getDamage / 2);
-                Console.WriteLine($"[{difficulties[(int)diff]}] 던전 클리어에 실패했습니다!\n");
-                Console.WriteLine("[탐험 결과]");
-                Console.WriteLine($"체력 : {prevHp} -> {player.Hp}\n");
-                if (player.Hp <= 0)
-                    Console.WriteLine("르탄이가 쓰러졌습니다!\n던전 진행이 불가능 합니다. 여관에서 휴식을 취하세요.\n");
-            }
-            else
-            {
-                int prevGold = player.Gold;                
-                player.GetDamage(getDamage);
-
-                if (player.Hp > 0)
-                {
-                    player.GetGold(getGold);
-                    Console.WriteLine("축하합니다!");
-                    Console.WriteLine($"[{difficulties[(int)diff]}] 던전을 클리어 했습니다!\n");
-                    Console.WriteLine("[탐험 결과]");
-                    Console.WriteLine($"체력 : {prevHp} -> {player.Hp}");
-                    Console.WriteLine($"Gold : {prevGold} -> {player.Gold}\n");
-                    Console.WriteLine($"경험치를 {getEXP} 획득했습니다.\n");
-
-                    int lv = player.Lv;
-                    if (player.IsLevelUp(getEXP))
-                        Console.WriteLine($"LevelUp!  Lv. {lv:00} -> {player.Lv:00}\n");
-
-                    Console.WriteLine($"경험치 : {player.EXP} / {player.NeedEXP}");
-                    float progress = (float)player.EXP / player.NeedEXP * 10f;
-                    for (int i = 0; i < 10; i++)
-                    {
-                        if (progress > i)
-                            Console.Write("■");
-                        else
-                            Console.Write("□");
-                    }
-                    Console.WriteLine("\n");
-                }
-                else
-                {
-                    Console.WriteLine("축하합니다!");
-                    Console.WriteLine($"[{difficulties[(int)diff]}] 던전을 클리어 했습니다!\n");
-                    Console.WriteLine("[탐험 결과]");
-                    Console.WriteLine($"체력 : {player.MaxHp} -> {player.Hp}\n");
-                    Console.WriteLine("르탄이가 쓰러졌습니다!\n보상을 얻지 못했습니다.\n\n던전 진행이 불가능 합니다. 여관에서 휴식을 취하세요.\n");
-                }
-            }
-            Console.WriteLine("-------------------------------------------\n");
-
-            Console.WriteLine("(AnyKey) : [나가기]\n");
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-            Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-            Console.ResetColor();
-
-            string input = Console.ReadLine();
-            Console.Clear();
+            Console.WriteLine("일단 들어옴");
         }
         #endregion
 
