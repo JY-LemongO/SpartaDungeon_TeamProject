@@ -41,28 +41,6 @@ namespace RtanTextDungeon
             this.MaxHp = MaxHp;
             this.Gold = Gold;
         }
-
-        // 저장 전, 현재 장착중인 아이템들의 능력보정 "수치" 만 제거 (장착 상태는 유지)
-        public void RemoveItemAbilityBeforeSave()
-        {
-            // Type 타입 키에 값이 있으면(아이템 장착 중이면) 해당 아이템 보정수치 제거. 
-            if (equippedItems.TryGetValue(typeof(Weapon), out var weapon))
-            {
-                Weapon equippedWeapon = (Weapon)weapon;
-                Atk -= equippedWeapon.damage;
-            }
-            if (equippedItems.TryGetValue(typeof(Armor), out var armor))
-            {
-                Armor equippedArmor = (Armor)armor;
-                Def -= equippedArmor.defense;
-            }
-            if (equippedItems.TryGetValue(typeof(Amulet), out var amulet))
-            {
-                Amulet equippedAmulet = (Amulet)amulet;
-                Atk -= equippedAmulet.damage;
-                Def -= equippedAmulet.defense;
-            }
-        }
         
         public void BuyOrSell(int price, Item item, bool isSell = false)
         {            

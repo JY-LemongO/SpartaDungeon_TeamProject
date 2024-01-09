@@ -6,8 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RtanTextDungeon
-{
-    //강성원 test
+{    
     internal class Dungeon
     {
         // 인게임에서 사용될 Player
@@ -38,7 +37,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
 
                 Console.WriteLine("-------------------------------------------\n");
-                Console.WriteLine("(E) : [상태]\n\n(I) : [인벤토리]\n\n(S) : [상점]\n\n(D) : [던전입장]\n\n(R) : [휴식]\n\n(X) : [게임종료] (게임저장)\n");
+                Console.WriteLine("(E) : [상태]\n\n(I) : [인벤토리]\n\n(S) : [상점]\n\n(D) : [던전입장]\n\n(R) : [휴식]\n\n(X) : [게임종료]\n");
                 Console.WriteLine("-------------------------------------------\n");
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
