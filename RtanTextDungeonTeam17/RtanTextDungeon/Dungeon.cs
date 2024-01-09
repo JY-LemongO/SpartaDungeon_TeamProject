@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static RtanTextDungeon.Define;
 
@@ -458,17 +459,135 @@ namespace RtanTextDungeon
         }
         #endregion
 
-        #region 던전
+        #region 배틀
         private void EnterDungeon()
-        {
-            Console.WriteLine("" +
+        {            
+            #region 몬스터 스폰
+            int spawnCount = new Random().Next(1, 5);
+            Monster[] monsters = new Monster[spawnCount];
+            for (int i = 0; i < monsters.Length; i++)
+            {
+                int randLv = new Random().Next(1, 6);
+                int randomType = new Random().Next(0, 3);
+
+                monsters[i] = new Monster(randLv, (MonsterType)randomType);                
+            }
+            #endregion
+
+            while (true)
+            {
+                Console.WriteLine("" +
                 "'||'''|,            ||      ||    '||`        \r\n" +
                 " ||   ||            ||      ||     ||         \r\n" +
                 " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
                 " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
-                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  ");            
+                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
 
-            Console.WriteLine("일단 들어옴");
+                for (int i = 0; i < monsters.Length; i++)
+                    monsters[i].ShowText();
+
+                Console.WriteLine($"\n" +
+                    $"[내정보]\n" +
+                    $"Lv.{player.Lv}\t{player.Name}\n" +
+                    $"HP {player.Hp}/{player.MaxHp}\n\n");
+                
+                Console.WriteLine("1. 공격\n");
+                Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+                string input = Console.ReadLine();
+                Console.Clear();
+                switch (input)
+                {
+                    case "1":
+                        Fight(monsters);
+                        return;
+                    default:
+                        Console.WriteLine("잘못된 입력입니다.");
+                        continue;
+                }
+            }                   
+        }
+
+        private void Fight(Monster[] monsters)
+        {
+            bool playerTurn = true;
+
+            Console.Clear();            
+            while (true)
+            {
+                Console.WriteLine("" +
+                "'||'''|,            ||      ||    '||`        \r\n" +
+                " ||   ||            ||      ||     ||         \r\n" +
+                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
+                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
+                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
+
+                if (playerTurn)
+                {
+                    for (int i = 0; i < monsters.Length; i++)
+                        monsters[i].ShowText(i + 1);
+
+                    Console.WriteLine($"\n" +
+                        $"[내정보]\n" +
+                        $"Lv.{player.Lv}\t{player.Name}\n" +
+                        $"HP {player.Hp}/{player.MaxHp}\n\n");
+
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("대상을 선택해주세요.\n");
+
+                    int input = int.Parse(Console.ReadLine());
+                    if (input > 0 && input < monsters.Length)
+                    {
+                        if (monsters[input].IsDead)
+                            Console.WriteLine("잘못된 입력입니다.");
+                        else
+                            PlayerPhase(monsters[input]);
+                    }
+                    else if (input == 0)
+                        Console.WriteLine("턴 종료");
+                    else
+                        Console.WriteLine("잘못된 입력입니다.");
+                }
+                else
+                    MonsterPhase(monsters);
+
+                playerTurn = !playerTurn;
+            }            
+        }
+        #endregion
+
+        #region 공격
+        private void PlayerPhase(Monster monster)
+        {
+            string prevHp = monster.Hp.ToString();
+            monster.GetDamage(player.Atk);
+            string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+
+            Console.WriteLine($"{player.Name} 의 공격!\n" +
+                $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {player.Atk}]\n" +
+                $"\n" +
+                $"{monster.Name}\n" +
+                $"HP{prevHp} -> {currentHp}");
+
+            Console.ReadLine();
+        }
+        private void MonsterPhase(Monster[] monsters)
+        {
+            foreach (Monster monster in monsters)
+            {
+                if (!monster.IsDead)
+                {
+                    int prevHp = player.Hp;
+                    player.GetDamage(monster.Atk);
+
+                    Console.WriteLine($"{monster.Name} 의 공격!\n" +
+                    $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
+                    $"\n" +
+                    $"{player.Name}\n" +
+                    $"HP{prevHp} -> {player.Hp}");
+                    
+                    Console.ReadLine();
+                }                    
+            }                
         }
         #endregion
 

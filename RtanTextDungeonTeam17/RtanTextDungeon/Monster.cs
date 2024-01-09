@@ -8,22 +8,28 @@ namespace RtanTextDungeon
 {
     internal class Monster : IDamagable
     {
-        public string   Name    { get; private set; }
-        public int      Lv      { get; private set; }        
-        public int      Atk     { get; private set; }
+        private readonly string  _name;        
+        private readonly int     _lv;
+        private readonly int     _atk;        
+
+        public string   Name    => _name;
+        public int      Lv      => _lv;      
+        public int      Atk     => _atk;
+
+        private float   _hp;
         /// <summary>
         /// get 시 Hp 반환
         /// set 시 Hp = value 값 및 0 이하 시 Hp = 0, Dead 메서드 호출
         /// </summary>
         public float    Hp 
         {
-            get => Hp;
+            get => _hp;
             private set
-            {                
-                Hp = value;
+            {
+                _hp = value;
                 if(Hp <= 0)
                 {
-                    Hp = 0;
+                    _hp = 0;
                     Dead();
                 }
             }
@@ -37,21 +43,21 @@ namespace RtanTextDungeon
 
         public Monster(int lv, Define.MonsterType type)
         {
-            Lv      = lv;            
-            Atk     = ATKs[(int)type];
-            Hp      = HPs[(int)type];
-            _type = type;
+            _lv     = lv;
+            _atk    = ATKs[(int)type];
+            _hp     = HPs[(int)type];
+            _type   = type;
 
             switch (_type)
             {
                 case Define.MonsterType.SkeletonWorrior:
-                    Name = "스켈레톤 전사";
+                    _name = $"Lv.{Lv}  스켈레톤 전사";
                     break;
                 case Define.MonsterType.SkeletonArcher:
-                    Name = "스켈레톤 궁수";
+                    _name = $"Lv.{Lv}  스켈레톤 궁수";
                     break;
                 case Define.MonsterType.SkeletonWizard:
-                    Name = "스켈레톤 마법사";
+                    _name = $"Lv.{Lv}  스켈레톤 마법사";
                     break;
             }            
         }
@@ -62,15 +68,18 @@ namespace RtanTextDungeon
 
         public void ShowText()
         {
+            Console.WriteLine($"{Name}\t\tHP {Hp}");
+        }
+        public void ShowText(int index)
+        {
             if (IsDead)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"Lv.{Lv} {Name}\t\tDead");
+                Console.WriteLine($"({index}) {Name}\t\tDead");
                 Console.ResetColor();
                 return;
             }
-
-            Console.WriteLine($"Lv.{Lv} {Name}\t\tHP {Hp}");
+            Console.WriteLine($"({index}) {Name}\t\tHP {Hp}");
         }
     }
 }
