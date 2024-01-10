@@ -70,7 +70,14 @@ namespace RtanTextDungeon
         // 인 게임 상에서 출력할 Text 함수, 오버로딩으로 전투씬 전,후 구별 사용
         public void ShowText()
         {
-            Console.WriteLine($"{Name}  \tHP {Hp}");
+            if (IsDead)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"{Name}  \tDead");
+                Console.ResetColor();
+            }                
+            else
+                Console.WriteLine($"{Name}  \tHP {Hp}");
         }
         public void ShowText(int index)
         {
