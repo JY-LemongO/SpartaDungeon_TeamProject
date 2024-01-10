@@ -530,89 +530,79 @@ namespace RtanTextDungeon
                 {
                     case "1":
                         Fight(monsters);
-                        return;
+                        invalid = false;
+                        break;
                     default:
                         invalid = true;
                         continue;
                 }
+
+                if (monsters.All(x => x.IsDead) || player.Hp <= 0)
+                    return;
             }                   
         }
 
         private void Fight(Monster[] monsters)
-        {
-            bool playerTurn = true;
+        {            
             bool invalid = false;
-            int startHp = player.Hp;
-                  
+            int startHp = player.Hp;            
+
             while (true)
             {
                 BattlePrint();
 
-                if (playerTurn)
-                {                    
-                    for (int i = 0; i < monsters.Length; i++)
-                        monsters[i].ShowText(i + 1);
+                for (int i = 0; i < monsters.Length; i++)
+                    monsters[i].ShowText(i + 1);
 
-                    // 전투 종료
-                    if (monsters.All(x => x.IsDead))
-                    {
-                        Victory(monsters.Length, startHp);                        
-                        return;
-                    }                        
-                    else if (player.Hp <= 0)
-                    {
-                        Lose(startHp);
-                        return;
-                    }                        
+                Console.WriteLine($"\n" +
+                    $"[내정보]\n" +
+                    $"Lv.{player.Lv}\t{player.Name}\n" +
+                    $"HP {player.Hp}/{player.MaxHp}\n\n");
 
-                    Console.WriteLine($"\n" +
-                        $"[내정보]\n" +
-                        $"Lv.{player.Lv}\t{player.Name}\n" +
-                        $"HP {player.Hp}/{player.MaxHp}\n\n");
+                Console.WriteLine("0. 취소\n");
+                Console.WriteLine("대상을 선택해주세요.\n");
 
-                    Console.WriteLine("0. 취소\n");
-                    Console.WriteLine("대상을 선택해주세요.\n");
+                if (invalid)
+                    Console.WriteLine("잘못된 입력입니다.");
 
-                    if(invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
+                string input = Console.ReadLine();
+                int inputNum;
+                bool isNum = int.TryParse(input, out inputNum);
+                if (!isNum)
+                {
+                    invalid = true;
+                    continue;
+                }
 
-                    string input = Console.ReadLine();
-                    int inputNum;
-                    bool isNum= int.TryParse(input, out inputNum);
-                    if (!isNum)
+                if (inputNum > 0 && inputNum <= monsters.Length)
+                {
+                    if (monsters[inputNum - 1].IsDead)
                     {
                         invalid = true;
                         continue;
-                    }                        
-
-                    if (inputNum > 0 && inputNum <= monsters.Length)
-                    {
-                        if (monsters[inputNum - 1].IsDead)
-                        {
-                            invalid = true;
-                            continue;
-                        }
-                        else
-                        {
-                            invalid = false;
-                            PlayerPhase(monsters[inputNum - 1]);
-                        }                            
                     }
-                    else if (inputNum == 0)
-                    {
-                        invalid = false;
-                        Console.WriteLine("턴 종료");
-                    }                        
                     else
                     {
-                        invalid = true;
-                        continue;
-                    }                        
+                        invalid = false;
+                        PlayerPhase(monsters[inputNum - 1]);
+                    }
                 }
+                else if (inputNum == 0)
+                    return;
                 else
-                    MonsterPhase(monsters);
+                {
+                    invalid = true;
+                    continue;
+                }                    
 
-                playerTurn = !playerTurn;
+                MonsterPhase(monsters);
+                
+                if (monsters.All(x => x.IsDead))
+                    Victory(monsters.Length, startHp);
+                else if (player.Hp <= 0)
+                    Lose(startHp);
+
+                return;
             }            
         }
         #endregion
@@ -620,33 +610,34 @@ namespace RtanTextDungeon
         #region 공격
         private void PlayerPhase(Monster monster)
         {
-            BattlePrint();
-
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             int damage = player.Atk + new Random().Next(-error, error + 1);
 
             string prevHp = monster.Hp.ToString();
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
-            
+
+            BattlePrint();
+
             Console.WriteLine($"{player.Name} 의 공격!\n" +
-                $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {player.Atk}]\n" +
-                $"\n" +
-                $"{monster.Name}\n" +
-                $"HP {prevHp} -> {currentHp}\n" +
-                $"\n" +
-                $"0. 다음\n" +
-                $"\n" +
-                $"대상을 선택해주세요.");
+            $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+            $"\n" +
+            $"{monster.Name}\n" +
+            $"HP {prevHp} -> {currentHp}\n" +
+            $"\n" +
+            $"계속\n" +
+            $"\n");
 
             Console.ReadLine();
         }
 
         private void MonsterPhase(Monster[] monsters)
         {
+            BattlePrint();
+
             foreach (Monster monster in monsters)
             {
-                if (!monster.IsDead)
+                if (!monster.IsDead && player.Hp > 0)
                 {
                     int prevHp = player.Hp;
                     player.GetDamage(monster.Atk);
@@ -659,7 +650,7 @@ namespace RtanTextDungeon
                     
                     Console.ReadLine();
                 }                    
-            }                
+            }
         }
         #endregion
 
@@ -679,7 +670,7 @@ namespace RtanTextDungeon
                 $"Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
                 $"\n" +
-                $"0. 다음");
+                $"계속");
 
             Console.ReadLine();
         }
@@ -697,7 +688,7 @@ namespace RtanTextDungeon
                 $"Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
                 $"\n" +
-                $"0. 다음");
+                $"계속");
 
             Console.ReadLine();
         }
