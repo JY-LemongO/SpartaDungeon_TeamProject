@@ -416,6 +416,7 @@ namespace RtanTextDungeon
         {            
             bool status = false;
             bool hpZero = false;
+            int startHp = player.Hp;
 
             while (true)
             {
@@ -469,7 +470,7 @@ namespace RtanTextDungeon
                 {
                     case "1":                    
                         if (player.Hp > 0)
-                            EnterDungeon();
+                            EnterDungeon(startHp);
                         else
                             hpZero = true;
                         break;                        
@@ -491,7 +492,7 @@ namespace RtanTextDungeon
         #endregion
 
         #region 배틀
-        private void EnterDungeon()
+        private void EnterDungeon(int startHp)
         {            
             #region 몬스터 스폰
             int spawnCount = new Random().Next(1, 5);
@@ -499,12 +500,12 @@ namespace RtanTextDungeon
             for (int i = 0; i < monsters.Length; i++)
             {
                 int randLv = new Random().Next(1, 6);
-                int randomType = new Random().Next(0, 3);
+                int randomType = new Random().Next(0, Enum.GetValues(typeof(MonsterType)).Length);
 
                 monsters[i] = new Monster(randLv, (MonsterType)randomType);                
             }
             #endregion
-            bool invalid = false;
+            bool invalid = false;            
 
             while (true)
             {
@@ -529,7 +530,7 @@ namespace RtanTextDungeon
                 switch (input)
                 {
                     case "1":
-                        Fight(monsters);
+                        Fight(monsters, startHp);
                         invalid = false;
                         break;
                     default:
@@ -542,10 +543,9 @@ namespace RtanTextDungeon
             }                   
         }
 
-        private void Fight(Monster[] monsters)
+        private void Fight(Monster[] monsters, int startHp)
         {            
-            bool invalid = false;
-            int startHp = player.Hp;            
+            bool invalid = false;                      
 
             while (true)
             {
