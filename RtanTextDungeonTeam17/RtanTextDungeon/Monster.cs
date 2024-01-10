@@ -8,6 +8,7 @@ namespace RtanTextDungeon
 {
     internal class Monster : IDamagable
     {
+        // 생성 시 할당 이후 변화 없는 변수 name, lv, atk 는 readonly로 선언.
         private readonly string  _name;        
         private readonly int     _lv;
         private readonly int     _atk;        
@@ -18,8 +19,8 @@ namespace RtanTextDungeon
 
         private float   _hp;
         /// <summary>
-        /// get 시 Hp 반환
-        /// set 시 Hp = value 값 및 0 이하 시 Hp = 0, Dead 메서드 호출
+        /// get 시, Hp 반환
+        /// set 시, Hp = value 값 및 0 이하 시 Hp = 0, Dead 메서드 호출
         /// </summary>
         public float    Hp 
         {
@@ -30,7 +31,7 @@ namespace RtanTextDungeon
                 if(Hp <= 0)
                 {
                     _hp = 0;
-                    Dead();
+                    IsDead = true;
                 }
             }
         }
@@ -38,6 +39,7 @@ namespace RtanTextDungeon
         public bool     IsDead  { get; private set; } = false;
 
         private Define.MonsterType _type;
+        // 타입에 따라 부여할 공격력/체력 (고정값)
         private readonly int[]      ATKs    = [10, 15, 25];
         private readonly float[]    HPs     = [30f, 20f, 10f];
 
@@ -48,6 +50,7 @@ namespace RtanTextDungeon
             _hp     = HPs[(int)type];
             _type   = type;
 
+            // 몬스터 타입에 따라 이름 할당.
             switch (_type)
             {
                 case Define.MonsterType.SkeletonWorrior:
@@ -60,26 +63,25 @@ namespace RtanTextDungeon
                     _name = $"Lv.{Lv}  스켈레톤 마법사";
                     break;
             }            
-        }
-        
-        public void Dead() => IsDead = true;
+        }        
 
         public void GetDamage(float damage) => Hp -= damage;
 
+        // 인 게임 상에서 출력할 Text 함수, 오버로딩으로 전투씬 전,후 구별 사용
         public void ShowText()
         {
-            Console.WriteLine($"{Name}\t\tHP {Hp}");
+            Console.WriteLine($"{Name}  \tHP {Hp}");
         }
         public void ShowText(int index)
         {
             if (IsDead)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"({index}) {Name}\t\tDead");
+                Console.WriteLine($"({index}) {Name}  \tDead");
                 Console.ResetColor();
                 return;
             }
-            Console.WriteLine($"({index}) {Name}\t\tHP {Hp}");
+            Console.WriteLine($"({index}) {Name}  \tHP {Hp}");
         }
     }
 }

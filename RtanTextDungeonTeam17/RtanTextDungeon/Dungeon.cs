@@ -385,12 +385,13 @@ namespace RtanTextDungeon
 
         #region 던전입구
         private void DungeonEntrance()
-        {
+        {            
             bool status = false;
             bool hpZero = false;
 
             while (true)
             {
+                Console.Clear();
                 Console.WriteLine(" _____                                            ");
                 Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
                 Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
@@ -418,7 +419,9 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("=================================\n");
 
-                Console.WriteLine("(1) 전투 시작");
+                Console.WriteLine("" +
+                    "(1) 전투 시작\n" +
+                    "(B) 마을로 돌아가기\n");
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 if (hpZero)
@@ -473,15 +476,11 @@ namespace RtanTextDungeon
                 monsters[i] = new Monster(randLv, (MonsterType)randomType);                
             }
             #endregion
+            bool invalid = false;
 
             while (true)
             {
-                Console.WriteLine("" +
-                "'||'''|,            ||      ||    '||`        \r\n" +
-                " ||   ||            ||      ||     ||         \r\n" +
-                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
-                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
-                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
+                BattlePrint();
 
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText();
@@ -493,6 +492,10 @@ namespace RtanTextDungeon
                 
                 Console.WriteLine("1. 공격\n");
                 Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+
+                if (invalid)
+                    Console.WriteLine("잘못된 입력입니다.");
+
                 string input = Console.ReadLine();
                 Console.Clear();
                 switch (input)
@@ -501,7 +504,7 @@ namespace RtanTextDungeon
                         Fight(monsters);
                         return;
                     default:
-                        Console.WriteLine("잘못된 입력입니다.");
+                        invalid = true;
                         continue;
                 }
             }                   
@@ -510,21 +513,29 @@ namespace RtanTextDungeon
         private void Fight(Monster[] monsters)
         {
             bool playerTurn = true;
-
-            Console.Clear();            
+            bool invalid = false;
+            int startHp = player.Hp;
+                  
             while (true)
             {
-                Console.WriteLine("" +
-                "'||'''|,            ||      ||    '||`        \r\n" +
-                " ||   ||            ||      ||     ||         \r\n" +
-                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
-                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
-                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
+                BattlePrint();
 
                 if (playerTurn)
-                {
+                {                    
                     for (int i = 0; i < monsters.Length; i++)
                         monsters[i].ShowText(i + 1);
+
+                    // 전투 종료
+                    if (monsters.All(x => x.IsDead))
+                    {
+                        Victory(monsters.Length, startHp);                        
+                        return;
+                    }                        
+                    else if (player.Hp <= 0)
+                    {
+                        Lose(startHp);
+                        return;
+                    }                        
 
                     Console.WriteLine($"\n" +
                         $"[내정보]\n" +
@@ -534,18 +545,41 @@ namespace RtanTextDungeon
                     Console.WriteLine("0. 취소\n");
                     Console.WriteLine("대상을 선택해주세요.\n");
 
-                    int input = int.Parse(Console.ReadLine());
-                    if (input > 0 && input < monsters.Length)
-                    {
-                        if (monsters[input].IsDead)
-                            Console.WriteLine("잘못된 입력입니다.");
-                        else
-                            PlayerPhase(monsters[input]);
-                    }
-                    else if (input == 0)
-                        Console.WriteLine("턴 종료");
-                    else
+                    if(invalid)
                         Console.WriteLine("잘못된 입력입니다.");
+
+                    string input = Console.ReadLine();
+                    int inputNum;
+                    bool isNum= int.TryParse(input, out inputNum);
+                    if (!isNum)
+                    {
+                        invalid = true;
+                        continue;
+                    }                        
+
+                    if (inputNum > 0 && inputNum <= monsters.Length)
+                    {
+                        if (monsters[inputNum - 1].IsDead)
+                        {
+                            invalid = true;
+                            continue;
+                        }
+                        else
+                        {
+                            invalid = false;
+                            PlayerPhase(monsters[inputNum - 1]);
+                        }                            
+                    }
+                    else if (inputNum == 0)
+                    {
+                        invalid = false;
+                        Console.WriteLine("턴 종료");
+                    }                        
+                    else
+                    {
+                        invalid = true;
+                        continue;
+                    }                        
                 }
                 else
                     MonsterPhase(monsters);
@@ -558,18 +592,28 @@ namespace RtanTextDungeon
         #region 공격
         private void PlayerPhase(Monster monster)
         {
-            string prevHp = monster.Hp.ToString();
-            monster.GetDamage(player.Atk);
-            string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+            BattlePrint();
 
+            int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
+            int damage = player.Atk + new Random().Next(-error, error + 1);
+
+            string prevHp = monster.Hp.ToString();
+            monster.GetDamage(damage);
+            string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+            
             Console.WriteLine($"{player.Name} 의 공격!\n" +
                 $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {player.Atk}]\n" +
                 $"\n" +
                 $"{monster.Name}\n" +
-                $"HP{prevHp} -> {currentHp}");
+                $"HP {prevHp} -> {currentHp}\n" +
+                $"\n" +
+                $"0. 다음\n" +
+                $"\n" +
+                $"대상을 선택해주세요.");
 
             Console.ReadLine();
         }
+
         private void MonsterPhase(Monster[] monsters)
         {
             foreach (Monster monster in monsters)
@@ -583,11 +627,51 @@ namespace RtanTextDungeon
                     $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
                     $"\n" +
                     $"{player.Name}\n" +
-                    $"HP{prevHp} -> {player.Hp}");
+                    $"HP {prevHp} -> {player.Hp}");
                     
                     Console.ReadLine();
                 }                    
             }                
+        }
+        #endregion
+
+        #region 결과
+        private void Victory(int monsterCount, int startHp)
+        {
+            BattlePrint();
+            Console.WriteLine("Result\n");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Victory\n");
+            Console.ResetColor();
+
+            Console.WriteLine(
+                $"던전에 몬스터 {monsterCount}마리를 잡았습니다.\n" +
+                $"\n" +
+                $"Lv.{player.Lv} {player.Name}\n" +
+                $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"0. 다음");
+
+            Console.ReadLine();
+        }
+
+        private void Lose(int startHp)
+        {
+            BattlePrint();
+            Console.WriteLine("Result\n");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("You Lose\n");
+            Console.ResetColor();
+
+            Console.WriteLine(
+                $"Lv.{player.Lv} {player.Name}\n" +
+                $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"0. 다음");
+
+            Console.ReadLine();
         }
         #endregion
 
@@ -672,6 +756,19 @@ namespace RtanTextDungeon
                         break;
                 }
             }
+        }
+        #endregion
+
+        #region Battle 아스키 아트
+        private void BattlePrint()
+        {
+            Console.Clear();
+            Console.WriteLine("" +
+                "'||'''|,            ||      ||    '||`        \r\n" +
+                " ||   ||            ||      ||     ||         \r\n" +
+                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
+                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
+                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
         }
         #endregion
     }
