@@ -477,6 +477,7 @@ namespace RtanTextDungeon
             }
             #endregion
             bool invalid = false;
+            bool isSkillShow = false;
 
             while (true)
             {
@@ -490,25 +491,64 @@ namespace RtanTextDungeon
                     $"Lv.{player.Lv}\t{player.Name}\n" +
                     $"HP {player.Hp}/{player.MaxHp}\n\n");
                 
-                Console.WriteLine("1. 공격\n");
-                Console.WriteLine("원하시는 행동을 입력해주세요.\n");
-
-                if (invalid)
-                    Console.WriteLine("잘못된 입력입니다.");
-
-                string input = Console.ReadLine();
-                Console.Clear();
-                switch (input)
+                if(!isSkillShow)
                 {
-                    case "1":
-                        Fight(monsters);
-                        return;
-                    default:
-                        invalid = true;
-                        continue;
+                    Console.WriteLine("1. 공격\n");
+                    Console.WriteLine("2. 스킬\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
+
+                    string input = Console.ReadLine();
+                    Console.Clear();
+                    switch (input)
+                    {
+                        case "1":
+                            Fight(monsters);
+                            return;
+                        case "2":
+                            isSkillShow = true; //스킬 선택 화면으로
+                            break;
+                        default:
+                            invalid = true;
+                            continue;
+                    }
+                }
+                else // 스킬 선택 화면
+                {
+                    for(int i = 0; i < player.Skills.Count; ++i)
+                    {
+                        player.Skills[i].ShowText();
+                    }
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
+
+                    string input = Console.ReadLine();
+                    Console.Clear();
+                    switch (input)
+                    {
+                        case "0":
+                            isSkillShow = false; //공격, 스킬 선택 화면으로
+                            continue;
+                        default:
+                            int skillNum;
+                            //입력 값이 (숫자 and 1 이상 and 스킬 개수 이하) 인 경우
+                            if (int.TryParse(input,out skillNum) && skillNum >= 1 && (skillNum - 1) < player.Skills.Count)
+                            {
+                                // 여기부터 개발해야함.
+                            }
+                            else
+                                invalid = true;
+                            continue;
+                    }
                 }
             }                   
         }
+
+        
 
         private void Fight(Monster[] monsters)
         {
@@ -535,7 +575,7 @@ namespace RtanTextDungeon
                     {
                         Lose(startHp);
                         return;
-                    }                        
+                    }
 
                     Console.WriteLine($"\n" +
                         $"[내정보]\n" +
