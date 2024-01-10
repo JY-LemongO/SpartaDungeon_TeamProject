@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -17,8 +18,11 @@ namespace RtanTextDungeon
         public int Def                      { get; private set; }
         public int Hp                       { get; private set; }
         public int MaxHp                    { get; private set; }
+        public int Mp                       { get; set; }
+        public int MaxMp                    { get; private set; }
         public int Gold                     { get; private set; }
         public int EXP                      { get; private set; }        
+        public List<Skill> Skills           { get; private set; }
 
         // 런타임에서 가지고 있을 아이템 정보들
         public Dictionary<Type, Item>   equippedItems       = new Dictionary<Type, Item>();        
@@ -30,16 +34,21 @@ namespace RtanTextDungeon
 
         public int NeedEXP { get; private set; } = 10;
         
-        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int Hp, int MaxHp, int Gold)
+        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int MaxHp, int MaxMp, int Gold)
         {
             this.Lv = Lv;
             this.Name = Name;
             this.m_Class = m_Class;
             this.Atk = Atk;
             this.Def = Def;
-            this.Hp = Hp;
+            this.Hp = MaxHp;
             this.MaxHp = MaxHp;
+            this.Mp = MaxMp;
+            this.MaxMp = MaxMp;
             this.Gold = Gold;
+
+            //스킬 생성용 임시 함수
+            CreateSkills();
         }
         
         public void BuyOrSell(int price, Item item, bool isSell = false)
@@ -209,6 +218,25 @@ namespace RtanTextDungeon
             Lv++;
             Atk += 3;
             Def += 1;            
+        }
+
+        public void CreateSkills()
+        {
+            Skills = new List<Skill>();
+
+            Skill skill_1 = new Skill("알파 스트라이크", 10, 2, "공격력 * 2 로 하나의 적을 공격합니다.");
+            Skill skill_2 = new Skill("짱센 스트라이크", 15, 3, "공격력 * 3 로 하나의 적을 랜덤으로 공격합니다.");
+            
+            Skills.Add(skill_1);
+            Skills.Add(skill_2);
+        }
+
+        public void ShowText()
+        {
+            Console.WriteLine($"\n" +
+                $"[내정보]\n" +
+                $"Lv.{Lv}\t{Name}\n" +
+                $"HP {Hp} / {MaxHp}\n\n");
         }
     }    
 }

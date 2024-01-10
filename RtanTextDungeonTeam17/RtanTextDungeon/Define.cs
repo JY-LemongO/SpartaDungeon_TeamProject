@@ -36,6 +36,9 @@ namespace RtanTextDungeon
             SkeletonWorrior,
             SkeletonArcher,
             SkeletonWizard,
+            GoblinWorrior,
+            GoblinArcher,
+            GoblinWizard,
         }
     }
 }
