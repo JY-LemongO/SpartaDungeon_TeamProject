@@ -541,7 +541,8 @@ namespace RtanTextDungeon
                     {
                         case "1":
                             Fight(monsters, startHp);
-                            return;
+                            invalid = false;
+                            break;
                         case "2":
                             isSkillShow = true; //스킬 선택 화면으로
                             break;
