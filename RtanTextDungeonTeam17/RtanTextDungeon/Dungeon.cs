@@ -534,7 +534,7 @@ namespace RtanTextDungeon
                     switch (input)
                     {
                         case "1":
-                            Fight(monsters);
+                            Fight(monsters, startHp);
                             return;
                         case "2":
                             isSkillShow = true; //스킬 선택 화면으로
