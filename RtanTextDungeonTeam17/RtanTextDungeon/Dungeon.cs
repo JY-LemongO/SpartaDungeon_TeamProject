@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static RtanTextDungeon.Define;
 
@@ -384,12 +385,13 @@ namespace RtanTextDungeon
 
         #region 던전입구
         private void DungeonEntrance()
-        {
+        {            
             bool status = false;
             bool hpZero = false;
 
             while (true)
             {
+                Console.Clear();
                 Console.WriteLine(" _____                                            ");
                 Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
                 Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
@@ -417,11 +419,9 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("=================================\n");
 
-                Console.WriteLine("난이도를 선택하세요.\n");
-                Console.WriteLine("(1) : [쉬움]\t| 방어력 [10] 이상 권장 \n" +
-                    "(2) : [보통]\t| 방어력 [25] 이상 권장\n" +
-                    "(3) : [어려움]\t| 방어력 [70] 이상 권장\n\n" +
-                    "(B) : [마을로 돌아가기]\n");
+                Console.WriteLine("" +
+                    "(1) 전투 시작\n" +
+                    "(B) 마을로 돌아가기\n");
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 if (hpZero)
@@ -439,14 +439,9 @@ namespace RtanTextDungeon
                 Console.Clear();
                 switch (input)
                 {
-                    case "1":
-                    case "2":
-                    case "3":
+                    case "1":                    
                         if (player.Hp > 0)
-                        {
-                            int inputNum = int.Parse(input);
-                            EnterDungeon(player, (Define.DungeonDiff)(inputNum - 1));
-                        }
+                            EnterDungeon();
                         else
                             hpZero = true;
                         break;                        
@@ -467,90 +462,216 @@ namespace RtanTextDungeon
         }
         #endregion
 
-        #region 던전
-        private void EnterDungeon(Player player, Define.DungeonDiff diff)
-        {
-            Console.WriteLine(" _____                                            ");
-            Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
-            Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
-            Console.WriteLine("|_____/ |_____||__|__||___  ||_____||_____||__|__|");
-            Console.WriteLine("                      |_____|                     \n\n");
-
-            int[] recommendDEF = [ 10, 25, 70 ];
-            int[] rewards = [ 500, 1500, 2500 ];
-            int[] exp = [5, 15, 50];
-            string[] difficulties = { "쉬움", "보통", "어려움" };
-
-            int randomDamage = new Random().Next(20, 36);
-            float randomAdditionalGold = 1 + new Random().Next(player.Atk, player.Atk * 2 + 1) * 0.01f;
-
-            int prevHp = player.Hp;
-            int getDamage = (randomDamage + (recommendDEF[(int)diff] - player.Def)) < 0 ? 0 : (randomDamage + (recommendDEF[(int)diff] - player.Def));
-            int getGold = (int)(rewards[(int)diff] * randomAdditionalGold);
-            int getEXP = exp[(int)diff];
-            int fail = new Random().Next(0, 10);
-
-            Console.WriteLine("-------------------------------------------\n");
-            if (player.Def < recommendDEF[(int)diff] && fail < 4)
+        #region 배틀
+        private void EnterDungeon()
+        {            
+            #region 몬스터 스폰
+            int spawnCount = new Random().Next(1, 5);
+            Monster[] monsters = new Monster[spawnCount];
+            for (int i = 0; i < monsters.Length; i++)
             {
-                // 실패 시 보상x 받는 데미지 절반
-                player.GetDamage(getDamage / 2);
-                Console.WriteLine($"[{difficulties[(int)diff]}] 던전 클리어에 실패했습니다!\n");
-                Console.WriteLine("[탐험 결과]");
-                Console.WriteLine($"체력 : {prevHp} -> {player.Hp}\n");
-                if (player.Hp <= 0)
-                    Console.WriteLine("르탄이가 쓰러졌습니다!\n던전 진행이 불가능 합니다. 여관에서 휴식을 취하세요.\n");
+                int randLv = new Random().Next(1, 6);
+                int randomType = new Random().Next(0, 3);
+
+                monsters[i] = new Monster(randLv, (MonsterType)randomType);                
             }
-            else
+            #endregion
+            bool invalid = false;
+
+            while (true)
             {
-                int prevGold = player.Gold;                
-                player.GetDamage(getDamage);
+                BattlePrint();
 
-                if (player.Hp > 0)
+                for (int i = 0; i < monsters.Length; i++)
+                    monsters[i].ShowText();
+
+                Console.WriteLine($"\n" +
+                    $"[내정보]\n" +
+                    $"Lv.{player.Lv}\t{player.Name}\n" +
+                    $"HP {player.Hp}/{player.MaxHp}\n\n");
+                
+                Console.WriteLine("1. 공격\n");
+                Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+
+                if (invalid)
+                    Console.WriteLine("잘못된 입력입니다.");
+
+                string input = Console.ReadLine();
+                Console.Clear();
+                switch (input)
                 {
-                    player.GetGold(getGold);
-                    Console.WriteLine("축하합니다!");
-                    Console.WriteLine($"[{difficulties[(int)diff]}] 던전을 클리어 했습니다!\n");
-                    Console.WriteLine("[탐험 결과]");
-                    Console.WriteLine($"체력 : {prevHp} -> {player.Hp}");
-                    Console.WriteLine($"Gold : {prevGold} -> {player.Gold}\n");
-                    Console.WriteLine($"경험치를 {getEXP} 획득했습니다.\n");
+                    case "1":
+                        Fight(monsters);
+                        return;
+                    default:
+                        invalid = true;
+                        continue;
+                }
+            }                   
+        }
 
-                    int lv = player.Lv;
-                    if (player.IsLevelUp(getEXP))
-                        Console.WriteLine($"LevelUp!  Lv. {lv:00} -> {player.Lv:00}\n");
+        private void Fight(Monster[] monsters)
+        {
+            bool playerTurn = true;
+            bool invalid = false;
+            int startHp = player.Hp;
+                  
+            while (true)
+            {
+                BattlePrint();
 
-                    Console.WriteLine($"경험치 : {player.EXP} / {player.NeedEXP}");
-                    float progress = (float)player.EXP / player.NeedEXP * 10f;
-                    for (int i = 0; i < 10; i++)
+                if (playerTurn)
+                {                    
+                    for (int i = 0; i < monsters.Length; i++)
+                        monsters[i].ShowText(i + 1);
+
+                    // 전투 종료
+                    if (monsters.All(x => x.IsDead))
                     {
-                        if (progress > i)
-                            Console.Write("■");
+                        Victory(monsters.Length, startHp);                        
+                        return;
+                    }                        
+                    else if (player.Hp <= 0)
+                    {
+                        Lose(startHp);
+                        return;
+                    }                        
+
+                    Console.WriteLine($"\n" +
+                        $"[내정보]\n" +
+                        $"Lv.{player.Lv}\t{player.Name}\n" +
+                        $"HP {player.Hp}/{player.MaxHp}\n\n");
+
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("대상을 선택해주세요.\n");
+
+                    if(invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
+
+                    string input = Console.ReadLine();
+                    int inputNum;
+                    bool isNum= int.TryParse(input, out inputNum);
+                    if (!isNum)
+                    {
+                        invalid = true;
+                        continue;
+                    }                        
+
+                    if (inputNum > 0 && inputNum <= monsters.Length)
+                    {
+                        if (monsters[inputNum - 1].IsDead)
+                        {
+                            invalid = true;
+                            continue;
+                        }
                         else
-                            Console.Write("□");
+                        {
+                            invalid = false;
+                            PlayerPhase(monsters[inputNum - 1]);
+                        }                            
                     }
-                    Console.WriteLine("\n");
+                    else if (inputNum == 0)
+                    {
+                        invalid = false;
+                        Console.WriteLine("턴 종료");
+                    }                        
+                    else
+                    {
+                        invalid = true;
+                        continue;
+                    }                        
                 }
                 else
+                    MonsterPhase(monsters);
+
+                playerTurn = !playerTurn;
+            }            
+        }
+        #endregion
+
+        #region 공격
+        private void PlayerPhase(Monster monster)
+        {
+            BattlePrint();
+
+            int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
+            int damage = player.Atk + new Random().Next(-error, error + 1);
+
+            string prevHp = monster.Hp.ToString();
+            monster.GetDamage(damage);
+            string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+            
+            Console.WriteLine($"{player.Name} 의 공격!\n" +
+                $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {player.Atk}]\n" +
+                $"\n" +
+                $"{monster.Name}\n" +
+                $"HP {prevHp} -> {currentHp}\n" +
+                $"\n" +
+                $"0. 다음\n" +
+                $"\n" +
+                $"대상을 선택해주세요.");
+
+            Console.ReadLine();
+        }
+
+        private void MonsterPhase(Monster[] monsters)
+        {
+            foreach (Monster monster in monsters)
+            {
+                if (!monster.IsDead)
                 {
-                    Console.WriteLine("축하합니다!");
-                    Console.WriteLine($"[{difficulties[(int)diff]}] 던전을 클리어 했습니다!\n");
-                    Console.WriteLine("[탐험 결과]");
-                    Console.WriteLine($"체력 : {player.MaxHp} -> {player.Hp}\n");
-                    Console.WriteLine("르탄이가 쓰러졌습니다!\n보상을 얻지 못했습니다.\n\n던전 진행이 불가능 합니다. 여관에서 휴식을 취하세요.\n");
-                }
-            }
-            Console.WriteLine("-------------------------------------------\n");
+                    int prevHp = player.Hp;
+                    player.GetDamage(monster.Atk);
 
-            Console.WriteLine("(AnyKey) : [나가기]\n");
+                    Console.WriteLine($"{monster.Name} 의 공격!\n" +
+                    $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
+                    $"\n" +
+                    $"{player.Name}\n" +
+                    $"HP {prevHp} -> {player.Hp}");
+                    
+                    Console.ReadLine();
+                }                    
+            }                
+        }
+        #endregion
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-            Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
+        #region 결과
+        private void Victory(int monsterCount, int startHp)
+        {
+            BattlePrint();
+            Console.WriteLine("Result\n");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Victory\n");
             Console.ResetColor();
 
-            string input = Console.ReadLine();
-            Console.Clear();
+            Console.WriteLine(
+                $"던전에 몬스터 {monsterCount}마리를 잡았습니다.\n" +
+                $"\n" +
+                $"Lv.{player.Lv} {player.Name}\n" +
+                $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"0. 다음");
+
+            Console.ReadLine();
+        }
+
+        private void Lose(int startHp)
+        {
+            BattlePrint();
+            Console.WriteLine("Result\n");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("You Lose\n");
+            Console.ResetColor();
+
+            Console.WriteLine(
+                $"Lv.{player.Lv} {player.Name}\n" +
+                $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"0. 다음");
+
+            Console.ReadLine();
         }
         #endregion
 
@@ -635,6 +756,19 @@ namespace RtanTextDungeon
                         break;
                 }
             }
+        }
+        #endregion
+
+        #region Battle 아스키 아트
+        private void BattlePrint()
+        {
+            Console.Clear();
+            Console.WriteLine("" +
+                "'||'''|,            ||      ||    '||`        \r\n" +
+                " ||   ||            ||      ||     ||         \r\n" +
+                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
+                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
+                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
         }
         #endregion
     }

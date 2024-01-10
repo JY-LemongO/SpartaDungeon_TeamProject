@@ -29,5 +29,12 @@ namespace RtanTextDungeon
             Normal,
             Hard,            
         }
+
+        public enum MonsterType
+        {
+            SkeletonWorrior,
+            SkeletonArcher,
+            SkeletonWizard,
+        }
     }
 }
