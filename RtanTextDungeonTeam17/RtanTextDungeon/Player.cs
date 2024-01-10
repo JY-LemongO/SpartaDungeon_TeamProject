@@ -139,6 +139,39 @@ namespace RtanTextDungeon
             equippedItems.Remove(item.GetType());
         }
 
+        public (bool, bool, int) CalculateExDamage(int originDamage, bool isSkill)
+        {
+            // 입력: 원래의 데미지, 스킬사용여부
+            // 반환: 치명타 성공 여부, 회피 여부, 실 데미지
+
+            // 반환값 목록 선언 및 초기화
+            bool isCritical = false;
+            bool isDodged = false;
+            int calculatedDamage = originDamage;
+
+            // 치명타 계산
+            Random random = new Random();
+            double chance = random.NextDouble();
+
+            if (chance <= 0.15) // 15% 의 확률로 치명타 발생
+            {
+                isCritical = true;
+                calculatedDamage = (int)(originDamage * 1.6f); // 160% 데미지
+            }
+
+            // 회피 계산
+            chance = random.NextDouble();
+
+            if (chance <= 0.1 && !isSkill) // 스킬공격이 아닐 시, 10% 의 확률로 회피
+            {
+                isDodged = true;
+                calculatedDamage = 0; // 0의 데미지
+            }
+
+            return (isCritical, isDodged, calculatedDamage);
+            // (string val1, string val2, int val3) = player.CalculateExDamage(originDamage, isSkill); 와 같이 사용
+        }
+
         public void GetGold(int gold) => Gold += gold;
 
         public void Rest() => Hp = MaxHp;
