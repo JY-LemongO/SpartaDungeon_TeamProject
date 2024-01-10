@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,4 +112,28 @@ namespace RtanTextDungeon
             this.defense = defense;
         }
     }
+
+    class Potion : Item
+    {
+        // id 어떡함...?
+        // new Potion 어디에 넣음.....?
+        public int heal { get; private set; }
+        public int count { get; private set; }
+        public Potion(int id, string name, string desc, int price, int heal) : base(id, name, "체력회복", desc, price)
+        {
+            this.heal = heal;
+            this.count = 3;
+        }
+        public void UsePotionOnDungeon()
+        {
+            // 포션 사용 구현.
+            // 선택1. 플레이어 객체를 함께 받아, player.Hp += heal;
+            // 선택2. heal값을 반환하여 장면 내에서 구현하기
+
+            // 2번 선택. 이유가 있었는데, 밥먹다가 망각함... 곧 작성.
+        }
+        public void UsePotionOnInventory() => count--;
+        public void GetPotion(int n) => count += n;
+    }
+
 }

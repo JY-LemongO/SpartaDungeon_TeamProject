@@ -169,12 +169,14 @@ namespace RtanTextDungeon
             }
 
             return (isCritical, isDodged, calculatedDamage);
-            // (string val1, string val2, int val3) = player.CalculateExDamage(originDamage, isSkill); 와 같이 사용
+            // (bool val1, bool val2, int val3) = player.CalculateExDamage(originDamage, isSkill); 와 같이 사용
         }
 
         public void GetGold(int gold) => Gold += gold;
 
         public void Rest() => Hp = MaxHp;
+
+        public void SetHp(int hp) => Hp = hp;
 
         public void GetDamage(int damage)
         {
