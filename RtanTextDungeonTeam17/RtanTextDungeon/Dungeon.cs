@@ -136,10 +136,38 @@ namespace RtanTextDungeon
                 Console.WriteLine($"이름 : {name}");
                 Console.ReadLine();
                 Console.Clear();
+
+                // 직업 선택 영역 구현
+                Console.Clear();
+                Console.WriteLine("===== 캐릭터 직업 선택 =====");
+                Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 체력: 100, Max체력: 100, GOLD: 1500");
+                Console.WriteLine("2. 궁수 - 공격력: 13, 방어력: 3, 체력: 70, Max체력: 70, GOLD: 2500");
+                Console.WriteLine("3. 마법사 - 공격력: 3, 방어력: 13, 체력: 80, Max체력: 80, GOLD: 3500");
+                Console.WriteLine("4. 도둑 - 공격력: 2, 방어력: 3, 체력: 120, Max체력: 120, GOLD: 5500");
+
+                Console.Write("");
+                input = Console.ReadLine();
+
+                switch(input)
+                {
+                    case "1":
+                        player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500);
+                        break;
+                    case "2":
+                        player = new Player(1, name, PlayerClass.Archer, 13, 3, 70, 70, 2500);
+                        break;
+                    case "3":
+                        player = new Player(1, name, PlayerClass.Magic, 3, 13, 80, 80, 3500);
+                        break;
+                    case "4":
+                        player = new Player(1, name, PlayerClass.Thief, 2, 3, 120, 120, 5500);
+                        break;
+                    default:
+                        continue;
+                }
+
                 break;
             }
-                     
-            player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500);
         }
         #endregion
 
