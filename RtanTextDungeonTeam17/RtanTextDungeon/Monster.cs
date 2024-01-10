@@ -40,8 +40,8 @@ namespace RtanTextDungeon
 
         private Define.MonsterType _type;
         // 타입에 따라 부여할 공격력/체력 (고정값)
-        private readonly int[]      ATKs    = [5, 10, 15];
-        private readonly float[]    HPs     = [15f, 10f, 5f];
+        private readonly int[]      ATKs    = [5, 10, 15, 7, 12, 18];
+        private readonly float[]    HPs     = [15f, 10f, 5f, 20f, 15f, 10f];
 
         public Monster(int lv, Define.MonsterType type)
         {
@@ -61,6 +61,15 @@ namespace RtanTextDungeon
                     break;
                 case Define.MonsterType.SkeletonWizard:
                     _name = $"Lv.{Lv}  스켈레톤 마법사";
+                    break;
+                case Define.MonsterType.GoblinWorrior:
+                    _name = $"Lv.{Lv}  고블린 전사";
+                    break;
+                case Define.MonsterType.GoblinArcher:
+                    _name = $"Lv.{Lv}  고블린 궁수";
+                    break;
+                case Define.MonsterType.GoblinWizard:
+                    _name = $"Lv.{Lv}  고블린 마법사";
                     break;
             }            
         }        
