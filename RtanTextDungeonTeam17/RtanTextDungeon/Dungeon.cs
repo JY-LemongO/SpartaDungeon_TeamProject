@@ -181,7 +181,6 @@ namespace RtanTextDungeon
         }
         #endregion
 
-
         #region 상태창
         private void Status()
         {
@@ -575,7 +574,12 @@ namespace RtanTextDungeon
             Monster[] monsters = DungeonInfo.MonsterSpawn(chooseFloor); 
             #endregion
             bool invalid = false;
+
             bool isSkillShow = false;
+            bool isUseItem = false;
+
+            // 회복약 사용 시 표현할 상태가 셋 이상이어서 bool is~; 포기. alertMsg 사용.
+            string alertMsg = "";
 
             while (true)
             {
@@ -596,10 +600,11 @@ namespace RtanTextDungeon
                     $"Lv.{player.Lv}\t{player.Name}\n" +
                     $"HP {player.Hp}/{player.MaxHp}\n\n");
                 
-                if(!isSkillShow)
+                if(!(isSkillShow||isUseItem))
                 {
                     Console.WriteLine("1. 공격\n");
                     Console.WriteLine("2. 스킬\n");
+                    Console.WriteLine("3. 회복\n");
                     Console.WriteLine("원하시는 행동을 입력해주세요.\n");
 
                     if (invalid)
@@ -616,12 +621,15 @@ namespace RtanTextDungeon
                         case "2":
                             isSkillShow = true; //스킬 선택 화면으로
                             break;
+                        case "3":
+                            isUseItem = true; //회복 화면으로
+                            break;
                         default:
                             invalid = true;
                             continue;
                     }
                 }
-                else // 스킬 선택 화면
+                else if(isSkillShow) // 스킬 선택 화면
                 {
 
                     for(int i = 0; i < player.Skills.Count; ++i)
@@ -655,6 +663,46 @@ namespace RtanTextDungeon
                                 invalid = true;
                             continue;
                     }
+                }
+                else if (isUseItem)
+                {
+                    Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
+                    Console.WriteLine($"1. {potion.Name}을 사용 ( 남은 수량 : {potion.count} )\n");
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("");
+                    Console.WriteLine("");
+                    Console.Write(alertMsg);
+
+                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
+                    
+
+                    string input = Console.ReadLine();
+                    Console.Clear();
+                    switch (input)
+                    {
+                        case "0": // 이전 메뉴로
+                            isUseItem = false;
+                            alertMsg = "";
+                            continue;
+                        case "1": // 회복약 사용 시도
+                            int preHp = player.Hp;
+                            bool isPotionUsed = potion.Use(player);
+                            if (isPotionUsed) { alertMsg = $"체력을 {player.Hp-preHp} 회복하여 [{preHp} → {player.Hp}] 이 되었습니다.\n\n"; }
+                            else
+                            {
+                                if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 회복약을 사용 할 수 없습니다.\n\n";
+                                if (potion.count <= 0) alertMsg = $"{potion.Name}을 소지하고 있지 않습니다.\n\n";
+                            }
+                            continue;
+                        default:
+                            invalid = true;
+                            alertMsg = "";
+                            continue;
+                    }
+
                 }
 
                 if (monsters.All(x => x.IsDead) || player.Hp <= 0)
@@ -769,7 +817,10 @@ namespace RtanTextDungeon
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
                 damage = (player.Atk * player.Skills[skillNum-1].AtkMultiplier) + new Random().Next(-error, error + 1);
-            
+
+            // 크리티컬, 몬스터 회피, 실데미지 계산
+            (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
+
             string prevHp = monster.Hp.ToString();
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
@@ -777,7 +828,8 @@ namespace RtanTextDungeon
             BattlePrint();
 
             Console.WriteLine($"{player.Name} 의 공격!\n" +
-            $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+            $"\n" +
+            $"{monster.Name} {(isDodged? "은(는) 공격을 피했습니다!": "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
             $"\n" +
             $"{monster.Name}\n" +
             $"HP {prevHp} -> {currentHp}\n" +
@@ -796,6 +848,9 @@ namespace RtanTextDungeon
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             //무조건 데미지에 스킬의 배수를 곱해줌
             int damage = (player.Atk * player.Skills[skillNum - 1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            // 크리티컬, 몬스터 회피, 실데미지 계산
+            (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
+
             int MonsterNum = monsters.Count(x => !x.IsDead);            // 살아있는 몬스터 수
             int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
 
@@ -813,7 +868,8 @@ namespace RtanTextDungeon
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
                                        
                     Console.WriteLine($"{player.Name} 의 공격!\n" +
-                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
                         $"{monster.Name}\n" +
                         $"HP {prevHp} -> {currentHp}\n" +
@@ -845,7 +901,8 @@ namespace RtanTextDungeon
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
 
                     Console.WriteLine($"{player.Name} 의 공격!\n" +
-                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
                         $"{monster.Name}\n" +
                         $"HP {prevHp} -> {currentHp}\n" +
@@ -972,40 +1029,47 @@ namespace RtanTextDungeon
         #region 회복 아이템
         private void PotionInventory()
         {
+            string alertMsg = "";
+
             while (true)
             {
-                Console.WriteLine(" __               "); // 임시로 여관 아트 가져옴
-                Console.WriteLine("|__|.-----..-----.");
-                Console.WriteLine("|  ||     ||     |");
-                Console.WriteLine("|__||__|__||__|__|");
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("==================[회 복]==================");
-                Console.ResetColor();
-                Console.WriteLine("-------------------------------------------\n");
+                if (alertMsg != "") alertMsg += "\n\n";
+                Console.WriteLine("                                                                   ");
+                Console.WriteLine("   .-.   p--- .'~`. .-=~=-.   :~:      |~|   .-~~8~~-.  |~|  .-.   ");
+                Console.WriteLine(" .'__( .'~`.  `. .'  )___(  .'   `.    | |   |~~---~~|  | |  )__`. ");
+                Console.WriteLine(" | l | | m |  .'n`. (  o  ) |  p  |] .' q `. |   r   | .'s`. | t | ");
+                Console.WriteLine(" |___| |___|  `._.'  `._.'  |_____|  `.___.' `._____.' `._.' |___| ");
+                Console.WriteLine("                                                                   ");
+                Console.WriteLine("===========================[회복 아이템]===========================");
+                Console.WriteLine("");
 
                 // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
                 Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($"{potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
+                    Console.WriteLine($" {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 {potion.Name} : {potion.count}개)");
                 }
                 else
                 {
-                    Console.WriteLine("게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
+                    Console.WriteLine(" 게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
                 }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[현재 체력 : {player.Hp}]\n");
+                Console.WriteLine("");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($" [현재 체력 : {player.Hp}]\n");
                 Console.ResetColor();
                 Console.WriteLine("");
-                Console.WriteLine("(1) : 사용하기");
+                Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
-                Console.WriteLine("(0) : 나가기");
+                Console.WriteLine(" (0) : 나가기");
                 Console.WriteLine("");
-                Console.WriteLine("---------------------------------");
+                Console.WriteLine("");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(alertMsg);
+                Console.ResetColor();
+                Console.WriteLine(" ---------------------------------");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
+                Console.WriteLine(" ※※※원하시는 행동을 선택하세요.※※※");
                 Console.ResetColor();
                 Console.WriteLine("");
 
@@ -1019,18 +1083,18 @@ namespace RtanTextDungeon
 
                         if(potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
                         {
-                            Console.WriteLine("게임에 포션이 구현되지 않아 사용 할 수 없습니다.");
+                            alertMsg = " 게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
                             break;
                         }
 
                         if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
-                            Console.WriteLine($"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.");
+                            alertMsg = $" {potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.";
                         }
                         else
                         {
-                            if (player.Hp == player.MaxHp) Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
-                            if (potion.count <= 0) Console.WriteLine("현재 소지한 포션이 없습니다.");
+                            if (player.Hp == player.MaxHp) alertMsg = $" 체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                            if (potion.count <= 0) alertMsg = $" 현재 소지한 {potion.Name}이 없습니다.";
                         }
                         break;
 
@@ -1038,9 +1102,7 @@ namespace RtanTextDungeon
                         return;
 
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                        alertMsg = " !!!잘못된 입력입니다!!!";
                         break;
                 }
 

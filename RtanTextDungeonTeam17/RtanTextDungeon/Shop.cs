@@ -33,7 +33,7 @@ namespace RtanTextDungeon
             new Amulet(16, "[불꽃 귀걸이]", "용의 힘이 담겨있는 귀걸이입니다.", 25000, 90, 45),
             new Amulet(17, "[스파르타의 완장]", "스파르타의 전사들이 사용했다는 전설의 완장입니다.", 40000, 100, 100),
 
-            new Potion(1000, "[물]", "평범한 물인척 하는 성수입니다.", 1000, 30),
+            new Potion(1000, "[회복약]", "평범한 회복약입니다.", 1000, 30),
         };
 
         public void Buy(Player player, Item item)
