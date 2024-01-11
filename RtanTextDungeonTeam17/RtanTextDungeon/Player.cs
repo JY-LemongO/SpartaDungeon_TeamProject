@@ -174,6 +174,7 @@ namespace RtanTextDungeon
             if (chance <= 0.1 && !isSkill) // 스킬공격이 아닐 시, 10% 의 확률로 회피
             {
                 isDodged = true;
+                isCritical = false;
                 calculatedDamage = 0; // 0의 데미지
             }
 
