@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -534,7 +535,7 @@ namespace RtanTextDungeon
                     switch (input)
                     {
                         case "1":
-                            Fight(monsters, startHp);
+                            Fight(monsters, startHp, 0); //스킬 선택 없으면 0 전달
                             return;
                         case "2":
                             isSkillShow = true; //스킬 선택 화면으로
@@ -564,11 +565,14 @@ namespace RtanTextDungeon
                             isSkillShow = false; //공격, 스킬 선택 화면으로
                             continue;
                         default:
-                            int skillNum;
+                            int skillNum; // 선택한 스킬 번호
+
                             //입력 값이 (숫자 and 1 이상 and 스킬 개수 이하) 인 경우
                             if (int.TryParse(input,out skillNum) && skillNum >= 1 && (skillNum - 1) < player.Skills.Count)
                             {
-                                // 여기부터 개발해야함.
+                                // Fight 메서드에 스킬 넘버(1~N) 전달
+                                Fight(monsters, startHp, skillNum);
+                                isSkillShow = false;
                             }
                             else
                                 invalid = true;
@@ -581,9 +585,14 @@ namespace RtanTextDungeon
             }                   
         }
 
-        private void Fight(Monster[] monsters, int startHp)
+
+        private void Fight(Monster[] monsters, int startHp, int skillNum)
         {            
-            bool invalid = false;                      
+            bool invalid = false;
+            bool isMultiTarget = false; // 선택한 스킬이 다중 타격인지
+            if(skillNum > 0)
+                if (player.Skills[skillNum-1].NumberTargets > 1)
+                    isMultiTarget = true;
 
             while (true)
             {
@@ -605,46 +614,55 @@ namespace RtanTextDungeon
                     return;
                 }
 
-                Console.WriteLine($"\n" +
+                // 단일 타겟인 경우
+                if (!isMultiTarget)
+                {
+                    Console.WriteLine($"\n" +
                     $"[내정보]\n" +
                     $"Lv.{player.Lv}\t{player.Name}\n" +
                     $"HP {player.Hp}/{player.MaxHp}\n\n");
 
-                Console.WriteLine("0. 취소\n");
-                Console.WriteLine("대상을 선택해주세요.\n");
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("대상을 선택해주세요.\n");
 
-                if (invalid)
-                    Console.WriteLine("잘못된 입력입니다.");
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
 
-                string input = Console.ReadLine();
-                int inputNum;
-                bool isNum = int.TryParse(input, out inputNum);
-                if (!isNum)
-                {
-                    invalid = true;
-                    continue;
-                }
-
-                if (inputNum > 0 && inputNum <= monsters.Length)
-                {
-                    if (monsters[inputNum - 1].IsDead)
+                    string input = Console.ReadLine();
+                    int inputNum;
+                    bool isNum = int.TryParse(input, out inputNum);
+                    if (!isNum)
                     {
                         invalid = true;
                         continue;
                     }
+
+                    if (inputNum > 0 && inputNum <= monsters.Length)
+                    {
+                        if (monsters[inputNum - 1].IsDead) //몬스터 생존 여부
+                        {
+                            invalid = true;
+                            continue;
+                        }
+                        else
+                        {
+                            invalid = false;
+                            PlayerPhase(monsters[inputNum - 1], skillNum);
+                        }
+                    }
+                    else if (inputNum == 0)
+                        return;
                     else
                     {
-                        invalid = false;
-                        PlayerPhase(monsters[inputNum - 1]);
+                        invalid = true;
+                        continue;
                     }
                 }
-                else if (inputNum == 0)
-                    return;
+                // 다중 타겟인 경우
                 else
                 {
-                    invalid = true;
-                    continue;
-                }                    
+                    PlayerPhase(monsters, skillNum);
+                }
 
                 MonsterPhase(monsters);
                 
@@ -659,11 +677,16 @@ namespace RtanTextDungeon
         #endregion
 
         #region 공격
-        private void PlayerPhase(Monster monster)
+        //기본 공격 or 단일 공격 스킬 사용 시 호출
+        private void PlayerPhase(Monster monster, int skillNum)
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            int damage = player.Atk + new Random().Next(-error, error + 1);
-
+            int damage;
+            if(skillNum <= 0)
+                damage = player.Atk + new Random().Next(-error, error + 1);
+            else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
+                damage = (player.Atk * player.Skills[skillNum-1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            
             string prevHp = monster.Hp.ToString();
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
@@ -680,6 +703,78 @@ namespace RtanTextDungeon
             $"\n");
 
             Console.ReadLine();
+        }
+
+        //다중 공격 스킬 사용 시 호출 (오버로드)
+        private void PlayerPhase(Monster[] monsters, int skillNum) 
+        {
+            Random random = new Random();
+
+            int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
+            //무조건 데미지에 스킬의 배수를 곱해줌
+            int damage = (player.Atk * player.Skills[skillNum - 1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            int MonsterNum = monsters.Count(x => !x.IsDead);            // 살아있는 몬스터 수
+            int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
+
+            // 다중 공격 타겟 수가 살아있는 몬스터 수 이상일 때
+
+            if (TargetNum >= MonsterNum)
+            {
+                
+                BattlePrint();
+                // => 살아있는 것 전부 공격
+                foreach (Monster monster in monsters.Where(x => !x.IsDead)) 
+                {
+                    string prevHp = monster.Hp.ToString();
+                    monster.GetDamage(damage);
+                    string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+                                       
+                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name}\n" +
+                        $"HP {prevHp} -> {currentHp}\n" +
+                        $"\n" +
+                        $"\n");
+
+                    Console.ReadLine();
+                }
+            }
+            else // 다중 공격 타겟 수가 살아있는 몬스터 수 미만일 때
+            {
+                // => 다중 공격 타겟 수만큼 랜덤으로 공격
+
+                Monster[] shuffledMonsters = monsters.ToArray();    //원본 보존을 위한 임시 배열
+                for(int i = shuffledMonsters.Length - 1; i > 0; i--)
+                {
+                    int j = random.Next(0, i + 1);
+                    Monster tempMonster = shuffledMonsters[i];
+                    shuffledMonsters[i] = shuffledMonsters[j];
+                    shuffledMonsters[j] = tempMonster;
+                }
+
+                BattlePrint();
+
+                foreach (Monster monster in shuffledMonsters.Where(x => !x.IsDead).Take(TargetNum))
+                {
+                    string prevHp = monster.Hp.ToString();
+                    monster.GetDamage(damage);
+                    string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+
+                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name}\n" +
+                        $"HP {prevHp} -> {currentHp}\n" +
+                        $"\n" +
+                        $"\n");
+
+                    Console.ReadLine();
+                }
+
+            }
+            
+            
         }
 
         private void MonsterPhase(Monster[] monsters)
