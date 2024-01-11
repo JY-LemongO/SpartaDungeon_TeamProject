@@ -9,8 +9,8 @@ namespace RtanTextDungeon
     {
         static void Main(string[] args)
         {
-            Console.WindowWidth = 200;
-            Console.WindowHeight = 60;
+            // Console.WindowWidth = 200;
+            // Console.WindowHeight = 60;
 
             // 아이템 상점에 쓰일 Shop 클래스
             Shop shop = new Shop();
