@@ -816,7 +816,10 @@ namespace RtanTextDungeon
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
                 damage = (player.Atk * player.Skills[skillNum-1].AtkMultiplier) + new Random().Next(-error, error + 1);
-            
+
+            // 크리티컬, 몬스터 회피, 실데미지 계산
+            (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
+
             string prevHp = monster.Hp.ToString();
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
@@ -824,7 +827,8 @@ namespace RtanTextDungeon
             BattlePrint();
 
             Console.WriteLine($"{player.Name} 의 공격!\n" +
-            $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+            $"\n" +
+            $"{monster.Name} {(isDodged? "은(는) 공격을 피했습니다!": "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
             $"\n" +
             $"{monster.Name}\n" +
             $"HP {prevHp} -> {currentHp}\n" +
@@ -843,6 +847,9 @@ namespace RtanTextDungeon
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             //무조건 데미지에 스킬의 배수를 곱해줌
             int damage = (player.Atk * player.Skills[skillNum - 1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            // 크리티컬, 몬스터 회피, 실데미지 계산
+            (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
+
             int MonsterNum = monsters.Count(x => !x.IsDead);            // 살아있는 몬스터 수
             int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
 
@@ -860,7 +867,8 @@ namespace RtanTextDungeon
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
                                        
                     Console.WriteLine($"{player.Name} 의 공격!\n" +
-                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
                         $"{monster.Name}\n" +
                         $"HP {prevHp} -> {currentHp}\n" +
@@ -892,7 +900,8 @@ namespace RtanTextDungeon
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
 
                     Console.WriteLine($"{player.Name} 의 공격!\n" +
-                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
                         $"{monster.Name}\n" +
                         $"HP {prevHp} -> {currentHp}\n" +
