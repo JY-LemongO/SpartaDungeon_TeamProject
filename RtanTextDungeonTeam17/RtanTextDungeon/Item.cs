@@ -115,8 +115,6 @@ namespace RtanTextDungeon
 
     class Potion : Item
     {
-        // id 어떡함...?
-        // new Potion 어디에 넣음.....?
         public int heal { get; private set; }
         public int count { get; private set; }
         public Potion(int id, string name, string desc, int price, int heal) : base(id, name, "체력회복", desc, price)
@@ -124,16 +122,28 @@ namespace RtanTextDungeon
             this.heal = heal;
             this.count = 3;
         }
-        public void UsePotionOnDungeon()
+        public void Use() => this.count--;
+        public bool Use(Player player)
         {
-            // 포션 사용 구현.
-            // 선택1. 플레이어 객체를 함께 받아, player.Hp += heal;
-            // 선택2. heal값을 반환하여 장면 내에서 구현하기
+            // 입력: (Player)플레이어 객체
+            // 출력: (bool)회복여부
+            if (player.Hp == player.MaxHp) return false;
+            if (this.count <= 0) return false;
 
-            // 2번 선택. 이유가 있었는데, 밥먹다가 망각함... 곧 작성.
+            this.count--;
+            player.SetHp(Math.Min(player.Hp + heal, player.MaxHp));
+            return true;
         }
-        public void UsePotionOnInventory() => count--;
-        public void GetPotion(int n) => count += n;
+        public void Get() => this.count++;
+        public void Get(int n) => this.count += n;
+        public int Get(int min, int max)
+        {
+            // 입력: (int, int)랜덤 획득 범위
+            // 출력: (int)획득한 포션 갯수
+            int n = new Random().Next(Math.Min(min,max), Math.Max(min, max) + 1);
+            this.count += n;
+            return n;
+        }
     }
 
 }
