@@ -941,40 +941,47 @@ namespace RtanTextDungeon
         #region 회복 아이템
         private void PotionInventory()
         {
+            string alertMsg = "";
+
             while (true)
             {
-                Console.WriteLine(" __               "); // 임시로 여관 아트 가져옴
-                Console.WriteLine("|__|.-----..-----.");
-                Console.WriteLine("|  ||     ||     |");
-                Console.WriteLine("|__||__|__||__|__|");
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("==================[회 복]==================");
-                Console.ResetColor();
-                Console.WriteLine("-------------------------------------------\n");
+                if (alertMsg != "") alertMsg += "\n\n";
+                Console.WriteLine("                                                                   ");
+                Console.WriteLine("   .-.   p--- .'~`. .-=~=-.   :~:      |~|   .-~~8~~-.  |~|  .-.   ");
+                Console.WriteLine(" .'__( .'~`.  `. .'  )___(  .'   `.    | |   |~~---~~|  | |  )__`. ");
+                Console.WriteLine(" | l | | m |  .'n`. (  o  ) |  p  |] .' q `. |   r   | .'s`. | t | ");
+                Console.WriteLine(" |___| |___|  `._.'  `._.'  |_____|  `.___.' `._____.' `._.' |___| ");
+                Console.WriteLine("                                                                   ");
+                Console.WriteLine("===========================[회복 아이템]===========================");
+                Console.WriteLine("");
 
                 // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
                 Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($"{potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
+                    Console.WriteLine($" 회복 포션 {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 {potion.Name} : {potion.count}개)");
                 }
                 else
                 {
-                    Console.WriteLine("게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
+                    Console.WriteLine(" 게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
                 }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[현재 체력 : {player.Hp}]\n");
+                Console.WriteLine("");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($" [현재 체력 : {player.Hp}]\n");
                 Console.ResetColor();
                 Console.WriteLine("");
-                Console.WriteLine("(1) : 사용하기");
+                Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
-                Console.WriteLine("(0) : 나가기");
+                Console.WriteLine(" (0) : 나가기");
                 Console.WriteLine("");
-                Console.WriteLine("---------------------------------");
+                Console.WriteLine("");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(alertMsg);
+                Console.ResetColor();
+                Console.WriteLine(" ---------------------------------");
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
+                Console.WriteLine(" ※※※원하시는 행동을 선택하세요.※※※");
                 Console.ResetColor();
                 Console.WriteLine("");
 
@@ -988,18 +995,18 @@ namespace RtanTextDungeon
 
                         if(potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
                         {
-                            Console.WriteLine("게임에 포션이 구현되지 않아 사용 할 수 없습니다.");
+                            alertMsg = " 게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
                             break;
                         }
 
                         if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
-                            Console.WriteLine($"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.");
+                            alertMsg = " {potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.";
                         }
                         else
                         {
-                            if (player.Hp == player.MaxHp) Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
-                            if (potion.count <= 0) Console.WriteLine("현재 소지한 포션이 없습니다.");
+                            if (player.Hp == player.MaxHp) alertMsg = " 체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.";
+                            if (potion.count <= 0) alertMsg = " 현재 소지한 포션이 없습니다.";
                         }
                         break;
 
@@ -1007,9 +1014,7 @@ namespace RtanTextDungeon
                         return;
 
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                        alertMsg = " !!!잘못된 입력입니다!!!";
                         break;
                 }
 
