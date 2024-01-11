@@ -648,6 +648,7 @@ namespace RtanTextDungeon
                                 // Fight 메서드에 스킬 넘버(1~N) 전달
                                 Fight(monsters, startHp, skillNum);
                                 isSkillShow = false;
+                                break;
                             }
                             else
                                 invalid = true;
@@ -854,8 +855,6 @@ namespace RtanTextDungeon
                 }
 
             }
-            
-            
         }
 
         private void MonsterPhase(Monster[] monsters)
