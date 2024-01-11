@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -16,6 +17,8 @@ namespace RtanTextDungeon
         private Player player = null;
         // 인게임에서 상점 이용에 쓰일 아이템 목록을 가지고 있는 Shop 필드
         private Shop shop = null;
+
+        private int chooseFloor = 0;
 
 
         #region 게임시작
@@ -423,6 +426,8 @@ namespace RtanTextDungeon
         {            
             bool status = false;
             bool hpZero = false;
+            bool choiceFloorPanel = false;
+
             int startHp = player.Hp;
 
             while (true)
@@ -455,9 +460,19 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("=================================\n");
 
-                Console.WriteLine("" +
-                    "(1) 전투 시작\n" +
+                if (!choiceFloorPanel)
+                {
+                    Console.WriteLine("" +
+                    $"(1) 전투 시작 (현재 진행 : {DungeonInfo.HighestFloor}층)\n" +
+                    $"(2) 다른 층 선택\n" +
                     "(B) 마을로 돌아가기\n");
+                }
+                else
+                {                    
+                    for (int i = 1; i <= DungeonInfo.HighestFloor; i++)
+                        Console.WriteLine($"({i}) {i}층 진입");
+                    Console.WriteLine("(0) 취소\n");
+                }
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 if (hpZero)
@@ -475,12 +490,46 @@ namespace RtanTextDungeon
                 Console.Clear();
                 switch (input)
                 {
-                    case "1":                    
+                    case "1":
+                        if (choiceFloorPanel)
+                            chooseFloor = 1;
+                        else
+                            chooseFloor = DungeonInfo.HighestFloor;
                         if (player.Hp > 0)
+                        {
                             EnterDungeon(startHp);
+                            choiceFloorPanel = false;
+                        }                            
                         else
                             hpZero = true;
-                        break;                        
+                        break;
+                    case "2":
+                        if (!choiceFloorPanel)
+                        {
+                            choiceFloorPanel = true;
+                            continue;
+                        }                            
+                        else
+                            chooseFloor = 2;
+
+                        if (player.Hp > 0)
+                        {
+                            EnterDungeon(startHp);
+                            choiceFloorPanel = false;
+                        }
+                        else
+                            hpZero = true;
+                        break;
+                    case "0":
+                        if (choiceFloorPanel)
+                            choiceFloorPanel = false;
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("!!!잘못된 입력입니다!!!");
+                            Console.ResetColor();
+                        }
+                        break;
                     case "E":
                     case "e":
                         status = !status;
@@ -489,6 +538,27 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
+                        if (choiceFloorPanel)
+                        {
+                            int inputNum;
+                            bool isDigit = int.TryParse(input, out inputNum);
+                            if (isDigit)
+                            {
+                                chooseFloor = inputNum;
+                                if (player.Hp > 0)
+                                {
+                                    EnterDungeon(startHp);
+                                    choiceFloorPanel = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    hpZero = true;
+                                    continue;
+                                }                                    
+                            }
+                        }
+
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("!!!잘못된 입력입니다!!!");
                         Console.ResetColor();
@@ -500,17 +570,9 @@ namespace RtanTextDungeon
 
         #region 배틀
         private void EnterDungeon(int startHp)
-        {            
+        {
             #region 몬스터 스폰
-            int spawnCount = new Random().Next(1, 5);
-            Monster[] monsters = new Monster[spawnCount];
-            for (int i = 0; i < monsters.Length; i++)
-            {
-                int randLv = new Random().Next(1, 6);
-                int randomType = new Random().Next(0, Enum.GetValues(typeof(MonsterType)).Length);
-
-                monsters[i] = new Monster(randLv, (MonsterType)randomType);                
-            }
+            Monster[] monsters = DungeonInfo.MonsterSpawn(chooseFloor); 
             #endregion
             bool invalid = false;
             bool isSkillShow = false;
@@ -518,9 +580,16 @@ namespace RtanTextDungeon
             while (true)
             {
                 BattlePrint();
+                Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
+                Console.WriteLine($"" +
+                    $"====================\n" +
+                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
+                    $"====================\n");
 
+                Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText();
+                Console.WriteLine("\n======================================\n");
 
                 Console.WriteLine($"\n" +
                     $"[내정보]\n" +
@@ -541,7 +610,7 @@ namespace RtanTextDungeon
                     switch (input)
                     {
                         case "1":
-                            Fight(monsters, startHp);
+                            Fight(monsters, startHp, 0);
                             invalid = false;
                             break;
                         case "2":
@@ -572,11 +641,15 @@ namespace RtanTextDungeon
                             isSkillShow = false; //공격, 스킬 선택 화면으로
                             continue;
                         default:
-                            int skillNum;
+                            int skillNum; // 선택한 스킬 번호
+
                             //입력 값이 (숫자 and 1 이상 and 스킬 개수 이하) 인 경우
                             if (int.TryParse(input,out skillNum) && skillNum >= 1 && (skillNum - 1) < player.Skills.Count)
                             {
-                                // 여기부터 개발해야함.
+                                // Fight 메서드에 스킬 넘버(1~N) 전달
+                                Fight(monsters, startHp, skillNum);
+                                isSkillShow = false;
+                                break;
                             }
                             else
                                 invalid = true;
@@ -589,16 +662,27 @@ namespace RtanTextDungeon
             }                   
         }
 
-        private void Fight(Monster[] monsters, int startHp)
+
+        private void Fight(Monster[] monsters, int startHp, int skillNum)
         {            
-            bool invalid = false;                      
+            bool invalid = false;
+            bool isMultiTarget = false; // 선택한 스킬이 다중 타격인지
+            if(skillNum > 0)
+                if (player.Skills[skillNum-1].NumberTargets > 1)
+                    isMultiTarget = true;
 
             while (true)
             {
                 BattlePrint();
+                Console.WriteLine($"" +
+                    $"====================\n" +
+                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
+                    $"====================\n");
 
+                Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText(i + 1);
+                Console.WriteLine("\n======================================\n");                
 
 
                 // 전투 종료
@@ -613,46 +697,55 @@ namespace RtanTextDungeon
                     return;
                 }
 
-                Console.WriteLine($"\n" +
+                // 단일 타겟인 경우
+                if (!isMultiTarget)
+                {
+                    Console.WriteLine($"\n" +
                     $"[내정보]\n" +
                     $"Lv.{player.Lv}\t{player.Name}\n" +
                     $"HP {player.Hp}/{player.MaxHp}\n\n");
 
-                Console.WriteLine("0. 취소\n");
-                Console.WriteLine("대상을 선택해주세요.\n");
+                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("대상을 선택해주세요.\n");
 
-                if (invalid)
-                    Console.WriteLine("잘못된 입력입니다.");
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
 
-                string input = Console.ReadLine();
-                int inputNum;
-                bool isNum = int.TryParse(input, out inputNum);
-                if (!isNum)
-                {
-                    invalid = true;
-                    continue;
-                }
-
-                if (inputNum > 0 && inputNum <= monsters.Length)
-                {
-                    if (monsters[inputNum - 1].IsDead)
+                    string input = Console.ReadLine();
+                    int inputNum;
+                    bool isNum = int.TryParse(input, out inputNum);
+                    if (!isNum)
                     {
                         invalid = true;
                         continue;
                     }
+
+                    if (inputNum > 0 && inputNum <= monsters.Length)
+                    {
+                        if (monsters[inputNum - 1].IsDead) //몬스터 생존 여부
+                        {
+                            invalid = true;
+                            continue;
+                        }
+                        else
+                        {
+                            invalid = false;
+                            PlayerPhase(monsters[inputNum - 1], skillNum);
+                        }
+                    }
+                    else if (inputNum == 0)
+                        return;
                     else
                     {
-                        invalid = false;
-                        PlayerPhase(monsters[inputNum - 1]);
+                        invalid = true;
+                        continue;
                     }
                 }
-                else if (inputNum == 0)
-                    return;
+                // 다중 타겟인 경우
                 else
                 {
-                    invalid = true;
-                    continue;
-                }                    
+                    PlayerPhase(monsters, skillNum);
+                }
 
                 MonsterPhase(monsters);
                 
@@ -667,11 +760,16 @@ namespace RtanTextDungeon
         #endregion
 
         #region 공격
-        private void PlayerPhase(Monster monster)
+        //기본 공격 or 단일 공격 스킬 사용 시 호출
+        private void PlayerPhase(Monster monster, int skillNum)
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            int damage = player.Atk + new Random().Next(-error, error + 1);
-
+            int damage;
+            if(skillNum <= 0)
+                damage = player.Atk + new Random().Next(-error, error + 1);
+            else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
+                damage = (player.Atk * player.Skills[skillNum-1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            
             string prevHp = monster.Hp.ToString();
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
@@ -690,6 +788,76 @@ namespace RtanTextDungeon
             Console.ReadLine();
         }
 
+        //다중 공격 스킬 사용 시 호출 (오버로드)
+        private void PlayerPhase(Monster[] monsters, int skillNum) 
+        {
+            Random random = new Random();
+
+            int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
+            //무조건 데미지에 스킬의 배수를 곱해줌
+            int damage = (player.Atk * player.Skills[skillNum - 1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            int MonsterNum = monsters.Count(x => !x.IsDead);            // 살아있는 몬스터 수
+            int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
+
+            // 다중 공격 타겟 수가 살아있는 몬스터 수 이상일 때
+
+            if (TargetNum >= MonsterNum)
+            {
+                
+                BattlePrint();
+                // => 살아있는 것 전부 공격
+                foreach (Monster monster in monsters.Where(x => !x.IsDead)) 
+                {
+                    string prevHp = monster.Hp.ToString();
+                    monster.GetDamage(damage);
+                    string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+                                       
+                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name}\n" +
+                        $"HP {prevHp} -> {currentHp}\n" +
+                        $"\n" +
+                        $"\n");
+
+                    Console.ReadLine();
+                }
+            }
+            else // 다중 공격 타겟 수가 살아있는 몬스터 수 미만일 때
+            {
+                // => 다중 공격 타겟 수만큼 랜덤으로 공격
+
+                Monster[] shuffledMonsters = monsters.ToArray();    //원본 보존을 위한 임시 배열
+                for(int i = shuffledMonsters.Length - 1; i > 0; i--)
+                {
+                    int j = random.Next(0, i + 1);
+                    Monster tempMonster = shuffledMonsters[i];
+                    shuffledMonsters[i] = shuffledMonsters[j];
+                    shuffledMonsters[j] = tempMonster;
+                }
+
+                BattlePrint();
+
+                foreach (Monster monster in shuffledMonsters.Where(x => !x.IsDead).Take(TargetNum))
+                {
+                    string prevHp = monster.Hp.ToString();
+                    monster.GetDamage(damage);
+                    string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
+
+                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                        $"{monster.Name} 을(를) 맞췄습니다. [데미지 : {damage}]\n" +
+                        $"\n" +
+                        $"{monster.Name}\n" +
+                        $"HP {prevHp} -> {currentHp}\n" +
+                        $"\n" +
+                        $"\n");
+
+                    Console.ReadLine();
+                }
+
+            }
+        }
+
         private void MonsterPhase(Monster[] monsters)
         {
             BattlePrint();
@@ -699,7 +867,7 @@ namespace RtanTextDungeon
                 if (!monster.IsDead && player.Hp > 0)
                 {
                     int prevHp = player.Hp;
-                    player.GetDamage(monster.Atk);
+                    player.GetDamage((int)monster.Atk);
 
                     Console.WriteLine($"{monster.Name} 의 공격!\n" +
                     $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
@@ -746,7 +914,19 @@ namespace RtanTextDungeon
 
         private void Victory(int monsterCount, int startHp, Monster[] monsters)
         {
+            // Potion 드랍 획득. 드랍 기능의 확장이 필요하다면, 이후 따로 클래스나 메서드를 두는 것을 추천.
+            int nPotionDrop = 0;
+            Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
+            if (potion != null) nPotionDrop = potion.Get(0, monsterCount);
+            // Gold 보상 획득
+            int addGold = 0;
+            addGold = new Random().Next((int)(0.5f * 500), monsterCount * 500);
+            player.GetGold(addGold);
+            
+
             BattlePrint();
+            DungeonInfo.UpdateInfo();
+            Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
             Console.WriteLine("Result\n");
 
             Console.ForegroundColor = ConsoleColor.Green;
@@ -755,10 +935,15 @@ namespace RtanTextDungeon
             int preLv = player.Lv;
             LevelCal(monsters, player); 
             Console.WriteLine(
-                $"던전에 몬스터 {monsterCount}마리를 잡았습니다.\n" +
+                $"던전에서 몬스터 {monsterCount} 마리를 잡았습니다.\n" +
                 $"\n" +
                 $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"\n" +
+                $"{addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
+                (nPotionDrop!=0?$"\n{potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
+                $"\n" +
                 $"\n" +
                 $"계속");
              
@@ -787,19 +972,6 @@ namespace RtanTextDungeon
         #region 회복 아이템
         private void PotionInventory()
         {
-            // 회복 아이템 사용이 가능한 장면
-
-            /* 사양) ```
-            회복
-            포션을 사용하면 체력을 30 회복 할 수 있습니다. (남은 포션: 3 )
-
-            1.사용하기
-            0.나가기
-
-            원하시는 행동을 입력해주세요.
-            >>
-            ```*/
-
             while (true)
             {
                 Console.WriteLine(" __               "); // 임시로 여관 아트 가져옴
@@ -812,12 +984,11 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("-------------------------------------------\n");
 
-                // 정말 만약에 Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
-                // 참조 타입 변수에 null이 할당될 가능성이 있을 때 나오는 경고문떄문에 아래와 같이 라인 수 많아짐.
-                Potion? potion = shop.items.OfType<Potion>().FirstOrDefault();
+                // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
+                Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($"포션을 사용하면 체력을 30 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
+                    Console.WriteLine($"{potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
                 }
                 else
                 {
@@ -829,6 +1000,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("");
                 Console.WriteLine("(1) : 사용하기");
+                Console.WriteLine("");
                 Console.WriteLine("(0) : 나가기");
                 Console.WriteLine("");
                 Console.WriteLine("---------------------------------");
@@ -850,19 +1022,15 @@ namespace RtanTextDungeon
                             Console.WriteLine("게임에 포션이 구현되지 않아 사용 할 수 없습니다.");
                             break;
                         }
-                        if (player.Hp == 100) // 체력이 100일 경우
+
+                        if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
-                            Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
+                            Console.WriteLine($"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.");
                         }
-                        else if (potion.count <= 0) // 포션이 0개 남아있을 경우
+                        else
                         {
-                            Console.WriteLine("현재 소지한 포션이 없습니다.");
-                        }
-                        else // 사용 요건을 충족하였을 경우
-                        {
-                            potion.UsePotionOnInventory(); // 포션 갯수를 한 개 줄이기
-                            player.SetHp(Math.Min(player.Hp + 30, 100)); // 체력 +30, 100 초과 시 100으로 설정
-                            Console.WriteLine($"포션을 사용하여 체력이 {player.Hp} 이 되었습니다.");
+                            if (player.Hp == player.MaxHp) Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
+                            if (potion.count <= 0) Console.WriteLine("현재 소지한 포션이 없습니다.");
                         }
                         break;
 
