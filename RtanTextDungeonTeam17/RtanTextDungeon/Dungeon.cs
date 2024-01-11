@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -735,7 +736,7 @@ namespace RtanTextDungeon
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
                 {
-                    Victory(monsters.Length, startHp);                        
+                    Victory(monsters.Length, startHp, monsters);   
                     return;
                 }                        
                 else if (player.Hp <= 0)
@@ -797,7 +798,7 @@ namespace RtanTextDungeon
                 MonsterPhase(monsters);
                 
                 if (monsters.All(x => x.IsDead))
-                    Victory(monsters.Length, startHp);
+                    Victory(monsters.Length, startHp, monsters);
                 else if (player.Hp <= 0)
                     Lose(startHp);
 
@@ -938,7 +939,37 @@ namespace RtanTextDungeon
         #endregion
 
         #region 결과
-        private void Victory(int monsterCount, int startHp)
+        
+        // 레벨업 기능 구현
+        public void LevelCal(Monster[] monsters, Player player)
+        {
+            int point = 0;
+        
+            foreach(Monster monster in monsters)
+            {
+                point += monster.Lv;
+            }
+
+            if (point >= 10 && point < 35)
+            {
+                player.Lv = 2;
+            }
+            else if (point >= 35 && point < 65)
+            {
+                player.Lv = 3;
+            } 
+            else if (point >= 65 && point < 100)
+            {
+                player.Lv = 4;
+            }
+            else if (point >= 100)
+            {
+                player.Lv = 5;
+            }
+            
+        }
+
+        private void Victory(int monsterCount, int startHp, Monster[] monsters)
         {
             // Potion 드랍 획득. 드랍 기능의 확장이 필요하다면, 이후 따로 클래스나 메서드를 두는 것을 추천.
             int nPotionDrop = 0;
@@ -958,11 +989,12 @@ namespace RtanTextDungeon
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Victory\n");
             Console.ResetColor();
-
+            int preLv = player.Lv;
+            LevelCal(monsters, player); 
             Console.WriteLine(
                 $"던전에서 몬스터 {monsterCount} 마리를 잡았습니다.\n" +
                 $"\n" +
-                $"Lv.{player.Lv} {player.Name}\n" +
+                $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
                 $"\n" +
                 $"\n" +
@@ -971,7 +1003,7 @@ namespace RtanTextDungeon
                 $"\n" +
                 $"\n" +
                 $"계속");
-
+             
             Console.ReadLine();
         }
 
