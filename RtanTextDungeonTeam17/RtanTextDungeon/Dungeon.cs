@@ -715,6 +715,16 @@ namespace RtanTextDungeon
         #region 결과
         private void Victory(int monsterCount, int startHp)
         {
+            // Potion 드랍 획득. 드랍 기능의 확장이 필요하다면, 이후 따로 클래스나 메서드를 두는 것을 추천.
+            int nPotionDrop = 0;
+            Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
+            if (potion != null) nPotionDrop = potion.Get(0, monsterCount);
+            // Gold 보상 획득
+            int addGold = 0;
+            addGold = new Random().Next((int)(0.5f * 500), monsterCount * 500);
+            player.GetGold(addGold);
+            
+
             BattlePrint();
             Console.WriteLine("Result\n");
 
@@ -723,10 +733,15 @@ namespace RtanTextDungeon
             Console.ResetColor();
 
             Console.WriteLine(
-                $"던전에 몬스터 {monsterCount}마리를 잡았습니다.\n" +
+                $"던전에서 몬스터 {monsterCount} 마리를 잡았습니다.\n" +
                 $"\n" +
                 $"Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
+                $"\n" +
+                $"\n" +
+                $"{addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
+                (nPotionDrop!=0?$"\n{potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
+                $"\n" +
                 $"\n" +
                 $"계속");
 
@@ -755,19 +770,6 @@ namespace RtanTextDungeon
         #region 회복 아이템
         private void PotionInventory()
         {
-            // 회복 아이템 사용이 가능한 장면
-
-            /* 사양) ```
-            회복
-            포션을 사용하면 체력을 30 회복 할 수 있습니다. (남은 포션: 3 )
-
-            1.사용하기
-            0.나가기
-
-            원하시는 행동을 입력해주세요.
-            >>
-            ```*/
-
             while (true)
             {
                 Console.WriteLine(" __               "); // 임시로 여관 아트 가져옴
@@ -780,12 +782,11 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("-------------------------------------------\n");
 
-                // 정말 만약에 Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
-                // 참조 타입 변수에 null이 할당될 가능성이 있을 때 나오는 경고문떄문에 아래와 같이 라인 수 많아짐.
-                Potion? potion = shop.items.OfType<Potion>().FirstOrDefault();
+                // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
+                Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($"포션을 사용하면 체력을 30 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
+                    Console.WriteLine($"{potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 포션 : {potion.count}개)");
                 }
                 else
                 {
@@ -797,6 +798,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("");
                 Console.WriteLine("(1) : 사용하기");
+                Console.WriteLine("");
                 Console.WriteLine("(0) : 나가기");
                 Console.WriteLine("");
                 Console.WriteLine("---------------------------------");
@@ -818,19 +820,15 @@ namespace RtanTextDungeon
                             Console.WriteLine("게임에 포션이 구현되지 않아 사용 할 수 없습니다.");
                             break;
                         }
-                        if (player.Hp == 100) // 체력이 100일 경우
+
+                        if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
-                            Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
+                            Console.WriteLine($"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.");
                         }
-                        else if (potion.count <= 0) // 포션이 0개 남아있을 경우
+                        else
                         {
-                            Console.WriteLine("현재 소지한 포션이 없습니다.");
-                        }
-                        else // 사용 요건을 충족하였을 경우
-                        {
-                            potion.UsePotionOnInventory(); // 포션 갯수를 한 개 줄이기
-                            player.SetHp(Math.Min(player.Hp + 30, 100)); // 체력 +30, 100 초과 시 100으로 설정
-                            Console.WriteLine($"포션을 사용하여 체력이 {player.Hp} 이 되었습니다.");
+                            if (player.Hp == player.MaxHp) Console.WriteLine("체력이 이미 모두 회복되어 포션을 사용 할 수 없습니다.");
+                            if (potion.count <= 0) Console.WriteLine("현재 소지한 포션이 없습니다.");
                         }
                         break;
 
