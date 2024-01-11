@@ -16,6 +16,8 @@ namespace RtanTextDungeon
         // 인게임에서 상점 이용에 쓰일 아이템 목록을 가지고 있는 Shop 필드
         private Shop shop = null;
 
+        private int chooseFloor = 0;
+
 
         #region 게임시작
         public void EnterGame(Shop shop)
@@ -422,6 +424,8 @@ namespace RtanTextDungeon
         {            
             bool status = false;
             bool hpZero = false;
+            bool choiceFloorPanel = false;
+
             int startHp = player.Hp;
 
             while (true)
@@ -454,9 +458,19 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 Console.WriteLine("=================================\n");
 
-                Console.WriteLine("" +
-                    "(1) 전투 시작\n" +
+                if (!choiceFloorPanel)
+                {
+                    Console.WriteLine("" +
+                    $"(1) 전투 시작 (현재 진행 : {DungeonInfo.HighestFloor}층)\n" +
+                    $"(2) 다른 층 선택\n" +
                     "(B) 마을로 돌아가기\n");
+                }
+                else
+                {                    
+                    for (int i = 1; i <= DungeonInfo.HighestFloor; i++)
+                        Console.WriteLine($"({i}) {i}층 진입");
+                    Console.WriteLine("(0) 취소\n");
+                }
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 if (hpZero)
@@ -474,12 +488,46 @@ namespace RtanTextDungeon
                 Console.Clear();
                 switch (input)
                 {
-                    case "1":                    
+                    case "1":
+                        if (choiceFloorPanel)
+                            chooseFloor = 1;
+                        else
+                            chooseFloor = DungeonInfo.HighestFloor;
                         if (player.Hp > 0)
+                        {
                             EnterDungeon(startHp);
+                            choiceFloorPanel = false;
+                        }                            
                         else
                             hpZero = true;
-                        break;                        
+                        break;
+                    case "2":
+                        if (!choiceFloorPanel)
+                        {
+                            choiceFloorPanel = true;
+                            continue;
+                        }                            
+                        else
+                            chooseFloor = 2;
+
+                        if (player.Hp > 0)
+                        {
+                            EnterDungeon(startHp);
+                            choiceFloorPanel = false;
+                        }
+                        else
+                            hpZero = true;
+                        break;
+                    case "0":
+                        if (choiceFloorPanel)
+                            choiceFloorPanel = false;
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("!!!잘못된 입력입니다!!!");
+                            Console.ResetColor();
+                        }
+                        break;
                     case "E":
                     case "e":
                         status = !status;
@@ -488,6 +536,27 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
+                        if (choiceFloorPanel)
+                        {
+                            int inputNum;
+                            bool isDigit = int.TryParse(input, out inputNum);
+                            if (isDigit)
+                            {
+                                chooseFloor = inputNum;
+                                if (player.Hp > 0)
+                                {
+                                    EnterDungeon(startHp);
+                                    choiceFloorPanel = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    hpZero = true;
+                                    continue;
+                                }                                    
+                            }
+                        }
+
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("!!!잘못된 입력입니다!!!");
                         Console.ResetColor();
@@ -499,17 +568,9 @@ namespace RtanTextDungeon
 
         #region 배틀
         private void EnterDungeon(int startHp)
-        {            
+        {
             #region 몬스터 스폰
-            int spawnCount = new Random().Next(1, 5);
-            Monster[] monsters = new Monster[spawnCount];
-            for (int i = 0; i < monsters.Length; i++)
-            {
-                int randLv = new Random().Next(1, 6);
-                int randomType = new Random().Next(0, Enum.GetValues(typeof(MonsterType)).Length);
-
-                monsters[i] = new Monster(randLv, (MonsterType)randomType);                
-            }
+            Monster[] monsters = DungeonInfo.MonsterSpawn(chooseFloor); 
             #endregion
             bool invalid = false;
             bool isSkillShow = false;
@@ -517,9 +578,16 @@ namespace RtanTextDungeon
             while (true)
             {
                 BattlePrint();
+                Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
+                Console.WriteLine($"" +
+                    $"====================\n" +
+                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
+                    $"====================\n");
 
+                Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText();
+                Console.WriteLine("\n======================================\n");
 
                 Console.WriteLine($"\n" +
                     $"[내정보]\n" +
@@ -595,9 +663,15 @@ namespace RtanTextDungeon
             while (true)
             {
                 BattlePrint();
+                Console.WriteLine($"" +
+                    $"====================\n" +
+                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
+                    $"====================\n");
 
+                Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText(i + 1);
+                Console.WriteLine("\n======================================\n");                
 
 
                 // 전투 종료
@@ -698,7 +772,7 @@ namespace RtanTextDungeon
                 if (!monster.IsDead && player.Hp > 0)
                 {
                     int prevHp = player.Hp;
-                    player.GetDamage(monster.Atk);
+                    player.GetDamage((int)monster.Atk);
 
                     Console.WriteLine($"{monster.Name} 의 공격!\n" +
                     $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
@@ -726,6 +800,8 @@ namespace RtanTextDungeon
             
 
             BattlePrint();
+            DungeonInfo.UpdateInfo();
+            Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
             Console.WriteLine("Result\n");
 
             Console.ForegroundColor = ConsoleColor.Green;

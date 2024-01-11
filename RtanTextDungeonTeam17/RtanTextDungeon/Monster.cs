@@ -11,18 +11,18 @@ namespace RtanTextDungeon
         // 생성 시 할당 이후 변화 없는 변수 name, lv, atk 는 readonly로 선언.
         private readonly string  _name;        
         private readonly int     _lv;
-        private readonly int     _atk;        
+        private readonly float   _atk;        
 
         public string   Name    => _name;
         public int      Lv      => _lv;      
-        public int      Atk     => _atk;
+        public float    Atk     => _atk;
 
-        private float   _hp;
+        private int     _hp;
         /// <summary>
         /// get 시, Hp 반환
         /// set 시, Hp = value 값 및 0 이하 시 Hp = 0, Dead 메서드 호출
         /// </summary>
-        public float    Hp 
+        public int Hp 
         {
             get => _hp;
             private set
@@ -40,14 +40,14 @@ namespace RtanTextDungeon
 
         private Define.MonsterType _type;
         // 타입에 따라 부여할 공격력/체력 (고정값)
-        private readonly int[]      ATKs    = [5, 10, 15, 7, 12, 18];
-        private readonly float[]    HPs     = [15f, 10f, 5f, 20f, 15f, 10f];
+        private readonly float[]    ATKs    = [5f, 10f, 15f, 7f, 12f, 18f];
+        private readonly int[]      HPs     = [15, 10, 5, 20, 15, 10];
 
         public Monster(int lv, Define.MonsterType type)
         {
             _lv     = lv;
-            _atk    = ATKs[(int)type];
-            _hp     = HPs[(int)type];
+            _atk    = ATKs[(int)type] + ATKs[(int)type] * 0.2f * (_lv - 1);
+            _hp     = HPs[(int)type] + (int)(HPs[(int)type] * 0.2f) * (_lv - 1);
             _type   = type;
 
             // 몬스터 타입에 따라 이름 할당.
@@ -74,7 +74,7 @@ namespace RtanTextDungeon
             }            
         }        
 
-        public void GetDamage(float damage) => Hp -= damage;
+        public void GetDamage(float damage) => Hp -= (int)damage;
 
         // 인 게임 상에서 출력할 Text 함수, 오버로딩으로 전투씬 전,후 구별 사용
         public void ShowText()
