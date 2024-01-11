@@ -21,6 +21,7 @@ namespace RtanTextDungeon
             Weapon,
             Armor,
             Amulet,
+            Potion,
         }
 
         public enum DungeonDiff

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,4 +112,38 @@ namespace RtanTextDungeon
             this.defense = defense;
         }
     }
+
+    class Potion : Item
+    {
+        public int heal { get; private set; }
+        public int count { get; private set; }
+        public Potion(int id, string name, string desc, int price, int heal) : base(id, name, "체력회복", desc, price)
+        {
+            this.heal = heal;
+            this.count = 3;
+        }
+        public void Use() => this.count--;
+        public bool Use(Player player)
+        {
+            // 입력: (Player)플레이어 객체
+            // 출력: (bool)회복여부
+            if (player.Hp == player.MaxHp) return false;
+            if (this.count <= 0) return false;
+
+            this.count--;
+            player.SetHp(Math.Min(player.Hp + heal, player.MaxHp));
+            return true;
+        }
+        public void Get() => this.count++;
+        public void Get(int n) => this.count += n;
+        public int Get(int min, int max)
+        {
+            // 입력: (int, int)랜덤 획득 범위
+            // 출력: (int)획득한 포션 갯수
+            int n = new Random().Next(Math.Min(min,max), Math.Max(min, max) + 1);
+            this.count += n;
+            return n;
+        }
+    }
+
 }
