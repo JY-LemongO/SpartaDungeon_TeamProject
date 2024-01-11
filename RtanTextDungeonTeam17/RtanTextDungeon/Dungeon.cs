@@ -666,9 +666,8 @@ namespace RtanTextDungeon
         {            
             bool invalid = false;
             bool isMultiTarget = false; // 선택한 스킬이 다중 타격인지
-            if(skillNum > 0)
-                if (player.Skills[skillNum-1].NumberTargets > 1)
-                    isMultiTarget = true;
+            if (skillNum > 0 && player.Skills[skillNum-1].NumberTargets > 1) // 
+                isMultiTarget = true;
 
             while (true)
             {
