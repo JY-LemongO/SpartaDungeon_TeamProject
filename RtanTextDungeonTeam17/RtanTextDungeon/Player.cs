@@ -11,7 +11,7 @@ namespace RtanTextDungeon
 {    
     internal class Player
     {
-        public int Lv                       { get; private set; }
+        public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
         public PlayerClass m_Class          { get; private set; }
         public int Atk                      { get; private set; }
