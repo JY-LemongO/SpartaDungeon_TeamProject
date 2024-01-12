@@ -30,22 +30,17 @@ namespace RtanTextDungeon
             if (this.shop == null)
                 this.shop = shop;
 
-            
-            
+            string alertMsg = "";
+
             while (true)
             {
-                Console.WriteLine(UI.AsciiArt(UI.AsciiPreset.MainMenu));
+                UI.AsciiArt(UI.AsciiPreset.MainMenu);
 
-                Console.WriteLine("-------------------------------------------\n");
                 Console.WriteLine(" (E) : [상태]\n\n (I) : [인벤토리]\n\n (S) : [상점]\n\n (D) : [던전입장]\n\n (P) : [회복아이템]\n\n (R) : [휴식]\n\n (X) : [게임종료]\n");
-                Console.WriteLine("-------------------------------------------\n");
+                
+                string input = UI.UserInput(alertMsg);
+                alertMsg = "";
 
-                //Console.ForegroundColor = ConsoleColor.Cyan;
-                //Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                //Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                //Console.ResetColor();
-
-                string input = Console.ReadLine();
                 Console.Clear();
                 switch (input)
                 {
@@ -75,14 +70,12 @@ namespace RtanTextDungeon
                         break;
                     case "X":
                     case "x":
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("※※※게임을 종료합니다※※※");
                         Console.ResetColor();
                         return;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                        alertMsg="잘못된 입력입니다!";
                         break;
                 }
             }
@@ -185,16 +178,12 @@ namespace RtanTextDungeon
             string amuletATK    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalATK : "";
             string amuletDEF    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalDEF : "";
 
+            string alertMsg = "";
+
             while (true)
             {
-                Console.WriteLine(" _______  __           __                 ");
-                Console.WriteLine("|     __||  |_ .---.-.|  |_ .--.--..-----.");
-                Console.WriteLine("|__     ||   _||  _  ||   _||  |  ||__ --|");
-                Console.WriteLine("|_______||____||___._||____||_____||_____|");
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("=================[상태 창]=================");
-                Console.ResetColor();
+                UI.AsciiArt(UI.AsciiPreset.Status);
 
                 Console.WriteLine("-------------------------------------------\n");
                 Console.WriteLine($"Lv. {player.Lv.ToString("00")}\n" +
@@ -207,12 +196,9 @@ namespace RtanTextDungeon
 
                 Console.WriteLine("(I) : [인벤토리]\n\n(S) : [상점]\n\n(B) : [마을로 돌아가기]\n\n");
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
+                string input = UI.UserInput(alertMsg);
+                alertMsg = "";
 
-                string input = Console.ReadLine();
                 Console.Clear();
                 switch (input)
                 {
@@ -227,10 +213,8 @@ namespace RtanTextDungeon
                     case "B":
                     case "b":                        
                         return;
-                    default:                        
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                    default:
+                        alertMsg = "!잘못된 입력입니다!";
                         break;
                 }
             }
@@ -240,17 +224,12 @@ namespace RtanTextDungeon
         #region 인벤토리
         private void Inventory()
         {
+            string alertMsg = "";
+            bool isAlertPositive = false;
+
             while (true)
             {
-                Console.WriteLine(" _______                              __                       ");
-                Console.WriteLine("|_     _|.-----..--.--..-----..-----.|  |_ .-----..----..--.--.");
-                Console.WriteLine(" _|   |_ |     ||  |  ||  -__||     ||   _||  _  ||   _||  |  |");
-                Console.WriteLine("|_______||__|__| \\___/ |_____||__|__||____||_____||__|  |___  |");
-                Console.WriteLine("                                                        |_____|");
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("============================[인벤토리]============================");
-                Console.ResetColor();
+                UI.AsciiArt(UI.AsciiPreset.Inventory);
 
                 Console.WriteLine("------------------------------------------------------------------\n");
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -279,14 +258,13 @@ namespace RtanTextDungeon
 
                 Console.WriteLine("(E) : [상태]\n\n(S) : [상점]\n\n(B) : [마을로 돌아가기]\n\n");
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
+                string input = UI.UserInput(alertMsg);
+                alertMsg = "";
 
-                string input = Console.ReadLine();
                 Console.Clear();
+
                 int itemIndex;
+
                 switch (input)
                 {
                     case "E":
@@ -313,9 +291,7 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("!!!잘못된 입력입니다!!!");
-                            Console.ResetColor();
+                            alertMsg = "!!!잘못된 입력입니다!!!";
                         }
                         break;
                 }
@@ -326,17 +302,13 @@ namespace RtanTextDungeon
         #region 상점
         private void Shop()
         {
+            string alertMsg = "";
+            bool isAlertPositive = false;
+
             while (true)
             {
-                Console.WriteLine(" _______  __                  ");
-                Console.WriteLine("|     __||  |--..-----..-----.");
-                Console.WriteLine("|__     ||     ||  _  ||  _  |");
-                Console.WriteLine("|_______||__|__||_____||   __|");
-                Console.WriteLine("                       |__|   ");
+                UI.AsciiArt(UI.AsciiPreset.Shop);
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("============[상   점]============");
-                Console.ResetColor();
                 Console.WriteLine("---------------------------------\n");
 
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -374,13 +346,11 @@ namespace RtanTextDungeon
 
                 Console.WriteLine("(E) : [상태]\n\n(I) : [인벤토리]\n\n(B) : [마을로 돌아가기]\n\n");
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
+                string input = UI.UserInput(alertMsg);
+                alertMsg = "";
 
-                string input = Console.ReadLine();
                 Console.Clear();
+
                 int itemIndex;
                 switch (input)
                 {
@@ -406,9 +376,7 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("!!!잘못된 입력입니다!!!");
-                            Console.ResetColor();
+                            alertMsg = "!!!잘못된 입력입니다!!!";
                         }
                         break;
                 }
@@ -421,21 +389,16 @@ namespace RtanTextDungeon
         {            
             bool status = false;
             bool hpZero = false;
-            bool choiceFloorPanel = false;            
+            bool choiceFloorPanel = false;
+
+            string alertMsg = "";
+            bool isAlertPositive = false;
 
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine(" _____                                            ");
-                Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
-                Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
-                Console.WriteLine("|_____/ |_____||__|__||___  ||_____||_____||__|__|");
-                Console.WriteLine("                      |_____|                     ");
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("====================[던전 입구]====================");
-                Console.ResetColor();
-                Console.WriteLine("---------------------------------\n");
+                UI.AsciiArt(UI.AsciiPreset.DungeonEntrance);
 
                 Console.WriteLine("=================================\n");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -474,14 +437,13 @@ namespace RtanTextDungeon
 
                 Console.WriteLine("---------------------------------");
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
+                string input = UI.UserInput(alertMsg);
+                alertMsg = "";
+                isAlertPositive = false;
+
+                Console.Clear();
 
                 startHp = player.Hp;
-                string input = Console.ReadLine();
-                Console.Clear();
                 switch (input)
                 {
                     case "1":
@@ -519,9 +481,7 @@ namespace RtanTextDungeon
                             choiceFloorPanel = false;
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("!!!잘못된 입력입니다!!!");
-                            Console.ResetColor();
+                            alertMsg = "!!!잘못된 입력입니다!!!";
                         }
                         break;
                     case "E":
@@ -552,10 +512,7 @@ namespace RtanTextDungeon
                                 }                                    
                             }
                         }
-
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                        alertMsg = "!!!잘못된 입력입니다!!!";
                         break;
                 }
             }
@@ -573,12 +530,13 @@ namespace RtanTextDungeon
             bool isSkillShow = false;
             bool isUseItem = false;
 
-            // 회복약 사용 시 표현할 상태가 셋 이상이어서 bool is~; 포기. alertMsg 사용.
             string alertMsg = "";
+            bool isAlertPositive = false;
 
             while (true)
             {
-                BattlePrint();
+                UI.AsciiArt(UI.AsciiPreset.Battle);
+
                 Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
                 Console.WriteLine($"" +
                     $"====================\n" +
@@ -600,12 +558,11 @@ namespace RtanTextDungeon
                     Console.WriteLine("1. 공격\n");
                     Console.WriteLine("2. 스킬\n");
                     Console.WriteLine("3. 회복\n");
-                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
 
-                    if (invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
+                    string input = UI.UserInput(alertMsg, isAlertPositive);
+                    alertMsg = "";
+                    isAlertPositive = false;
 
-                    string input = Console.ReadLine();
                     Console.Clear();
                     switch (input)
                     {
@@ -620,7 +577,7 @@ namespace RtanTextDungeon
                             isUseItem = true; //회복 화면으로
                             break;
                         default:
-                            invalid = true;
+                            alertMsg = "!!!잘못된 입력입니다!!!";
                             continue;
                     }
                 }
@@ -632,11 +589,11 @@ namespace RtanTextDungeon
                         player.Skills[i].ShowText();
                     }
                     Console.WriteLine("0. 취소\n");
-                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
-                    if (invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
 
-                    string input = Console.ReadLine();
+                    string input = UI.UserInput(alertMsg, isAlertPositive);
+                    alertMsg = "";
+                    isAlertPositive = false;
+
                     Console.Clear();
                     switch (input)
                     {
@@ -655,7 +612,7 @@ namespace RtanTextDungeon
                                 break;
                             }
                             else
-                                invalid = true;
+                                alertMsg = "!!!잘못된 입력입니다!!!";
                             continue;
                     }
                 }
@@ -666,15 +623,11 @@ namespace RtanTextDungeon
                     Console.WriteLine("0. 취소\n");
                     Console.WriteLine("");
                     Console.WriteLine("");
-                    Console.Write(alertMsg);
 
-                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+                    string input = UI.UserInput(alertMsg, isAlertPositive);
+                    alertMsg = "";
+                    isAlertPositive = false;
 
-                    if (invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
-                    
-
-                    string input = Console.ReadLine();
                     Console.Clear();
                     switch (input)
                     {
@@ -685,17 +638,19 @@ namespace RtanTextDungeon
                         case "1": // 회복약 사용 시도
                             int preHp = player.Hp;
                             bool isPotionUsed = potion.Use(player);
-                            if (isPotionUsed) { alertMsg = $"체력을 {player.Hp-preHp} 회복하여 [{preHp} → {player.Hp}] 이 되었습니다.\n\n"; }
+                            if (isPotionUsed){
+                                alertMsg = $"체력을 {player.Hp-preHp} 회복하여 [{preHp} → {player.Hp}] 이 되었습니다.";
+                                isAlertPositive = true;
+                            }
                             else
                             {
-                                if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 회복약을 사용 할 수 없습니다.\n\n";
-                                if (potion.count <= 0) alertMsg = $"{potion.Name}을 소지하고 있지 않습니다.\n\n";
+                                if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 회복약을 사용 할 수 없습니다.";
+                                if (potion.count <= 0) alertMsg = $"{potion.Name}을 소지하고 있지 않습니다.";
                             }
                             startHp = player.Hp;
                             continue;
                         default:
-                            invalid = true;
-                            alertMsg = "";
+                            alertMsg = "잘못된 입력입니다.";
                             continue;
                     }
 
@@ -715,9 +670,14 @@ namespace RtanTextDungeon
                 if (player.Skills[skillNum-1].NumberTargets > 1)
                     isMultiTarget = true;
 
+            string alertMsg = "";
+            bool isAlertPositive = false;
+
             while (true)
             {
-                BattlePrint();
+
+                UI.AsciiArt(UI.AsciiPreset.Battle);
+
                 Console.WriteLine($"" +
                     $"====================\n" +
                     $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
@@ -753,9 +713,12 @@ namespace RtanTextDungeon
                     Console.WriteLine("대상을 선택해주세요.\n");
 
                     if (invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
+                        alertMsg = "!!!잘못된 입력입니다!!!";
 
-                    string input = Console.ReadLine();
+                    string input = UI.UserInput(alertMsg, isAlertPositive);
+                    alertMsg = "";
+                    isAlertPositive = false;
+
                     int inputNum;
                     bool isNum = int.TryParse(input, out inputNum);
                     if (!isNum)
@@ -821,7 +784,7 @@ namespace RtanTextDungeon
             monster.GetDamage(damage);
             string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
 
-            BattlePrint();
+            UI.AsciiArt(UI.AsciiPreset.Battle);
 
             Console.WriteLine($"{player.Name} 의 공격!\n" +
             $"\n" +
@@ -854,7 +817,8 @@ namespace RtanTextDungeon
 
             if (TargetNum >= MonsterNum)
             {
-                BattlePrint();
+                UI.AsciiArt(UI.AsciiPreset.Battle);
+
                 // => 살아있는 것 전부 공격
                 foreach (Monster monster in monsters.Where(x => !x.IsDead)) 
                 {
@@ -887,7 +851,7 @@ namespace RtanTextDungeon
                     shuffledMonsters[j] = tempMonster;
                 }
 
-                BattlePrint();
+                UI.AsciiArt(UI.AsciiPreset.Battle);
 
                 foreach (Monster monster in shuffledMonsters.Where(x => !x.IsDead).Take(TargetNum))
                 {
@@ -911,7 +875,7 @@ namespace RtanTextDungeon
 
         private void MonsterPhase(Monster[] monsters)
         {
-            BattlePrint();
+            UI.AsciiArt(UI.AsciiPreset.Battle);
 
             foreach (Monster monster in monsters)
             {
@@ -978,9 +942,10 @@ namespace RtanTextDungeon
             int addGold = 0;
             addGold = new Random().Next((int)(0.5f * 500), monsterCount * 500);
             player.GetGold(addGold);
-            
 
-            BattlePrint();
+
+            UI.AsciiArt(UI.AsciiPreset.Battle);
+
             DungeonInfo.UpdateInfo();
             Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
             Console.WriteLine("Result\n");
@@ -1001,14 +966,15 @@ namespace RtanTextDungeon
                 (nPotionDrop!=0?$"\n{potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
                 $"\n" +
                 $"\n" +
-                $"계속");
+                $">>> 계속");
              
             Console.ReadLine();
         }
 
         private void Lose(int startHp)
         {
-            BattlePrint();
+            UI.AsciiArt(UI.AsciiPreset.Battle);
+
             Console.WriteLine("Result\n");
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
@@ -1019,7 +985,7 @@ namespace RtanTextDungeon
                 $"Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
                 $"\n" +
-                $"계속");
+                $">>> 계속");
 
             Console.ReadLine();
         }
@@ -1029,10 +995,11 @@ namespace RtanTextDungeon
         private void PotionInventory()
         {
             string alertMsg = "";
+            bool isAlertPositive = false;
 
             while (true)
             {
-                Console.WriteLine(UI.AsciiArt(UI.AsciiPreset.PotionInventory));
+                UI.AsciiArt(UI.AsciiPreset.PotionInventory);
                 Console.WriteLine("");
 
                 // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
@@ -1056,20 +1023,10 @@ namespace RtanTextDungeon
                 Console.WriteLine(" (0) : 나가기");
                 Console.WriteLine("");
                 Console.WriteLine("");
-                //Console.ForegroundColor = ConsoleColor.Yellow;
-                //Console.Write(alertMsg);
-                //Console.ResetColor();
-                //Console.WriteLine(" ---------------------------------");
-                //Console.ForegroundColor = ConsoleColor.Cyan;
-                //Console.WriteLine(" ※※※원하시는 행동을 선택하세요.※※※");
-                //Console.ResetColor();
-                //Console.WriteLine("");
 
-                //string input = Console.ReadLine();
-
-                string input = UI.UserInput(alertMsg);
-
-
+                string input = UI.UserInput(alertMsg, isAlertPositive);
+                alertMsg = "";
+                isAlertPositive = false;
 
                 Console.Clear();
 
@@ -1086,6 +1043,7 @@ namespace RtanTextDungeon
                         if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
                             alertMsg = $"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.";
+                            isAlertPositive = true;
                         }
                         else
                         {
@@ -1098,7 +1056,7 @@ namespace RtanTextDungeon
                         return;
 
                     default:
-                        alertMsg = "!!!잘못된 입력입니다!!!";
+                        alertMsg = "!잘못된 입력입니다!";
                         break;
                 }
 
@@ -1113,17 +1071,14 @@ namespace RtanTextDungeon
             bool canRest = player.Gold >= 500;
             bool rest = false;
             bool fullCondition = player.Hp == player.MaxHp;
+
+            string alertMsg = "";
+            bool isAlertPositive = false;
+
             while (true)
             {
-                Console.WriteLine(" __               ");
-                Console.WriteLine("|__|.-----..-----.");
-                Console.WriteLine("|  ||     ||     |");
-                Console.WriteLine("|__||__|__||__|__|");
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("==================[여 관]==================");
-                Console.ResetColor();
-                Console.WriteLine("-------------------------------------------\n");
+                Console.Clear();
+                UI.AsciiArt(UI.AsciiPreset.Inn);
 
                 Console.WriteLine($"500 G 를 지불하시면 체력을 회복할 수 있습니다. (보유골드 : {player.Gold} G)");
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -1156,15 +1111,12 @@ namespace RtanTextDungeon
                 }
 
                 Console.WriteLine("(R) : [휴식]\n\n(B) : [마을로 돌아가기]\n");
+                Console.WriteLine("");
 
-                Console.WriteLine("-------------------------------------------");
+                string input = UI.UserInput(alertMsg, isAlertPositive);
+                alertMsg = "";
+                isAlertPositive = false;
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
-
-                string input = Console.ReadLine();
                 Console.Clear();
                 switch (input)
                 {
@@ -1182,26 +1134,12 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("!!!잘못된 입력입니다!!!");
-                        Console.ResetColor();
+                        alertMsg = "!!!잘못된 입력입니다!!!";
                         break;
                 }
             }
         }
         #endregion
 
-        #region Battle 아스키 아트
-        private void BattlePrint()
-        {
-            Console.Clear();
-            Console.WriteLine("" +
-                "'||'''|,            ||      ||    '||`        \r\n" +
-                " ||   ||            ||      ||     ||         \r\n" +
-                " ||;;;;    '''|.  ''||''  ''||''   ||  .|''|, \r\n" +
-                " ||   ||  .|''||    ||      ||     ||  ||..|| \r\n" +
-                ".||...|'  `|..||.   `|..'   `|..' .||. `|...  \n\n");
-        }
-        #endregion
     }
 }
