@@ -33,26 +33,16 @@ namespace RtanTextDungeon
             
             while (true)
             {
-                Console.WriteLine("===============================================================================================");
-                Console.WriteLine(" _______                      __            _____                                              ");
-                Console.WriteLine("|     __|.-----..---.-..----.|  |_ .---.-. |     \\ .--.--..-----..-----..-----..-----..-----. ");
-                Console.WriteLine("|__     ||  _  ||  _  ||   _||   _||  _  | |  --  ||  |  ||     ||  _  ||  -__||  _  ||     |  ");
-                Console.WriteLine("|_______||   __||___._||__|  |____||___._| |_____/ |_____||__|__||___  ||_____||_____||__|__|  ");
-                Console.WriteLine("         |__|                                                    |_____|                       ");
-                Console.WriteLine("===============================================================================================\n");
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("※※※스파르타 던전에 온 것을 환영합니다.※※※\n\n");
-                Console.ResetColor();
+                Console.WriteLine(UI.AsciiArt(UI.AsciiPreset.MainMenu));
 
                 Console.WriteLine("-------------------------------------------\n");
-                Console.WriteLine("(E) : [상태]\n\n(I) : [인벤토리]\n\n(S) : [상점]\n\n(D) : [던전입장]\n\n(P) : [회복아이템]\n\n(R) : [휴식]\n\n(X) : [게임종료]\n");
+                Console.WriteLine(" (E) : [상태]\n\n (I) : [인벤토리]\n\n (S) : [상점]\n\n (D) : [던전입장]\n\n (P) : [회복아이템]\n\n (R) : [휴식]\n\n (X) : [게임종료]\n");
                 Console.WriteLine("-------------------------------------------\n");
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
-                Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
-                Console.ResetColor();
+                //Console.ForegroundColor = ConsoleColor.Cyan;
+                //Console.WriteLine("※※※원하시는 행동을 선택하세요.※※※");
+                //Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
+                //Console.ResetColor();
 
                 string input = Console.ReadLine();
                 Console.Clear();
@@ -1033,14 +1023,7 @@ namespace RtanTextDungeon
 
             while (true)
             {
-                if (alertMsg != "") alertMsg += "\n\n";
-                Console.WriteLine("                                                                   ");
-                Console.WriteLine("   .-.   p--- .'~`. .-=~=-.   :~:      |~|   .-~~8~~-.  |~|  .-.   ");
-                Console.WriteLine(" .'__( .'~`.  `. .'  )___(  .'   `.    | |   |~~---~~|  | |  )__`. ");
-                Console.WriteLine(" | l | | m |  .'n`. (  o  ) |  p  |] .' q `. |   r   | .'s`. | t | ");
-                Console.WriteLine(" |___| |___|  `._.'  `._.'  |_____|  `.___.' `._____.' `._.' |___| ");
-                Console.WriteLine("                                                                   ");
-                Console.WriteLine("===========================[회복 아이템]===========================");
+                Console.WriteLine(UI.AsciiArt(UI.AsciiPreset.PotionInventory));
                 Console.WriteLine("");
 
                 // Potion 객체가 shop.items에 없을 경우를 위해 대비한 로직
@@ -1064,16 +1047,20 @@ namespace RtanTextDungeon
                 Console.WriteLine(" (0) : 나가기");
                 Console.WriteLine("");
                 Console.WriteLine("");
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write(alertMsg);
-                Console.ResetColor();
-                Console.WriteLine(" ---------------------------------");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(" ※※※원하시는 행동을 선택하세요.※※※");
-                Console.ResetColor();
-                Console.WriteLine("");
+                //Console.ForegroundColor = ConsoleColor.Yellow;
+                //Console.Write(alertMsg);
+                //Console.ResetColor();
+                //Console.WriteLine(" ---------------------------------");
+                //Console.ForegroundColor = ConsoleColor.Cyan;
+                //Console.WriteLine(" ※※※원하시는 행동을 선택하세요.※※※");
+                //Console.ResetColor();
+                //Console.WriteLine("");
 
-                string input = Console.ReadLine();
+                //string input = Console.ReadLine();
+
+                string input = UI.UserInput(alertMsg);
+
+
 
                 Console.Clear();
 
@@ -1083,18 +1070,18 @@ namespace RtanTextDungeon
 
                         if(potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
                         {
-                            alertMsg = " 게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
+                            alertMsg = "게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
                             break;
                         }
 
                         if (potion.Use(player)) // 포션사용여부(bool) 반환
                         {
-                            alertMsg = $" {potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.";
+                            alertMsg = $"{potion.Name}을 사용하여 체력이 {player.Hp} 이 되었습니다.";
                         }
                         else
                         {
-                            if (player.Hp == player.MaxHp) alertMsg = $" 체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
-                            if (potion.count <= 0) alertMsg = $" 현재 소지한 {potion.Name}이 없습니다.";
+                            if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                            if (potion.count <= 0) alertMsg = $"현재 소지한 {potion.Name}이 없습니다.";
                         }
                         break;
 
@@ -1102,7 +1089,7 @@ namespace RtanTextDungeon
                         return;
 
                     default:
-                        alertMsg = " !!!잘못된 입력입니다!!!";
+                        alertMsg = "!!!잘못된 입력입니다!!!";
                         break;
                 }
 
