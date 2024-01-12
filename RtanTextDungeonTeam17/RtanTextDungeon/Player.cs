@@ -22,8 +22,8 @@ namespace RtanTextDungeon
         public int MaxMp                    { get; private set; }
         public int Gold                     { get; private set; }
         public int EXP                      { get; private set; }        
-        public List<Skill> Skills           { get; private set; }
-        public int Point                       { get; set; }
+        public List<Skill> Skills           { get; protected set; }
+        public int Point                    { get; set; }
 
         // 런타임에서 가지고 있을 아이템 정보들
         public Dictionary<Type, Item>   equippedItems       = new Dictionary<Type, Item>();        
@@ -49,8 +49,6 @@ namespace RtanTextDungeon
             this.Gold = Gold;
             this.Point = Point;
 
-            //스킬 생성용 임시 함수
-            CreateSkills();
         }
         
         public void BuyOrSell(int price, Item item, bool isSell = false)
@@ -223,15 +221,13 @@ namespace RtanTextDungeon
             Def += 1;            
         }
 
-        public void CreateSkills()
+        public virtual void CreateSkills()
         {
             Skills = new List<Skill>();
 
+            Skill skill_1 = new Skill(this, "힘없는 휘두르기",10, 1, "공격력 * 1 로 하나의 적을 공격합니다.", 1);
+            Skill skill_2 = new Skill(this, "별반 차이 없는 휘두르기", 10, 1, "그냥 때리는게 마나도 안들고 좋아보입니다.", 1);
 
-            Skill skill_1 = new Skill(this, "알파 스트라이크", 10, 2, "공격력 * 2 로 하나의 적을 공격합니다.", 1);
-            Skill skill_2 = new Skill(this, "짱센 스트라이크", 15, 3, "공격력 * 3 로 둘의 적을 랜덤으로 공격합니다.", 2);
-
-            
             Skills.Add(skill_1);
             Skills.Add(skill_2);
         }
@@ -243,5 +239,102 @@ namespace RtanTextDungeon
                 $"Lv.{Lv}\t{Name}\n" +
                 $"HP {Hp} / {MaxHp}\n\n");
         }
+
+        public virtual string GetClassName() { return "잘못된 접근"; }
     }    
+
+
+    internal class Warrior : Player
+    {
+        public Warrior(string name) : base (1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0)
+        {
+            CreateSkills();
+        }
+
+        public override void CreateSkills()
+        {
+            Skills = new List<Skill>();
+
+            Skill skill_1 = new Skill(this, "알파 스트라이크", 10, 2, "하나의 적을 공격합니다. / 공격력 * 2", 1);
+            Skill skill_2 = new Skill(this, "짱센 스트라이크", 20, 1, "둘의 적을 랜덤으로 공격합니다. / 공격력 * 1", 2);
+
+            Skills.Add(skill_1);
+            Skills.Add(skill_2);
+        }
+
+        public override string GetClassName() { return "전사"; }
+    }
+
+    internal class Archer : Player
+    {
+        public Archer(string name) : base(1, name, PlayerClass.Worrior, 12, 3, 90, 100, 1500, 0)
+        {
+            CreateSkills();
+        }
+
+        public override void CreateSkills()
+        {
+            Skills = new List<Skill>();
+
+            Skill skill_1 = new Skill(this, "급소 조준", 10, 2, "급소에 화살을 꽂습니다. / 공격력 * 2", 1);
+            Skill skill_2 = new Skill(this, "몰아치는 화살", 20, 1, "3명의 적을 공격합니다. / 공격력 * 1", 3);
+
+            Skills.Add(skill_1);
+            Skills.Add(skill_2);
+        }
+
+        public override string GetClassName() { return "궁수"; }
+    }
+
+    internal class Magic : Player
+    {
+        public Magic(string name) : base(1, name, PlayerClass.Worrior, 10, 4, 80, 120, 1500, 0)
+        {
+            CreateSkills();
+        }
+
+        public override void CreateSkills()
+        {
+            Skills = new List<Skill>();
+
+            Skill skill_1 = new Skill(this, "마법 화살", 10, 2, "마력 화살 하나를 날립니다. / 공격력 * 2", 1);
+            Skill skill_2 = new Skill(this, "번개 사슬", 35, 2, "3명의 적에게 전기 피해룰 줍니다. / 공격력 * 2", 3);
+
+            Skills.Add(skill_1);
+            Skills.Add(skill_2);
+        }
+
+        public override string GetClassName() { return "마법사"; }
+    }
+
+    internal class Thief : Player
+    {
+        public Thief(string name) : base(1, name, PlayerClass.Worrior, 11, 4, 80, 100, 1500, 0)
+        {
+            CreateSkills();
+        }
+
+        public override void CreateSkills()
+        {
+            Skills = new List<Skill>();
+
+            Skill skill_1 = new Skill(this, "힘줄 자르기", 10, 2, "강하게 공격합니다. / 공격력 *2", 1);
+            Skill skill_2 = new Skill(this, "암습", 30, 4, "뒤에서 급소를 공격합니다. / 공격력 * 4", 1);
+
+            Skills.Add(skill_1);
+            Skills.Add(skill_2);
+        }
+
+        public override string GetClassName() { return "도둑"; }
+    }
+
+    internal class Deadbeat : Player
+    {
+        public Deadbeat(string name) : base(1, name, PlayerClass.Deadbeat, 6, 5, 100, 100, 500, 0)
+        {
+            CreateSkills();
+        }
+
+        public override string GetClassName() { return "무직백수"; }
+    }
 }
