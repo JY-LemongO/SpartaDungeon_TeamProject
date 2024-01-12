@@ -18,6 +18,7 @@ namespace RtanTextDungeon
             Console.WriteLine("데이터를 불러오는중...");
             //Player player = new Player(1, "르탄이", Define.PlayerClass.Worrior, 10, 5, 100, 100, 1500);
             Thread.Sleep(1000);
+            Console.Clear();
 
             // 인 게임 Dungeon클래스
             Dungeon dungeon = new Dungeon();
