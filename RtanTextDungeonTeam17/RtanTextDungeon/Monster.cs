@@ -53,23 +53,23 @@ namespace RtanTextDungeon
             // 몬스터 타입에 따라 이름 할당.
             switch (_type)
             {
-                case Define.MonsterType.SkeletonWorrior:
-                    _name = $"Lv.{Lv}  스켈레톤 전사";
+                case Define.MonsterType.TILFairy:
+                    _name = $"Lv.{Lv}  [TIL 요정]";
                     break;
-                case Define.MonsterType.SkeletonArcher:
-                    _name = $"Lv.{Lv}  스켈레톤 궁수";
+                case Define.MonsterType.HellofAlgorythm:
+                    _name = $"Lv.{Lv}  [알고리즘 무사]";
                     break;
-                case Define.MonsterType.SkeletonWizard:
-                    _name = $"Lv.{Lv}  스켈레톤 마법사";
+                case Define.MonsterType.VerifyGhost:
+                    _name = $"Lv.{Lv}  [본인인증 유령]";
                     break;
-                case Define.MonsterType.GoblinWorrior:
-                    _name = $"Lv.{Lv}  고블린 전사";
+                case Define.MonsterType.GitCrashCat:
+                    _name = $"Lv.{Lv}  [깃허브 충돌 고양이]";
                     break;
-                case Define.MonsterType.GoblinArcher:
-                    _name = $"Lv.{Lv}  고블린 궁수";
+                case Define.MonsterType.EnterMemoryEraser:
+                    _name = $"Lv.{Lv}  [입실버튼 기억말소자]";
                     break;
-                case Define.MonsterType.GoblinWizard:
-                    _name = $"Lv.{Lv}  고블린 마법사";
+                case Define.MonsterType.ExitMemoryEraser:
+                    _name = $"Lv.{Lv}  [퇴실버튼 기억말소자]";
                     break;
             }            
         }        

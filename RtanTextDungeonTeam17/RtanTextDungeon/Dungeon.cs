@@ -70,9 +70,7 @@ namespace RtanTextDungeon
                         break;
                     case "X":
                     case "x":
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("※※※게임을 종료합니다※※※");
-                        Console.ResetColor();
+                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);
                         return;
                     default:
                         alertMsg="잘못된 입력입니다!";
@@ -252,10 +250,7 @@ namespace RtanTextDungeon
             while (true)
             {
                 UI.AsciiArt(UI.AsciiPreset.Inventory);
-
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine(" [아이템 목록]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine(" [아이템 목록]\n", ConsoleColor.DarkGreen);
                 // 아이템 목록은 아이템 리스트에 있는 아이템들을 전부 불러와야겠지?
 
                 int index = 1;
@@ -330,11 +325,7 @@ namespace RtanTextDungeon
             while (true)
             {
                 UI.AsciiArt(UI.AsciiPreset.Shop);
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"[보유 골드 : {player.Gold:N0} G]");
-                Console.WriteLine("");
-                Console.ResetColor();
+                UI.ColoredWriteLine($"[보유 골드 : {player.Gold:N0} G]\n", ConsoleColor.Yellow);                
 
                 Console.WriteLine("[아이템 목록]\t[능력]\t\t\t\t[가격]\t\t[이름]\t\t[설명]\n");
                 int index = 1;
@@ -356,9 +347,7 @@ namespace RtanTextDungeon
                 }
 
                 Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("아이템 번호를 입력하시면 구매/판매가 가능합니다.\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine("아이템 번호를 입력하시면 구매/판매가 가능합니다.\n", ConsoleColor.Yellow);
                 Console.WriteLine();
 
                 Console.WriteLine("  (E) : [상태]\n\n  (I) : [인벤토리]\n\n  (B) : [마을로 돌아가기]\n");
@@ -577,6 +566,7 @@ namespace RtanTextDungeon
                     Console.WriteLine("1. 공격\n");
                     Console.WriteLine("2. 스킬\n");
                     Console.WriteLine("3. 회복\n");
+                    Console.WriteLine("0. 도망친다!\n");
 
                     string input = UI.UserInput(alertMsg, isAlertPositive);
                     alertMsg = "";
@@ -594,6 +584,10 @@ namespace RtanTextDungeon
                             break;
                         case "3":
                             isUseItem = true; //회복 화면으로
+                            break;
+                        case "0":
+                            if (TryRun(monsters)) // 도망에 성공하면 던전 탈출
+                                return;
                             break;
                         default:
                             alertMsg = "!!!잘못된 입력입니다!!!";
@@ -686,14 +680,11 @@ namespace RtanTextDungeon
                             alertMsg = "잘못된 입력입니다.";
                             continue;
                     }
-
                 }
-
                 if (monsters.All(x => x.IsDead) || player.Hp <= 0)
                     return;
             }                   
         }
-
 
         private void Fight(Monster[] monsters, int startHp, int skillNum)
         {            
@@ -719,8 +710,7 @@ namespace RtanTextDungeon
                 Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText(i + 1);
-                Console.WriteLine("\n======================================\n");                
-
+                Console.WriteLine("\n======================================\n");
 
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
@@ -790,12 +780,37 @@ namespace RtanTextDungeon
                 MonsterPhase(monsters);
                 
                 if (monsters.All(x => x.IsDead))
-                    Victory(monsters.Length, startHp, monsters);
-                else if (player.Hp <= 0)
-                    Lose(startHp);
+                    Victory(monsters.Length, startHp, monsters);                
 
                 return;
             }            
+        }
+
+        /// <summary>
+        /// 40% 확률로 도망치기에 성공. 성공 시, 던전 입구로 복귀
+        /// </summary>        
+        private bool TryRun(Monster[] monsters)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                Thread.Sleep(500);
+            }
+
+            int randRun = new Random().Next(0, 10);
+            if (randRun < 6)
+            {
+                UI.ColoredWriteLine("\n스파르타 교육을 뿌리칠 수 없었습니다... [몬스터의 턴으로 넘어갑니다]", ConsoleColor.DarkRed);
+                UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
+                MonsterPhase(monsters);
+            }
+            else
+            {
+                UI.ColoredWriteLine("\n뒤도 돌아보지 않고 도망쳤습니다. [잠시 후 던전입구에 도착합니다]",ConsoleColor.Green);
+                UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
+                return true;
+            }                
+            return false;                            
         }
         #endregion
 
@@ -933,6 +948,9 @@ namespace RtanTextDungeon
                     Console.ReadLine();
                 }                    
             }
+
+            if (player.Hp <= 0)
+                Lose(startHp);
         }
         #endregion
 
@@ -941,8 +959,6 @@ namespace RtanTextDungeon
         // 레벨업 기능 구현
         public void LevelCal(Monster[] monsters, Player player)
         {
-            
-        
             foreach(Monster monster in monsters)
             {
                 player.Point += monster.Lv;
@@ -963,8 +979,7 @@ namespace RtanTextDungeon
             else if (player.Point >= 100)
             {
                 player.Lv = 5;
-            }
-            
+            }            
         }
 
         private void Victory(int monsterCount, int startHp, Monster[] monsters)
@@ -985,13 +1000,11 @@ namespace RtanTextDungeon
             Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
             Console.WriteLine("Result\n");
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Victory\n");
-            Console.ResetColor();
+            UI.ColoredWriteLine("Victory\n", ConsoleColor.Green);
             int preLv = player.Lv;
             LevelCal(monsters, player); 
             Console.WriteLine(
-                $"던전에서 몬스터 {monsterCount} 마리를 잡았습니다.\n" +
+                $"스파르타의 괴물 {monsterCount} 마리 조차 당신을 막을 순 없었습니다.\n" +
                 $"\n" +
                 $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
@@ -1009,12 +1022,8 @@ namespace RtanTextDungeon
         private void Lose(int startHp)
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
-
             Console.WriteLine("Result\n");
-
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("You Lose\n");
-            Console.ResetColor();
+            UI.ColoredWriteLine("스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
 
             Console.WriteLine(
                 $"Lv.{player.Lv} {player.Name}\n" +
@@ -1049,9 +1058,7 @@ namespace RtanTextDungeon
                 }
 
                 Console.WriteLine("");
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($" [현재 체력 : {player.Hp}]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine($" [현재 체력 : {player.Hp}]\n", ConsoleColor.Yellow);
                 Console.WriteLine("");
                 Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
@@ -1116,32 +1123,20 @@ namespace RtanTextDungeon
                 UI.AsciiArt(UI.AsciiPreset.Inn);
 
                 Console.WriteLine($"500 G 를 지불하시면 체력을 회복할 수 있습니다. (보유골드 : {player.Gold} G)");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[현재 체력 : {player.Hp}]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
                 if (rest)
                 {
                     if (fullCondition)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"이미 컨디션이 최상입니다!\n");
-                        Console.ResetColor();
-                    }
+                        UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
                     else
                     {
                         if (canRest)
                         {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"회복되었습니다!\n");
-                            Console.ResetColor();
+                            UI.ColoredWriteLine($"회복되었습니다!\n", ConsoleColor.Green);
                             fullCondition = true;
                         }
                         else
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkRed;
-                            Console.WriteLine($"숙박 비용이 모자랍니다!\n");
-                            Console.ResetColor();
-                        }
+                            UI.ColoredWriteLine($"숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
                     }
                 }
 
