@@ -9,7 +9,7 @@ using static RtanTextDungeon.Define;
 
 namespace RtanTextDungeon
 {    
-    internal class Player
+    internal class Player : IDamagable
     {
         public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
@@ -188,9 +188,9 @@ namespace RtanTextDungeon
 
         public void SetHp(int hp) => Hp = hp;
 
-        public void GetDamage(int damage)
+        public void GetDamage(float damage)
         {
-            Hp -= damage;
+            Hp -= (int)damage;
             if(Hp < 0)
                 Hp = 0;
         }        
