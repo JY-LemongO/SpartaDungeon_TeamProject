@@ -33,10 +33,11 @@ namespace RtanTextDungeon
         public enum AsciiPreset
         {
             TitleArt,
+            CreateCharacter,
+            SelectClass,
             MainMenu,
             Battle,
             Status,
-            CreateCharacter,
             PotionInventory,
             Inventory,
             Shop,
@@ -50,56 +51,64 @@ namespace RtanTextDungeon
         /// <param name="preset">표시할 아스키아트의 프리셋을 고릅니다. </param>
         public static void AsciiArt(AsciiPreset preset)
         {
-            ConsoleColor statusColor = ConsoleColor.Yellow;
+            ConsoleColor statusColor = ConsoleColor.Gray;
 
             switch (preset)
             {
                 case AsciiPreset.TitleArt:
                     Console.WriteLine("");
                     Console.WriteLine("");
-                    Console.WriteLine("                                      -========-                         ");
-                    Console.WriteLine("                                      %%++++*#@%                         ");
-                    Console.WriteLine("                                      %#++++*#@%                         ");
-                    Console.WriteLine("                                      %%######@%                         ");
-                    Console.WriteLine("                                      %%#%%%%#@%                         ");
-                    Console.WriteLine("                                      %@@%%%@@@%                         ");
-                    Console.WriteLine("                                       .@##%@@                           ");
-                    Console.WriteLine("                                   %@@@@@##%@@@@@@@                      ");
-                    Console.WriteLine("                                .%%########%%%%%%%%%*.                   ");
-                    Console.WriteLine("                              *#%####*###%%%%%%%####%%*+                 ");
-                    Console.WriteLine("                            +######+*###############%%%@#=               ");
-                    Console.WriteLine("                            %@#####################%%%%%@+               ");
-                    Console.WriteLine("                            %@###################%%%%%%%@+               ");
-                    Console.WriteLine("                            %@###%%@@@@%########@@@@@%%%@+               ");
-                    Console.WriteLine("                            %@###%#....-%#####%#....-%%%@+               ");
-                    Console.WriteLine("                            %@###%#:+%%*:*####::%%%:=%%#@*               ");
-                    Console.WriteLine("                         *##@@###%%#-..-#**%%%#*...*#%%%@@##*            ");
-                    Console.WriteLine("                       +@:..%@%##%#+:....====+.....=+%%%@#..:@-          ");
-                    Console.WriteLine("                       +@:..%@%%%%%%#*...........-*%%%%%@#..:@-          ");
-                    Console.WriteLine("                         %*..-@@%%%%%#%+........#%%%%%@@.:.*%            ");
-                    Console.WriteLine("                          :@:..*@%%%%#%+........#%%%@@:..-@.             ");
-                    Console.WriteLine("                            %%...%@@@@@*.......:@@@@#...@@@.             ");
-                    Console.WriteLine("                            %@@=..:###++++++++*###*...#@##@.             ");
-                    Console.WriteLine("                            %@#%@:....**+++++####-..-@####@.             ");
-                    Console.WriteLine("                            %@###@%.................-@%###@.             ");
-                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
-                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
-                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
-                    Console.WriteLine("                            %@###@%===========******#@%##%@.             ");
-                    Console.WriteLine("                            #@###@%+++##############%@%##%@.             ");
+                    Console.WriteLine("          +                           -========-                                      +        ");
+                    Console.WriteLine("                                      %%++++*#@%                  +                            ");
+                    Console.WriteLine("                         +            %#++++*#@%                                               ");
+                    Console.WriteLine("                                      %%######@%                                               ");
+                    Console.WriteLine("                  *                   %%#%%%%#@%                                               ");
+                    Console.WriteLine("                                      %@@%%%@@@%                                   +           ");
+                    Console.WriteLine("                                       .@##%@@                                                 ");
+                    Console.WriteLine("                                   %@@@@@##%@@@@@@@                                            ");
+                    Console.WriteLine("      +                         .%%########%%%%%%%%%*.                       *                 ");
+                    Console.WriteLine("                              *#%####*###%%%%%%%####%%*+                                       ");
+                    Console.WriteLine("              +             +######+*###############%%%@#=       +                          +  ");
+                    Console.WriteLine("                            %@#####################%%%%%@+                                     ");
+                    Console.WriteLine("                            %@###################%%%%%%%@+                                     ");
+                    Console.WriteLine("                            %@###%%@@@@%########@@@@@%%%@+                                     ");
+                    Console.WriteLine("                            %@###%#....-%#####%#....-%%%@+                                     ");
+                    Console.WriteLine("                            %@###%#:+%%*:*####::%%%:=%%#@*                                     ");
+                    Console.WriteLine("                         *##@@###%%#-..-#**%%%#*...*#%%%@@##*                +                 ");
+                    Console.WriteLine("                       +@:..%@%##%#+:....====+.....=+%%%@#..:@-                                ");
+                    Console.WriteLine("                       +@:..%@%%%%%%#*...........-*%%%%%@#..:@-                                ");
+                    Console.WriteLine("                         %*..-@@%%%%%#%+........#%%%%%@@.:.*%                                  ");
+                    Console.WriteLine("            *             :@:..*@%%%%#%+........#%%%@@:..-@.                                   ");
+                    Console.WriteLine("                            %%...%@@@@@*.......:@@@@#...@@@.                                   ");
+                    Console.WriteLine("     +                      %@@=..:###++++++++*###*...#@##@.                                   ");
+                    Console.WriteLine("                            %@#%@:....**+++++####-..-@####@.         +                         ");
+                    Console.WriteLine("                            %@###@%.................-@%###@.                                   ");
+                    Console.WriteLine("              +             %@###@#.................-@%###@.             [아무 키나 눌러 ]     ");
+                    Console.WriteLine("                            %@###@#.................-@%###@.             [게임을 시작하기]     ");
+                    Console.WriteLine("                            %@###@#.................-@%###@.                                   ");
+                    Console.WriteLine("                            %@###@%===========******#@%##%@.                                   ");
+                    Console.WriteLine("                            #@###@%+++##############%@%##%@.       +                           ");
                     Console.WriteLine("");
                     Console.WriteLine("===============================================================================================");
-                    Console.WriteLine("          ____                   _          ____                                     ");
+                    Console.WriteLine("          ____       *           _          ____                                          +    ");
                     Console.WriteLine("         / ___| _ __   __ _ _ __| |_ __ _  |  _ \\ _   _ _ __   __ _  ___  ___  _ __  ");
-                    Console.WriteLine("         \\___ \\| '_ \\ / _` | '__| __/ _` | | | | | | | | '_ \\ / _` |/ _ \\/ _ \\| '_ \\ ");
+                    Console.WriteLine("    *    \\___ \\| '_ \\ / _` | '__| __/ _` | | | | | | | | '_ \\ / _` |/ _ \\/ _ \\| '_ \\ ");
                     Console.WriteLine("          ___) | |_) | (_| | |  | || (_| | | |_| | |_| | | | | (_| |  __/ (_) | | | |");
                     Console.WriteLine("         |____/| .__/ \\__,_|_|   \\__\\__,_| |____/ \\__,_|_| |_|\\__, |\\___|\\___/|_| |_|");
-                    Console.WriteLine("               |_|                                            |___/                  ");
-                    Console.WriteLine("");
+                    Console.WriteLine("               |_|   +                                        |___/           +                ");
+                    Console.WriteLine("                                     +                                                         ");
                     Console.WriteLine("===============================================================================================");
-                    break;
-                case AsciiPreset.MainMenu:
 
+                    Random random = new Random();
+                    for(int i= 0; i < 5; i++)
+                    {
+                        Console.SetCursorPosition(random.Next(0, 85), random.Next(0, 41));
+                        RandomColoredWrite("*");// 랜덤 색으로 문자열 표현
+                    }
+
+                    break;
+
+                case AsciiPreset.MainMenu:
 
                     Console.WriteLine("===============================================================================================");
                     Console.WriteLine("");
@@ -111,17 +120,7 @@ namespace RtanTextDungeon
                     Console.WriteLine("");
                     Console.WriteLine("===============================================================================================");
                     Console.Write("                         └ [ ");
-
-                    // 랜덤 색으로 문자열 표현
-                    Random random = new Random();
-                    string welcomeText = "스파르타 던전에 오신것을 환영합니다";
-                    foreach (char c in welcomeText)
-                    {
-                        Console.ForegroundColor = (ConsoleColor)random.Next(9, 16);
-                        Console.Write(c);
-                    }
-                    Console.ResetColor();  // 색상을 기본값으로 재설정
-
+                    RandomColoredWrite("스파르타 던전에 오신것을 환영합니다");// 랜덤 색으로 문자열 표현
                     Console.WriteLine(" ] ┘                           ");
                     Console.WriteLine("");
 
@@ -142,6 +141,35 @@ namespace RtanTextDungeon
                     //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %#%+++++*###@#@       ");
                     //Console.SetCursorPosition(0, 9);
 
+                    break;
+
+                case AsciiPreset.CreateCharacter:
+                    Console.WriteLine("                                                                         ");
+                    Console.WriteLine("         _   _ _______        __   ____    _    __  __ _____         ");
+                    Console.WriteLine("        | \\ | | ____\\ \\      / /  / ___|  / \\  |  \\/  | ____|        ");
+                    Console.WriteLine("        |  \\| |  _|  \\ \\ /\\ / /  | |  _  / _ \\ | |\\/| |  _|          ");
+                    Console.WriteLine("        | |\\  | |___  \\ V  V /   | |_| |/ ___ \\| |  | | |___         ");
+                    Console.WriteLine("        |_| \\_|_____|  \\_/\\_/     \\____/_/   \\_\\_|  |_|_____|        ");
+                    Console.WriteLine("");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[캐릭터 생성]----------------------------");
+                    Console.ResetColor();
+                    Console.WriteLine("");
+                    break;
+
+
+                case AsciiPreset.SelectClass:
+                    Console.WriteLine("                                                                         ");
+                    Console.WriteLine("         _   _ _______        __   ____    _    __  __ _____         ");
+                    Console.WriteLine("        | \\ | | ____\\ \\      / /  / ___|  / \\  |  \\/  | ____|        ");
+                    Console.WriteLine("        |  \\| |  _|  \\ \\ /\\ / /  | |  _  / _ \\ | |\\/| |  _|          ");
+                    Console.WriteLine("        | |\\  | |___  \\ V  V /   | |_| |/ ___ \\| |  | | |___         ");
+                    Console.WriteLine("        |_| \\_|_____|  \\_/\\_/     \\____/_/   \\_\\_|  |_|_____|        ");
+                    Console.WriteLine("");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[클래스 선택]----------------------------");
+                    Console.ResetColor();
+                    Console.WriteLine("");
                     break;
 
                 case AsciiPreset.Battle:
@@ -186,11 +214,6 @@ namespace RtanTextDungeon
                     Console.WriteLine("");
                     break;
 
-                case AsciiPreset.CreateCharacter:
-                    Console.WriteLine(
-                        ""
-                        );
-                    break;
 
                 case AsciiPreset.PotionInventory:
                     Console.WriteLine("                                                                     ");
@@ -257,18 +280,27 @@ namespace RtanTextDungeon
         }
         #endregion
 
-        public void ColoredWriteLine(string s, ConsoleColor color)
+        public static void ColoredWriteLine(string s, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(s);
             Console.ResetColor();
         }
-        public void ColoredWrite(string s, ConsoleColor color)
+        public static void ColoredWrite(string s, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.Write(s);
             Console.ResetColor();
         }
-
+        public static void RandomColoredWrite(string s)
+        {
+            Random random = new Random();
+            foreach (char c in s)
+            {
+                Console.ForegroundColor = (ConsoleColor)random.Next(9, 16);
+                Console.Write(c);
+            }
+            Console.ResetColor();
+        }
     }
 }
