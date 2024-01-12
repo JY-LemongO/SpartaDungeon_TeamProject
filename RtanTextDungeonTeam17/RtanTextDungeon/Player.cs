@@ -239,9 +239,9 @@ namespace RtanTextDungeon
         }
 
         public virtual string GetClassName() { return "잘못된 접근"; }
-    }    
+    }
 
-
+    #region 하위 직업들
     internal class Warrior : Player
     {
         public Warrior(string name) : base (1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0)
@@ -327,4 +327,5 @@ namespace RtanTextDungeon
 
         public override string GetClassName() { return "무직백수"; }
     }
+    #endregion
 }
