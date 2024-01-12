@@ -93,29 +93,29 @@ namespace RtanTextDungeon
                 {
                     UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
 
-                    Console.WriteLine("이름을 입력하십시오.");
+                    Console.WriteLine("  이름을 입력하십시오.");
                     Console.WriteLine("");
-                    Console.Write(">>> ");
+                    Console.Write("  >>> ");
 
                     name = Console.ReadLine();
                     Console.Clear();
                     if (name == "")
                     {
-                        Console.WriteLine("입력 값이 없습니다.");                        
+                        Console.WriteLine("  입력 값이 없습니다.");                        
                         continue;
                     }
                 }
 
                 UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
 
-                Console.WriteLine($"입력하신 이름은 {name} 입니다.");
+                Console.WriteLine($"  입력하신 이름은 {name} 입니다.");
                 Console.WriteLine("");
 
-                Console.WriteLine("1. 저장");
-                Console.WriteLine("2. 취소");
+                Console.WriteLine("  1. 저장");
+                Console.WriteLine("  2. 취소");
 
                 Console.WriteLine("");
-                Console.Write(">>> ");
+                Console.Write("  >>> ");
 
                 input = Console.ReadLine();
                 Console.Clear();
@@ -127,7 +127,7 @@ namespace RtanTextDungeon
                         name = "";
                         continue;
                     default:                        
-                        Console.WriteLine("올바르지 않은 입력입니다.");
+                        Console.WriteLine("  올바르지 않은 입력입니다.");
                         continue;
                 }
 
@@ -139,15 +139,15 @@ namespace RtanTextDungeon
                 // 직업 선택 영역 구현          
                 UI.AsciiArt(UI.AsciiPreset.SelectClass);
 
-                Console.WriteLine("전직할 클래스를 선택 해 주세요.");
+                Console.WriteLine("  전직할 클래스를 선택 해 주세요.");
                 Console.WriteLine("");
-                Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 1500");
-                Console.WriteLine("2. 궁수 - 공격력: 12, 방어력: 3, 최대 체력: 90, 최대 마나: 100, GOLD: 1500");
-                Console.WriteLine("3. 마법사 - 공격력: 10, 방어력: 4, 최대 체력: 80, 최대 마나: 120, GOLD: 1500");
-                Console.WriteLine("4. 도둑 - 공격력: 11, 방어력: 4, 최대 체력: 80, 최대 마나: 100, GOLD: 1500");
-                Console.WriteLine("5. 무직백수 - 공격력: 6, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 500");
-                Console.WriteLine("");
-                Console.Write(">>> ");
+                Console.WriteLine("  1. 전사 - 공격력: 10, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("  2. 궁수 - 공격력: 12, 방어력: 3, 최대 체력: 90, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("  3. 마법사 - 공격력: 10, 방어력: 4, 최대 체력: 80, 최대 마나: 120, GOLD: 1500");
+                Console.WriteLine("  4. 도둑 - 공격력: 11, 방어력: 4, 최대 체력: 80, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("  5. 무직백수 - 공격력: 6, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 500");
+                Console.WriteLine("  ");
+                Console.Write("  >>> ");
 
                 input = Console.ReadLine();
 
@@ -170,17 +170,19 @@ namespace RtanTextDungeon
                         player = new Deadbeat(name);
                         break;
                     default:
-                        Console.WriteLine("올바르지 않은 입력입니다.");
+                        Console.WriteLine("  올바르지 않은 입력입니다.");
                         continue;
                 }
 
                 UI.AsciiArt(UI.AsciiPreset.SelectClass);
-                Console.WriteLine($"선택하신 직업은 [{player.GetClassName()}] 입니다.");
+                Console.WriteLine($"  선택하신 직업은 [{player.GetClassName()}] 입니다.");
+                Console.WriteLine("");
 
-                Console.WriteLine("1. 저장");
-                Console.WriteLine("2. 취소");
+                Console.WriteLine("  1. 저장");
+                Console.WriteLine("  2. 취소");
+                Console.WriteLine("");
 
-                Console.Write("");
+                Console.Write("  >>> ");
 
                 input = Console.ReadLine();
                 Console.Clear();
@@ -192,7 +194,7 @@ namespace RtanTextDungeon
                         player = null;
                         continue;
                     default:
-                        Console.WriteLine("올바르지 않은 입력입니다.");
+                        Console.WriteLine("  올바르지 않은 입력입니다.");
                         continue;
                 }
 
@@ -221,14 +223,18 @@ namespace RtanTextDungeon
 
                 Console.WriteLine("");
                 Console.WriteLine("");
+                Console.WriteLine("  .=================================.\n");
+                Console.WriteLine("");
                 Console.WriteLine($"    Lv. {player.Lv.ToString("00")}\n\n" +
                                 $"    이름\t:  {player.Name}({player.m_Class})\n\n" +
                                 //$"    레벨\t:  Lv. {player.Lv.ToString("00")}\n" +
                                 $"    공격력\t:  {player.Atk} {weaponStatus + amuletATK}\n" +
                                 $"    방어력\t:  {player.Def} {armorStatus + amuletDEF}\n" +
-                                $"    체 력\t:  {player.Hp} / {player.MaxHp}\n\n" +
+                                $"    체  력\t:  {player.Hp} / {player.MaxHp}\n\n" +
                                 $"    Gold\t:  {player.Gold:N0} G\n");
 
+                Console.WriteLine("");
+                Console.WriteLine("  '================================='\n");
                 Console.WriteLine("");
                 Console.WriteLine("");
 
@@ -252,7 +258,7 @@ namespace RtanTextDungeon
                     case "b":                        
                         return;
                     default:
-                        alertMsg = "!잘못된 입력입니다!";
+                        alertMsg = "잘못된 입력입니다!";
                         break;
                 }
             }
@@ -326,7 +332,7 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            alertMsg = "!!!잘못된 입력입니다!!!";
+                            alertMsg = "잘못된 입력입니다!";
                         }
                         break;
                 }
@@ -400,7 +406,7 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            alertMsg = "!!!잘못된 입력입니다!!!";
+                            alertMsg = "잘못된 입력입니다!";
                         }
                         break;
                 }
@@ -422,30 +428,33 @@ namespace RtanTextDungeon
             {
                 Console.Clear();
 
+                UI.AsciiArt(UI.AsciiPreset.DungeonEntrance2);
+                if (status) UI.AsciiArt(UI.AsciiPreset.DungeonEntrance3);
                 UI.AsciiArt(UI.AsciiPreset.DungeonEntrance);
 
-                Console.WriteLine("=================================\n");
+                Console.WriteLine("  .=============================.\n");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 if (!status)
-                    Console.WriteLine("(E) : ▶ 내 정보\n");
+                    Console.WriteLine("  (E) : ▶ 내 정보\n");
                 else
                 {
-                    Console.WriteLine("(E) : ▼ 내 정보");
-                    Console.WriteLine($"{player.Name} Lv. {player.Lv.ToString("00")}\n\n" +
-                                $"공격력\t:  {player.Atk}\n" +
-                                $"방어력\t:  {player.Def}\n" +
-                                $"체 력\t:  {player.Hp}\n" +
-                                $"Gold\t:  {player.Gold:N0} G\n");
+                    Console.WriteLine("  (E) : ▼ 내 정보");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"\n    Lv. {player.Lv.ToString("00")}\t{player.Name}\n\n" +
+                                $"    공격력\t:  {player.Atk}\n" +
+                                $"    방어력\t:  {player.Def}\n" +
+                                $"    체  력\t:  {player.Hp}\n" +
+                                $"    Gold\t:  {player.Gold:N0} G\n");
                 }
                 Console.ResetColor();
-                Console.WriteLine("=================================\n");
+                Console.WriteLine("  '============================='\n");
 
                 if (!choiceFloorPanel)
                 {
-                    Console.WriteLine("" +
-                    $"(1) 전투 시작 (현재 진행 : {DungeonInfo.HighestFloor}층)\n" +
-                    $"(2) 다른 층 선택\n" +
-                    "(B) 마을로 돌아가기\n");
+                    Console.WriteLine("\n" +
+                    $"  (1) 전투 시작 (현재 진행 : {DungeonInfo.HighestFloor}층)\n\n" +
+                    $"  (2) 다른 층 선택\n\n" +
+                    "  (B) 마을로 돌아가기\n\n");
                 }
                 else
                 {                    
@@ -454,12 +463,10 @@ namespace RtanTextDungeon
                     Console.WriteLine("(0) 취소\n");
                 }
 
-                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.ForegroundColor = ConsoleColor.Red;
                 if (hpZero)
-                Console.WriteLine("체력이 없습니다. 여관에서 휴식을 취하세요.\n");
+                Console.WriteLine("  체력이 없습니다. 여관에서 휴식을 취하세요.\n");
                 Console.ResetColor();
-
-                Console.WriteLine("---------------------------------");
 
                 string input = UI.UserInput(alertMsg);
                 alertMsg = "";
@@ -505,7 +512,7 @@ namespace RtanTextDungeon
                             choiceFloorPanel = false;
                         else
                         {
-                            alertMsg = "!!!잘못된 입력입니다!!!";
+                            alertMsg = "잘못된 입력입니다!";
                         }
                         break;
                     case "E":
@@ -536,7 +543,7 @@ namespace RtanTextDungeon
                                 }                                    
                             }
                         }
-                        alertMsg = "!!!잘못된 입력입니다!!!";
+                        alertMsg = "잘못된 입력입니다!";
                         break;
                 }
             }
@@ -608,7 +615,7 @@ namespace RtanTextDungeon
                                 return;
                             break;
                         default:
-                            alertMsg = "!!!잘못된 입력입니다!!!";
+                            alertMsg = "잘못된 입력입니다!";
                             continue;
                     }
                 }
@@ -657,7 +664,7 @@ namespace RtanTextDungeon
                                 break;
                             }
                             else
-                                alertMsg = "!!!잘못된 입력입니다!!!";
+                                alertMsg = "잘못된 입력입니다!";
                             continue;
                     }
                 }
@@ -754,7 +761,7 @@ namespace RtanTextDungeon
                     Console.WriteLine("대상을 선택해주세요.\n");
 
                     if (invalid)
-                        alertMsg = "!!!잘못된 입력입니다!!!";
+                        alertMsg = "잘못된 입력입니다!";
 
                     string input = UI.UserInput(alertMsg, isAlertPositive);
                     alertMsg = "";
@@ -1068,20 +1075,23 @@ namespace RtanTextDungeon
                 Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($" {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 {potion.Name} : {potion.count}개)");
+                    Console.WriteLine($"  {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다.");
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    UI.ColoredWriteLine($"  [ 남은 {potion.Name} : {potion.count} 개 ]", ConsoleColor.Yellow);
                 }
                 else
                 {
-                    Console.WriteLine(" 게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
+                    Console.WriteLine("  게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
                 }
 
                 Console.WriteLine("");
-                UI.ColoredWriteLine($" [현재 체력 : {player.Hp}]\n", ConsoleColor.Yellow);
+                UI.ColoredWriteLine($"  [ 현재 체력 : {player.Hp} / {player.MaxHp} ]\n", ConsoleColor.Green);
                 Console.WriteLine("");
-                Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
-                Console.WriteLine(" (0) : 나가기");
+                Console.WriteLine("  (P) : [사용]");
                 Console.WriteLine("");
+                Console.WriteLine("  (B) : [마을로 돌아가기]");
                 Console.WriteLine("");
 
                 string input = UI.UserInput(alertMsg, isAlertPositive);
@@ -1092,9 +1102,10 @@ namespace RtanTextDungeon
 
                 switch (input)
                 {
-                    case "1":
+                    case "P":
+                    case "p":
 
-                        if(potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
+                        if (potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
                         {
                             alertMsg = "게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
                             break;
@@ -1107,16 +1118,21 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                            if (player.Hp == player.MaxHp)
+                            {
+                                alertMsg = $"이미 컨디션이 최상입니다!";
+                                isAlertPositive = true;
+                            }
                             if (potion.count <= 0) alertMsg = $"현재 소지한 {potion.Name}이 없습니다.";
                         }
                         break;
 
-                    case "0":
+                    case "B":
+                    case "b":
                         return;
 
                     default:
-                        alertMsg = "!잘못된 입력입니다!";
+                        alertMsg = "잘못된 입력입니다!";
                         break;
                 }
 
@@ -1140,26 +1156,39 @@ namespace RtanTextDungeon
                 Console.Clear();
                 UI.AsciiArt(UI.AsciiPreset.Inn);
 
-                Console.WriteLine($"500 G 를 지불하시면 체력을 회복할 수 있습니다. (보유골드 : {player.Gold} G)");
-                UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
+                Console.WriteLine($"  500 G 를 지불하시면 체력을 회복할 수 있습니다.");
+                Console.WriteLine();
+                Console.WriteLine();
+                UI.ColoredWriteLine($"  [ 보유골드 : {player.Gold} G ]",ConsoleColor.Yellow);
+                Console.WriteLine();
+                UI.ColoredWriteLine($"  [ 현재 체력 : {player.Hp} / {player.MaxHp} ]\n", ConsoleColor.Green);
+                Console.WriteLine();
+                Console.WriteLine();
                 if (rest)
                 {
                     if (fullCondition)
-                        UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
+                    {
+                        //UI.ColoredWriteLine($"  이미 컨디션이 최상입니다!\n", ConsoleColor.Green);
+                        alertMsg = "이미 컨디션이 최상입니다!";
+                        isAlertPositive = true;
+                    }
                     else
                     {
                         if (canRest)
                         {
-                            UI.ColoredWriteLine($"회복되었습니다!\n", ConsoleColor.Green);
+                            //UI.ColoredWriteLine($"  회복되었습니다!\n", ConsoleColor.Green);
+                            alertMsg = "회복되었습니다!";
                             fullCondition = true;
                         }
                         else
-                            UI.ColoredWriteLine($"숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
+                        {
+                            //UI.ColoredWriteLine($"  숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
+                            alertMsg = "숙박 비용이 모자랍니다!";
+                        }
                     }
                 }
 
-                Console.WriteLine("(R) : [휴식]\n\n(B) : [마을로 돌아가기]\n");
-                Console.WriteLine("");
+                Console.WriteLine("  (R) : [휴식]\n\n  (B) : [마을로 돌아가기]\n");
 
                 string input = UI.UserInput(alertMsg, isAlertPositive);
                 alertMsg = "";
@@ -1182,7 +1211,7 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
-                        alertMsg = "!!!잘못된 입력입니다!!!";
+                        alertMsg = "잘못된 입력입니다!";
                         break;
                 }
             }

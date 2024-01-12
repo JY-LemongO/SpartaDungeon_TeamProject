@@ -43,6 +43,8 @@ namespace RtanTextDungeon
             Inventory,
             Shop,
             DungeonEntrance,
+            DungeonEntrance2,
+            DungeonEntrance3,
             Inn,
 
         }
@@ -53,6 +55,8 @@ namespace RtanTextDungeon
         public static void AsciiArt(AsciiPreset preset)
         {
             ConsoleColor statusColor = ConsoleColor.Gray;
+
+            int x, y;
 
             switch (preset)
             {
@@ -260,6 +264,30 @@ namespace RtanTextDungeon
                     Console.WriteLine("");
                     break;
 
+                case AsciiPreset.DungeonEntrance2:
+                    x = 39; y = 13;
+                    DrawOnSpecificPos("" +
+                        "        ______\n" +
+                        "       /     /\\\n" +
+                        "      /     /  \\\n" +
+                        "     /_____/----\\_    (  \n" +
+                        "    \"     \"          ).  \n" +
+                        "   _ ___          o (:') o   \n" +
+                        "  (@))_))        o ~/~~\\~ o   \n" +
+                        "                  o  o  o",
+                        x, y);
+                    break;
+
+                case AsciiPreset.DungeonEntrance3:
+                    x = 41; y = 25;
+                    DrawOnSpecificPos("" +
+                        "      |\\      _,,,---,,_\n" +
+                        "ZZZzz /,`.-'`'    -.  ;-;;,_\n" +
+                        "     |,4-  ) )-,_. ,\\ (  `'-'\n" +
+                        "    '---''(_/--'  `-'\\_)\n",
+                        x, y);
+                    break;
+
                 case AsciiPreset.Inn:
 
                     Console.WriteLine("");
@@ -304,6 +332,25 @@ namespace RtanTextDungeon
                 Console.Write(c);
             }
             Console.ResetColor();
+        }
+
+        public static void DrawOnSpecificPos(string s, int xInput, int yInput)
+        {
+            // 커서 위치를 저장해두어, Draw가 끝나면 커서 위치를 원상복귀
+            int ySave = Console.CursorTop;
+            int xSave = Console.CursorLeft;
+
+            int x = xInput;
+            int y = yInput;
+
+            string[] lines = s.Split('\n');
+            foreach (string line in lines)
+            {
+                Console.SetCursorPosition(x, y);
+                Console.Write(line);
+                y++;
+            }
+            Console.SetCursorPosition(xSave, ySave);
         }
     }
 }
