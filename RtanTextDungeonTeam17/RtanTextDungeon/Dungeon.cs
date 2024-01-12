@@ -560,6 +560,7 @@ namespace RtanTextDungeon
                     Console.WriteLine("1. 공격\n");
                     Console.WriteLine("2. 스킬\n");
                     Console.WriteLine("3. 회복\n");
+                    Console.WriteLine("0. 도망친다!\n");
 
                     string input = UI.UserInput(alertMsg, isAlertPositive);
                     alertMsg = "";
@@ -577,6 +578,9 @@ namespace RtanTextDungeon
                             break;
                         case "3":
                             isUseItem = true; //회복 화면으로
+                            break;
+                        case "0":
+                            Run();
                             break;
                         default:
                             alertMsg = "!!!잘못된 입력입니다!!!";
@@ -669,14 +673,11 @@ namespace RtanTextDungeon
                             alertMsg = "잘못된 입력입니다.";
                             continue;
                     }
-
                 }
-
                 if (monsters.All(x => x.IsDead) || player.Hp <= 0)
                     return;
             }                   
         }
-
 
         private void Fight(Monster[] monsters, int startHp, int skillNum)
         {            
@@ -702,8 +703,7 @@ namespace RtanTextDungeon
                 Console.WriteLine("=============[몬스터 목록]============\n");
                 for (int i = 0; i < monsters.Length; i++)
                     monsters[i].ShowText(i + 1);
-                Console.WriteLine("\n======================================\n");                
-
+                Console.WriteLine("\n======================================\n");
 
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
@@ -779,6 +779,11 @@ namespace RtanTextDungeon
 
                 return;
             }            
+        }
+
+        private void Run()
+        {
+            //ToDo 확률 적으로 도망성공, 실패 시 데미지 받음
         }
         #endregion
 
@@ -924,8 +929,6 @@ namespace RtanTextDungeon
         // 레벨업 기능 구현
         public void LevelCal(Monster[] monsters, Player player)
         {
-            
-        
             foreach(Monster monster in monsters)
             {
                 player.Point += monster.Lv;
@@ -946,8 +949,7 @@ namespace RtanTextDungeon
             else if (player.Point >= 100)
             {
                 player.Lv = 5;
-            }
-            
+            }            
         }
 
         private void Victory(int monsterCount, int startHp, Monster[] monsters)
