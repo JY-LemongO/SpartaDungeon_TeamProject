@@ -92,8 +92,11 @@ namespace RtanTextDungeon
             {   
                 if(name == "")
                 {
-                    Console.WriteLine("===== 캐릭터 생성 =====");
+                    UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
+
                     Console.WriteLine("이름을 입력하십시오.");
+                    Console.WriteLine("");
+                    Console.Write(">>> ");
 
                     name = Console.ReadLine();
                     Console.Clear();
@@ -101,15 +104,18 @@ namespace RtanTextDungeon
                     {
                         Console.WriteLine("입력 값이 없습니다.");                        
                         continue;
-                    }                                   
+                    }
                 }
-                Console.WriteLine("===== 캐릭터 생성 =====");
+
+                UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
+
                 Console.WriteLine($"입력하신 이름은 {name} 입니다.");
 
                 Console.WriteLine("1. 저장");
                 Console.WriteLine("2. 취소");
 
-                Console.Write("");
+                Console.WriteLine("");
+                Console.Write(">>> ");
 
                 input = Console.ReadLine();
                 Console.Clear();
@@ -126,9 +132,14 @@ namespace RtanTextDungeon
                 }
 
                 Console.Clear();
-                Console.WriteLine("===== 캐릭터 생성 =====");
+
+                UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
+
                 Console.WriteLine($"이름 : {name}");
-                Console.ReadLine();
+
+                Console.WriteLine("");
+                Console.Write(">>> 다음으로... ");
+                Console.ReadKey();
                 Console.Clear();
 
                 break;
@@ -137,14 +148,20 @@ namespace RtanTextDungeon
             while (true)
             {
                 // 직업 선택 영역 구현                
-                Console.WriteLine("===== 캐릭터 직업 선택 =====");
+
+                UI.AsciiArt(UI.AsciiPreset.SelectClass);
+
+                Console.WriteLine("전직할 클래스를 선택 해 주세요.");
+                Console.WriteLine("");
                 Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 체력: 100, Max체력: 100, GOLD: 1500");
                 Console.WriteLine("2. 궁수 - 공격력: 13, 방어력: 3, 체력: 70, Max체력: 70, GOLD: 2500");
                 Console.WriteLine("3. 마법사 - 공격력: 3, 방어력: 13, 체력: 80, Max체력: 80, GOLD: 3500");
                 Console.WriteLine("4. 도둑 - 공격력: 2, 방어력: 3, 체력: 120, Max체력: 120, GOLD: 5500");
+                Console.WriteLine("");
+                Console.Write(">>> ");
 
-                Console.Write("");
                 input = Console.ReadLine();
+
                 Console.Clear();// 콘솔 화면 한 번 지우기
                 switch (input)
                 {
