@@ -33,13 +33,7 @@ namespace RtanTextDungeon
 
         }
 
-        public void Use(Player player, Monster monster)
-        {
-            //플레이어 MP 소모
-            player.Mp -= Cost;
-            //몬스터 피격
-            monster.GetDamage(player.Atk * AtkMultiplier);
-        }
+        
 
         public int UseSkill(int originDamage)
         {
