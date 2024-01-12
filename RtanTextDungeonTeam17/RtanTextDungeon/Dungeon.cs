@@ -85,6 +85,7 @@ namespace RtanTextDungeon
         {
             string name = string.Empty;
             string input = string.Empty;
+            string className = string.Empty;
 
             while(true)
             {   
@@ -130,32 +131,21 @@ namespace RtanTextDungeon
                         continue;
                 }
 
-                Console.Clear();
-
-                UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
-
-                Console.WriteLine($"이름 : {name}");
-
-                Console.WriteLine("");
-                Console.Write(">>> 다음으로... ");
-                Console.ReadKey();
-                Console.Clear();
-
                 break;
             }
 
             while (true)
             {
-                // 직업 선택 영역 구현                
-
+                // 직업 선택 영역 구현          
                 UI.AsciiArt(UI.AsciiPreset.SelectClass);
 
                 Console.WriteLine("전직할 클래스를 선택 해 주세요.");
                 Console.WriteLine("");
-                Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 체력: 100, Max체력: 100, GOLD: 1500");
-                Console.WriteLine("2. 궁수 - 공격력: 13, 방어력: 3, 체력: 70, Max체력: 70, GOLD: 2500");
-                Console.WriteLine("3. 마법사 - 공격력: 3, 방어력: 13, 체력: 80, Max체력: 80, GOLD: 3500");
-                Console.WriteLine("4. 도둑 - 공격력: 2, 방어력: 3, 체력: 120, Max체력: 120, GOLD: 5500");
+                Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("2. 궁수 - 공격력: 12, 방어력: 3, 최대 체력: 90, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("3. 마법사 - 공격력: 10, 방어력: 4, 최대 체력: 80, 최대 마나: 120, GOLD: 1500");
+                Console.WriteLine("4. 도둑 - 공격력: 11, 방어력: 4, 최대 체력: 80, 최대 마나: 100, GOLD: 1500");
+                Console.WriteLine("5. 무직백수 - 공격력: 6, 방어력: 5, 최대 체력: 100, 최대 마나: 100, GOLD: 500");
                 Console.WriteLine("");
                 Console.Write(">>> ");
 
@@ -165,24 +155,52 @@ namespace RtanTextDungeon
                 switch (input)
                 {
                     case "1":
-                        player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0);
+                        player = new Warrior(name);
                         break;
                     case "2":
-                        player = new Player(1, name, PlayerClass.Archer, 13, 3, 70, 70, 2500, 0);
+                        player = new Archer(name);
                         break;
                     case "3":
-                        player = new Player(1, name, PlayerClass.Magic, 3, 13, 80, 80, 3500, 0);
+                        player = new Magic(name);
                         break;
                     case "4":
-                        player = new Player(1, name, PlayerClass.Thief, 2, 3, 120, 120, 5500, 0);
+                        player = new Thief(name);
+                        break;
+                    case "5":
+                        player = new Deadbeat(name);
                         break;
                     default:
                         Console.WriteLine("올바르지 않은 입력입니다.");
                         continue;
                 }
 
+                UI.AsciiArt(UI.AsciiPreset.SelectClass);
+                Console.WriteLine($"선택하신 직업은 [{player.GetClassName()}] 입니다.");
+
+                Console.WriteLine("1. 저장");
+                Console.WriteLine("2. 취소");
+
+                Console.Write("");
+
+                input = Console.ReadLine();
+                Console.Clear();
+                switch (input)
+                {
+                    case "1":
+                        break;
+                    case "2":
+                        player = null;
+                        continue;
+                    default:
+                        Console.WriteLine("올바르지 않은 입력입니다.");
+                        continue;
+                }
+
                 break;
+
             }
+
+
         }
         #endregion
 

@@ -14,6 +14,7 @@ namespace RtanTextDungeon
             Archer,
             Magic,
             Thief,
+            Deadbeat,
         }
 
         public enum ItemType
