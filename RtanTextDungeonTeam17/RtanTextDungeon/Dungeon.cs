@@ -528,6 +528,7 @@ namespace RtanTextDungeon
             bool invalid = false;
 
             bool isSkillShow = false;
+            bool isManaLack = false;
             bool isUseItem = false;
 
             string alertMsg = "";
@@ -551,7 +552,8 @@ namespace RtanTextDungeon
                 Console.WriteLine($"\n" +
                     $"[내정보]\n" +
                     $"Lv.{player.Lv}\t{player.Name}\n" +
-                    $"HP {player.Hp}/{player.MaxHp}\n\n");
+                    $"HP {player.Hp}/{player.MaxHp}\n" +
+                    $"MP {player.Mp}/{player.MaxMp}\n\n");
                 
                 if(!(isSkillShow||isUseItem))
                 {
@@ -589,6 +591,14 @@ namespace RtanTextDungeon
                         player.Skills[i].ShowText();
                     }
                     Console.WriteLine("0. 취소\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+
+                    if (invalid)
+                        Console.WriteLine("잘못된 입력입니다.");
+                    if(isManaLack)
+                        Console.WriteLine("마나가 부족합니다.");
+                    invalid = false;
+                    isManaLack = false;
 
                     string input = UI.UserInput(alertMsg, isAlertPositive);
                     alertMsg = "";
@@ -606,6 +616,12 @@ namespace RtanTextDungeon
                             //입력 값이 (숫자 and 1 이상 and 스킬 개수 이하) 인 경우
                             if (int.TryParse(input,out skillNum) && skillNum >= 1 && (skillNum - 1) < player.Skills.Count)
                             {
+                                if (!player.Skills[skillNum-1].IsAvailable())
+                                {
+                                    isManaLack = true;
+                                    continue;
+                                }
+                                    
                                 // Fight 메서드에 스킬 넘버(1~N) 전달
                                 Fight(monsters, startHp, skillNum);
                                 isSkillShow = false;
@@ -667,9 +683,8 @@ namespace RtanTextDungeon
             bool invalid = false;    
 
             bool isMultiTarget = false; // 선택한 스킬이 다중 타격인지
-            if(skillNum > 0)
-                if (player.Skills[skillNum-1].NumberTargets > 1)
-                    isMultiTarget = true;
+            if (skillNum > 0 && player.Skills[skillNum-1].NumberTargets > 1) // 
+                isMultiTarget = true;
 
             string alertMsg = "";
             bool isAlertPositive = false;
@@ -773,11 +788,11 @@ namespace RtanTextDungeon
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             int damage;
-            if(skillNum <= 0)
+            if (skillNum <= 0)
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
-                damage = (player.Atk * player.Skills[skillNum-1].AtkMultiplier) + new Random().Next(-error, error + 1);
-
+                damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1)); 
+            
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
 
@@ -806,8 +821,9 @@ namespace RtanTextDungeon
             Random random = new Random();
 
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            //무조건 데미지에 스킬의 배수를 곱해줌
-            int damage = (player.Atk * player.Skills[skillNum - 1].AtkMultiplier) + new Random().Next(-error, error + 1);
+            
+            int damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
+
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
 
@@ -815,7 +831,6 @@ namespace RtanTextDungeon
             int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
 
             // 다중 공격 타겟 수가 살아있는 몬스터 수 이상일 때
-
             if (TargetNum >= MonsterNum)
             {
                 UI.AsciiArt(UI.AsciiPreset.Battle);
@@ -843,7 +858,8 @@ namespace RtanTextDungeon
             {
                 // => 다중 공격 타겟 수만큼 랜덤으로 공격
 
-                Monster[] shuffledMonsters = monsters.ToArray();    //원본 보존을 위한 임시 배열
+                //임시 배열에 몬스터 복제하고 셔플
+                Monster[] shuffledMonsters = monsters.ToArray();  
                 for(int i = shuffledMonsters.Length - 1; i > 0; i--)
                 {
                     int j = random.Next(0, i + 1);
@@ -854,6 +870,7 @@ namespace RtanTextDungeon
 
                 UI.AsciiArt(UI.AsciiPreset.Battle);
 
+                //살아있는 몬스터 중에 다중 공격 타겟 수 만큼 순회
                 foreach (Monster monster in shuffledMonsters.Where(x => !x.IsDead).Take(TargetNum))
                 {
                     string prevHp = monster.Hp.ToString();
