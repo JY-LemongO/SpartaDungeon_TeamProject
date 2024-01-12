@@ -868,7 +868,6 @@ namespace RtanTextDungeon
             int TargetNum = player.Skills[skillNum - 1].NumberTargets;  // 스킬로 공격할 몬스터 수
 
             // 다중 공격 타겟 수가 살아있는 몬스터 수 이상일 때
-
             if (TargetNum >= MonsterNum)
             {
                 
@@ -926,7 +925,6 @@ namespace RtanTextDungeon
 
                     Console.ReadLine();
                 }
-
             }
         }
 
