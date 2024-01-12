@@ -36,7 +36,7 @@ namespace RtanTextDungeon
             {
                 UI.AsciiArt(UI.AsciiPreset.MainMenu);
 
-                Console.WriteLine(" (E) : [상태]\n\n (I) : [인벤토리]\n\n (S) : [상점]\n\n (D) : [던전입장]\n\n (P) : [회복아이템]\n\n (R) : [휴식]\n\n (X) : [게임종료]\n");
+                Console.WriteLine("  (E) : [상태]\n\n  (I) : [인벤토리]\n\n  (S) : [상점]\n\n  (D) : [던전입장]\n\n  (P) : [회복아이템]\n\n  (R) : [휴식]\n\n  (X) : [게임종료]\n");
                 
                 string input = UI.UserInput(alertMsg);
                 alertMsg = "";
@@ -110,6 +110,7 @@ namespace RtanTextDungeon
                 UI.AsciiArt(UI.AsciiPreset.CreateCharacter);
 
                 Console.WriteLine($"입력하신 이름은 {name} 입니다.");
+                Console.WriteLine("");
 
                 Console.WriteLine("1. 저장");
                 Console.WriteLine("2. 취소");
@@ -202,16 +203,20 @@ namespace RtanTextDungeon
 
                 UI.AsciiArt(UI.AsciiPreset.Status);
 
-                Console.WriteLine("-------------------------------------------\n");
-                Console.WriteLine($"Lv. {player.Lv.ToString("00")}\n" +
-                                $"이름\t:  {player.Name}({player.m_Class})\n\n" +
-                                $"공격력\t:  {player.Atk} {weaponStatus + amuletATK}\n" +
-                                $"방어력\t:  {player.Def} {armorStatus + amuletDEF}\n" +
-                                $"체 력\t:  {player.Hp}\n" +
-                                $"Gold\t:  {player.Gold:N0} G\n");
-                Console.WriteLine("-------------------------------------------\n");
+                Console.WriteLine("");
+                Console.WriteLine("");
+                Console.WriteLine($"    Lv. {player.Lv.ToString("00")}\n\n" +
+                                $"    이름\t:  {player.Name}({player.m_Class})\n\n" +
+                                //$"    레벨\t:  Lv. {player.Lv.ToString("00")}\n" +
+                                $"    공격력\t:  {player.Atk} {weaponStatus + amuletATK}\n" +
+                                $"    방어력\t:  {player.Def} {armorStatus + amuletDEF}\n" +
+                                $"    체 력\t:  {player.Hp} / {player.MaxHp}\n\n" +
+                                $"    Gold\t:  {player.Gold:N0} G\n");
 
-                Console.WriteLine("(I) : [인벤토리]\n\n(S) : [상점]\n\n(B) : [마을로 돌아가기]\n\n");
+                Console.WriteLine("");
+                Console.WriteLine("");
+
+                Console.WriteLine("  (I) : [인벤토리]\n\n  (S) : [상점]\n\n  (B) : [마을로 돌아가기]\n");
 
                 string input = UI.UserInput(alertMsg);
                 alertMsg = "";
