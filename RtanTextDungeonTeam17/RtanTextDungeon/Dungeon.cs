@@ -861,13 +861,11 @@ namespace RtanTextDungeon
 
             Console.WriteLine($"{player.Name} 의 공격!\n" +
             $"\n" +
-            $"{monster.Name} {(isDodged? "은(는) 공격을 피했습니다!": "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
+            $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
             $"\n" +
-            $"{monster.Name}\n" +
-            $"HP {prevHp} -> {currentHp}\n" +
-            $"\n" +
-            $"계속\n" +
-            $"\n");
+            $"{monster.Name}\n");
+            UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+            Console.WriteLine("\n계속\n");
 
             Console.ReadLine();
         }
@@ -898,15 +896,14 @@ namespace RtanTextDungeon
                     string prevHp = monster.Hp.ToString();
                     monster.GetDamage(damage);
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
-                                       
+
                     Console.WriteLine($"{player.Name} 의 공격!\n" +
                         $"\n" +
                         $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
-                        $"{monster.Name}\n" +
-                        $"HP {prevHp} -> {currentHp}\n" +
-                        $"\n" +
-                        $"\n");
+                        $"{monster.Name}\n");
+                    UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+                    Console.WriteLine("\n계속\n");
 
                     Console.ReadLine();
                 }
@@ -938,10 +935,9 @@ namespace RtanTextDungeon
                         $"\n" +
                         $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
-                        $"{monster.Name}\n" +
-                        $"HP {prevHp} -> {currentHp}\n" +
-                        $"\n" +
-                        $"\n");
+                        $"{monster.Name}\n");
+                    UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+                    Console.WriteLine("\n계속\n");
 
                     Console.ReadLine();
                 }
@@ -967,8 +963,8 @@ namespace RtanTextDungeon
                     Console.WriteLine($"{monster.Name} 의 공격!\n" +
                     $"{player.Name} 을(를) 맞췄습니다. [받은 데미지 : {applyDmg}] [데미지 경감 : {reduceDmg}]\n" +
                     $"\n" +
-                    $"{player.Name}\n" +
-                    $"HP {prevHp} -> {player.Hp}");
+                    $"{player.Name}\n");
+                    UI.ColoredWriteLine($"HP {prevHp} -> {player.Hp}",ConsoleColor.Red);
                     
                     Console.ReadLine();
                 }                    
