@@ -1050,19 +1050,23 @@ namespace RtanTextDungeon
                 Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
                 if (potion != null)
                 {
-                    Console.WriteLine($" {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다. (남은 {potion.Name} : {potion.count}개)");
+                    Console.WriteLine($"  {potion.Name}을 사용하면 체력을 {potion.heal} 회복 할 수 있습니다.");
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    UI.ColoredWriteLine($"  [ 남은 {potion.Name} : {potion.count} 개 ]", ConsoleColor.Yellow);
                 }
                 else
                 {
-                    Console.WriteLine(" 게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
+                    Console.WriteLine("  게임에 포션이 구현되지 않아 갯수를 표시 할 수 없습니다.");
                 }
 
                 Console.WriteLine("");
-                UI.ColoredWriteLine($" [현재 체력 : {player.Hp}]\n", ConsoleColor.Yellow);
+                UI.ColoredWriteLine($"  [ 현재 체력 : {player.Hp} / {player.MaxHp} ]\n", ConsoleColor.Green);
                 Console.WriteLine("");
-                Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
-                Console.WriteLine(" (0) : 나가기");
+                Console.WriteLine("  (P) : [사용]");
+                Console.WriteLine("");
+                Console.WriteLine("  (B) : [마을로 돌아가기]");
                 Console.WriteLine("");
                 Console.WriteLine("");
 
@@ -1074,9 +1078,10 @@ namespace RtanTextDungeon
 
                 switch (input)
                 {
-                    case "1":
+                    case "P":
+                    case "p":
 
-                        if(potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
+                        if (potion == null) // shop.items 배열에 Potion 객체가 존재하지 않을 경우
                         {
                             alertMsg = "게임에 포션이 구현되지 않아 사용 할 수 없습니다.";
                             break;
@@ -1089,12 +1094,17 @@ namespace RtanTextDungeon
                         }
                         else
                         {
-                            if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                            if (player.Hp == player.MaxHp)
+                            {
+                                alertMsg = $"체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                                isAlertPositive = true;
+                            }
                             if (potion.count <= 0) alertMsg = $"현재 소지한 {potion.Name}이 없습니다.";
                         }
                         break;
 
-                    case "0":
+                    case "B":
+                    case "b":
                         return;
 
                     default:
@@ -1122,26 +1132,39 @@ namespace RtanTextDungeon
                 Console.Clear();
                 UI.AsciiArt(UI.AsciiPreset.Inn);
 
-                Console.WriteLine($"500 G 를 지불하시면 체력을 회복할 수 있습니다. (보유골드 : {player.Gold} G)");
-                UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
+                Console.WriteLine($"  500 G 를 지불하시면 체력을 회복할 수 있습니다.");
+                Console.WriteLine();
+                Console.WriteLine();
+                UI.ColoredWriteLine($"  [ 보유골드 : {player.Gold} G ]",ConsoleColor.Yellow);
+                Console.WriteLine();
+                UI.ColoredWriteLine($"  [ 현재 체력 : {player.Hp} / {player.MaxHp} ]\n", ConsoleColor.Green);
+                Console.WriteLine();
+                Console.WriteLine();
                 if (rest)
                 {
                     if (fullCondition)
-                        UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
+                    {
+                        //UI.ColoredWriteLine($"  이미 컨디션이 최상입니다!\n", ConsoleColor.Green);
+                        alertMsg = "이미 컨디션이 최상입니다!";
+                        isAlertPositive = true;
+                    }
                     else
                     {
                         if (canRest)
                         {
-                            UI.ColoredWriteLine($"회복되었습니다!\n", ConsoleColor.Green);
+                            //UI.ColoredWriteLine($"  회복되었습니다!\n", ConsoleColor.Green);
+                            alertMsg = "회복되었습니다!";
                             fullCondition = true;
                         }
                         else
-                            UI.ColoredWriteLine($"숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
+                        {
+                            //UI.ColoredWriteLine($"  숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
+                            alertMsg = "숙박 비용이 모자랍니다!";
+                        }
                     }
                 }
 
-                Console.WriteLine("(R) : [휴식]\n\n(B) : [마을로 돌아가기]\n");
-                Console.WriteLine("");
+                Console.WriteLine("  (R) : [휴식]\n\n  (B) : [마을로 돌아가기]\n");
 
                 string input = UI.UserInput(alertMsg, isAlertPositive);
                 alertMsg = "";
@@ -1164,7 +1187,7 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
-                        alertMsg = "!!!잘못된 입력입니다!!!";
+                        alertMsg = "잘못된 입력입니다!";
                         break;
                 }
             }
