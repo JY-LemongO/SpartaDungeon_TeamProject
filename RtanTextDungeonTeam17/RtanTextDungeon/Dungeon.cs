@@ -1086,7 +1086,6 @@ namespace RtanTextDungeon
                 Console.WriteLine("");
                 Console.WriteLine("  (B) : [마을로 돌아가기]");
                 Console.WriteLine("");
-                Console.WriteLine("");
 
                 string input = UI.UserInput(alertMsg, isAlertPositive);
                 alertMsg = "";
@@ -1114,7 +1113,7 @@ namespace RtanTextDungeon
                         {
                             if (player.Hp == player.MaxHp)
                             {
-                                alertMsg = $"체력이 이미 모두 회복되어 {potion.Name}을 사용 할 수 없습니다.";
+                                alertMsg = $"이미 컨디션이 최상입니다!";
                                 isAlertPositive = true;
                             }
                             if (potion.count <= 0) alertMsg = $"현재 소지한 {potion.Name}이 없습니다.";
