@@ -149,16 +149,16 @@ namespace RtanTextDungeon
                 switch (input)
                 {
                     case "1":
-                        player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500);
+                        player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0);
                         break;
                     case "2":
-                        player = new Player(1, name, PlayerClass.Archer, 13, 3, 70, 70, 2500);
+                        player = new Player(1, name, PlayerClass.Archer, 13, 3, 70, 70, 2500, 0);
                         break;
                     case "3":
-                        player = new Player(1, name, PlayerClass.Magic, 3, 13, 80, 80, 3500);
+                        player = new Player(1, name, PlayerClass.Magic, 3, 13, 80, 80, 3500, 0);
                         break;
                     case "4":
-                        player = new Player(1, name, PlayerClass.Thief, 2, 3, 120, 120, 5500);
+                        player = new Player(1, name, PlayerClass.Thief, 2, 3, 120, 120, 5500, 0);
                         break;
                     default:
                         Console.WriteLine("올바르지 않은 입력입니다.");
@@ -664,7 +664,8 @@ namespace RtanTextDungeon
 
         private void Fight(Monster[] monsters, int startHp, int skillNum)
         {            
-            bool invalid = false;
+            bool invalid = false;    
+
             bool isMultiTarget = false; // 선택한 스킬이 다중 타격인지
             if(skillNum > 0)
                 if (player.Skills[skillNum-1].NumberTargets > 1)
@@ -906,26 +907,26 @@ namespace RtanTextDungeon
         // 레벨업 기능 구현
         public void LevelCal(Monster[] monsters, Player player)
         {
-            int point = 0;
+            
         
             foreach(Monster monster in monsters)
             {
-                point += monster.Lv;
+                player.Point += monster.Lv;
             }
 
-            if (point >= 10 && point < 35)
+            if (player.Point >= 10 && player.Point < 35)
             {
                 player.Lv = 2;
             }
-            else if (point >= 35 && point < 65)
+            else if (player.Point >= 35 && player.Point < 65)
             {
                 player.Lv = 3;
             } 
-            else if (point >= 65 && point < 100)
+            else if (player.Point >= 65 && player.Point < 100)
             {
                 player.Lv = 4;
             }
-            else if (point >= 100)
+            else if (player.Point >= 100)
             {
                 player.Lv = 5;
             }
