@@ -70,9 +70,7 @@ namespace RtanTextDungeon
                         break;
                     case "X":
                     case "x":
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("※※※게임을 종료합니다※※※");
-                        Console.ResetColor();
+                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);
                         return;
                     default:
                         alertMsg="잘못된 입력입니다!";
@@ -249,9 +247,7 @@ namespace RtanTextDungeon
                 UI.AsciiArt(UI.AsciiPreset.Inventory);
 
                 Console.WriteLine("------------------------------------------------------------------\n");
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("[아이템 목록]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine("[아이템 목록]\n", ConsoleColor.DarkGreen);
                 // 아이템 목록은 아이템 리스트에 있는 아이템들을 전부 불러와야겠지?
 
                 int index = 1;
@@ -597,7 +593,8 @@ namespace RtanTextDungeon
                             isUseItem = true; //회복 화면으로
                             break;
                         case "0":
-                            Run();
+                            if (TryRun(monsters)) // 도망에 성공하면 던전 탈출
+                                return;
                             break;
                         default:
                             alertMsg = "!!!잘못된 입력입니다!!!";
@@ -790,17 +787,37 @@ namespace RtanTextDungeon
                 MonsterPhase(monsters);
                 
                 if (monsters.All(x => x.IsDead))
-                    Victory(monsters.Length, startHp, monsters);
-                else if (player.Hp <= 0)
-                    Lose(startHp);
+                    Victory(monsters.Length, startHp, monsters);                
 
                 return;
             }            
         }
 
-        private void Run()
+        /// <summary>
+        /// 40% 확률로 도망치기에 성공. 성공 시, 던전 입구로 복귀
+        /// </summary>        
+        private bool TryRun(Monster[] monsters)
         {
-            //ToDo 확률 적으로 도망성공, 실패 시 데미지 받음
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                Thread.Sleep(500);
+            }
+
+            int randRun = new Random().Next(0, 10);
+            if (randRun < 6)
+            {
+                UI.ColoredWriteLine("\n스파르타 교육을 뿌리칠 수 없었습니다... [몬스터의 턴으로 넘어갑니다]", ConsoleColor.DarkRed);
+                UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
+                MonsterPhase(monsters);
+            }
+            else
+            {
+                UI.ColoredWriteLine("\n뒤도 돌아보지 않고 도망쳤습니다. [잠시 후 던전입구에 도착합니다]",ConsoleColor.Green);
+                UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
+                return true;
+            }                
+            return false;                            
         }
         #endregion
 
@@ -938,6 +955,9 @@ namespace RtanTextDungeon
                     Console.ReadLine();
                 }                    
             }
+
+            if (player.Hp <= 0)
+                Lose(startHp);
         }
         #endregion
 
@@ -987,13 +1007,11 @@ namespace RtanTextDungeon
             Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
             Console.WriteLine("Result\n");
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Victory\n");
-            Console.ResetColor();
+            UI.ColoredWriteLine("Victory\n", ConsoleColor.Green);
             int preLv = player.Lv;
             LevelCal(monsters, player); 
             Console.WriteLine(
-                $"던전에서 몬스터 {monsterCount} 마리를 잡았습니다.\n" +
+                $"스파르타의 괴물 {monsterCount} 마리 조차 당신을 막을 순 없었습니다.\n" +
                 $"\n" +
                 $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
@@ -1011,12 +1029,8 @@ namespace RtanTextDungeon
         private void Lose(int startHp)
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
-
             Console.WriteLine("Result\n");
-
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("You Lose\n");
-            Console.ResetColor();
+            UI.ColoredWriteLine("스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
 
             Console.WriteLine(
                 $"Lv.{player.Lv} {player.Name}\n" +
@@ -1051,9 +1065,7 @@ namespace RtanTextDungeon
                 }
 
                 Console.WriteLine("");
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($" [현재 체력 : {player.Hp}]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine($" [현재 체력 : {player.Hp}]\n", ConsoleColor.Yellow);
                 Console.WriteLine("");
                 Console.WriteLine(" (1) : 사용하기");
                 Console.WriteLine("");
@@ -1118,32 +1130,20 @@ namespace RtanTextDungeon
                 UI.AsciiArt(UI.AsciiPreset.Inn);
 
                 Console.WriteLine($"500 G 를 지불하시면 체력을 회복할 수 있습니다. (보유골드 : {player.Gold} G)");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[현재 체력 : {player.Hp}]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
                 if (rest)
                 {
                     if (fullCondition)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"이미 컨디션이 최상입니다!\n");
-                        Console.ResetColor();
-                    }
+                        UI.ColoredWriteLine($"[현재 체력 : {player.Hp}]\n", ConsoleColor.Green);
                     else
                     {
                         if (canRest)
                         {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"회복되었습니다!\n");
-                            Console.ResetColor();
+                            UI.ColoredWriteLine($"회복되었습니다!\n", ConsoleColor.Green);
                             fullCondition = true;
                         }
                         else
-                        {
-                            Console.ForegroundColor = ConsoleColor.DarkRed;
-                            Console.WriteLine($"숙박 비용이 모자랍니다!\n");
-                            Console.ResetColor();
-                        }
+                            UI.ColoredWriteLine($"숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
                     }
                 }
 

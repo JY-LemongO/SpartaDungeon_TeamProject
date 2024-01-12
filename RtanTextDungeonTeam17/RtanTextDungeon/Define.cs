@@ -33,12 +33,12 @@ namespace RtanTextDungeon
 
         public enum MonsterType
         {
-            SkeletonWorrior,
-            SkeletonArcher,
-            SkeletonWizard,
-            GoblinWorrior,
-            GoblinArcher,
-            GoblinWizard,
+            TILFairy,
+            HellofAlgorythm,
+            VerifyGhost,
+            GitCrashCat,
+            EnterMemoryEraser,
+            ExitMemoryEraser,
         }
     }
 }
