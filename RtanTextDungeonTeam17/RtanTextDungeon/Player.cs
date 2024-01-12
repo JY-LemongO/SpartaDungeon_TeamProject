@@ -227,8 +227,10 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>();
 
-            Skill skill_1 = new Skill("알파 스트라이크", 10, 2, "공격력 * 2 로 하나의 적을 공격합니다.", 1);
-            Skill skill_2 = new Skill("짱센 스트라이크", 15, 3, "공격력 * 3 로 둘의 적을 랜덤으로 공격합니다.", 2);
+
+            Skill skill_1 = new Skill(this, "알파 스트라이크", 10, 2, "공격력 * 2 로 하나의 적을 공격합니다.", 1);
+            Skill skill_2 = new Skill(this, "짱센 스트라이크", 15, 3, "공격력 * 3 로 둘의 적을 랜덤으로 공격합니다.", 2);
+
             
             Skills.Add(skill_1);
             Skills.Add(skill_2);
