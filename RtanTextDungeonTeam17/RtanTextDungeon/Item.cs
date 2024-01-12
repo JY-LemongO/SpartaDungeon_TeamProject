@@ -134,8 +134,7 @@ namespace RtanTextDungeon
             player.SetHp(Math.Min(player.Hp + heal, player.MaxHp));
             return true;
         }
-        public void Get() => this.count++;
-        public void Get(int n) => this.count += n;
+        public void Get(int n=1) => this.count += n;
         public int Get(int min, int max)
         {
             // 입력: (int, int)랜덤 획득 범위

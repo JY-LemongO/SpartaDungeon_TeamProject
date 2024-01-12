@@ -9,7 +9,7 @@ using static RtanTextDungeon.Define;
 
 namespace RtanTextDungeon
 {    
-    internal class Player
+    internal class Player : IDamagable
     {
         public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
@@ -23,6 +23,7 @@ namespace RtanTextDungeon
         public int Gold                     { get; private set; }
         public int EXP                      { get; private set; }        
         public List<Skill> Skills           { get; private set; }
+        public int Point                       { get; set; }
 
         // 런타임에서 가지고 있을 아이템 정보들
         public Dictionary<Type, Item>   equippedItems       = new Dictionary<Type, Item>();        
@@ -34,7 +35,7 @@ namespace RtanTextDungeon
 
         public int NeedEXP { get; private set; } = 10;
         
-        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int MaxHp, int MaxMp, int Gold)
+        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int MaxHp, int MaxMp, int Gold, int point)
         {
             this.Lv = Lv;
             this.Name = Name;
@@ -46,6 +47,7 @@ namespace RtanTextDungeon
             this.Mp = MaxMp;
             this.MaxMp = MaxMp;
             this.Gold = Gold;
+            this.Point = Point;
 
             //스킬 생성용 임시 함수
             CreateSkills();
@@ -188,9 +190,9 @@ namespace RtanTextDungeon
 
         public void SetHp(int hp) => Hp = hp;
 
-        public void GetDamage(int damage)
+        public void GetDamage(float damage)
         {
-            Hp -= damage;
+            Hp -= (int)damage;
             if(Hp < 0)
                 Hp = 0;
         }        
