@@ -86,7 +86,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
             }                
             else
-                Console.WriteLine($"{Name}  \tHP {Hp}");
+                Console.WriteLine($"{Name}  \tHP {Hp}  ATK {(int)Atk}");
         }
         public void ShowText(int index)
         {
@@ -97,7 +97,7 @@ namespace RtanTextDungeon
                 Console.ResetColor();
                 return;
             }
-            Console.WriteLine($"({index}) {Name}  \tHP {Hp}");
+            Console.WriteLine($"({index}) {Name}  \tHP {Hp}  ATK {(int)Atk}");
         }
     }
 }

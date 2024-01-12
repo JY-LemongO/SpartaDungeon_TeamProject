@@ -20,6 +20,7 @@ namespace RtanTextDungeon
 
         private int chooseFloor = 0;
 
+        int startHp;
 
         #region 게임시작
         public void EnterGame(Shop shop)
@@ -105,21 +106,20 @@ namespace RtanTextDungeon
             string input = string.Empty;
 
             while(true)
-            {
-                Console.Clear();
-                Console.WriteLine("===== 캐릭터 생성 =====");
-                Console.WriteLine("이름을 입력하십시오.");
-
-                name = Console.ReadLine();
-
-                if (name == "")
+            {   
+                if(name == "")
                 {
-                    Console.WriteLine("입력 값이 없습니다.");
-                    Console.ReadLine();
-                    continue;
-                }
+                    Console.WriteLine("===== 캐릭터 생성 =====");
+                    Console.WriteLine("이름을 입력하십시오.");
 
-                Console.Clear();
+                    name = Console.ReadLine();
+                    Console.Clear();
+                    if (name == "")
+                    {
+                        Console.WriteLine("입력 값이 없습니다.");                        
+                        continue;
+                    }                                   
+                }
                 Console.WriteLine("===== 캐릭터 생성 =====");
                 Console.WriteLine($"입력하신 이름은 {name} 입니다.");
 
@@ -127,15 +127,18 @@ namespace RtanTextDungeon
                 Console.WriteLine("2. 취소");
 
                 Console.Write("");
-                input = Console.ReadLine();
 
-                switch(input)
+                input = Console.ReadLine();
+                Console.Clear();
+                switch (input)
                 {
                     case "1":
                         break;
                     case "2":
+                        name = "";
                         continue;
-                    default:
+                    default:                        
+                        Console.WriteLine("올바르지 않은 입력입니다.");
                         continue;
                 }
 
@@ -145,8 +148,12 @@ namespace RtanTextDungeon
                 Console.ReadLine();
                 Console.Clear();
 
-                // 직업 선택 영역 구현
-                Console.Clear();
+                break;
+            }
+
+            while (true)
+            {
+                // 직업 선택 영역 구현                
                 Console.WriteLine("===== 캐릭터 직업 선택 =====");
                 Console.WriteLine("1. 전사 - 공격력: 10, 방어력: 5, 체력: 100, Max체력: 100, GOLD: 1500");
                 Console.WriteLine("2. 궁수 - 공격력: 13, 방어력: 3, 체력: 70, Max체력: 70, GOLD: 2500");
@@ -155,8 +162,8 @@ namespace RtanTextDungeon
 
                 Console.Write("");
                 input = Console.ReadLine();
-
-                switch(input)
+                Console.Clear();// 콘솔 화면 한 번 지우기
+                switch (input)
                 {
                     case "1":
                         player = new Player(1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500);
@@ -171,10 +178,9 @@ namespace RtanTextDungeon
                         player = new Player(1, name, PlayerClass.Thief, 2, 3, 120, 120, 5500);
                         break;
                     default:
+                        Console.WriteLine("올바르지 않은 입력입니다.");
                         continue;
                 }
-
-                Console.Clear(); // 콘솔 화면 한 번 지우기
 
                 break;
             }
@@ -425,9 +431,7 @@ namespace RtanTextDungeon
         {            
             bool status = false;
             bool hpZero = false;
-            bool choiceFloorPanel = false;
-
-            int startHp = player.Hp;
+            bool choiceFloorPanel = false;            
 
             while (true)
             {
@@ -485,6 +489,7 @@ namespace RtanTextDungeon
                 Console.WriteLine("※※※입력값은 대소문자를 구분하지 않습니다.※※※\n");
                 Console.ResetColor();
 
+                startHp = player.Hp;
                 string input = Console.ReadLine();
                 Console.Clear();
                 switch (input)
@@ -541,7 +546,7 @@ namespace RtanTextDungeon
                         {
                             int inputNum;
                             bool isDigit = int.TryParse(input, out inputNum);
-                            if (isDigit)
+                            if (isDigit && inputNum > 0 && inputNum <= DungeonInfo.HighestFloor)
                             {
                                 chooseFloor = inputNum;
                                 if (player.Hp > 0)
@@ -696,6 +701,7 @@ namespace RtanTextDungeon
                                 if (player.Hp == player.MaxHp) alertMsg = $"체력이 이미 모두 회복되어 회복약을 사용 할 수 없습니다.\n\n";
                                 if (potion.count <= 0) alertMsg = $"{potion.Name}을 소지하고 있지 않습니다.\n\n";
                             }
+                            startHp = player.Hp;
                             continue;
                         default:
                             invalid = true;
@@ -858,7 +864,6 @@ namespace RtanTextDungeon
 
             if (TargetNum >= MonsterNum)
             {
-                
                 BattlePrint();
                 // => 살아있는 것 전부 공격
                 foreach (Monster monster in monsters.Where(x => !x.IsDead)) 
@@ -911,7 +916,6 @@ namespace RtanTextDungeon
 
                     Console.ReadLine();
                 }
-
             }
         }
 
@@ -924,10 +928,15 @@ namespace RtanTextDungeon
                 if (!monster.IsDead && player.Hp > 0)
                 {
                     int prevHp = player.Hp;
-                    player.GetDamage((int)monster.Atk);
+
+                    float damage = monster.Atk;
+                    int reduceDmg = (int)(player.Def * 0.5f) >= damage ? (int)damage - 1 : (int)(player.Def * 0.5f);
+                    int applyDmg = damage - reduceDmg <= 0 ? 1 : (int)(damage - reduceDmg);
+
+                    player.GetDamage(applyDmg);
 
                     Console.WriteLine($"{monster.Name} 의 공격!\n" +
-                    $"{player.Name} 을(를) 맞췄습니다. [데미지 : {monster.Atk}]\n" +
+                    $"{player.Name} 을(를) 맞췄습니다. [받은 데미지 : {applyDmg}] [데미지 경감 : {reduceDmg}]\n" +
                     $"\n" +
                     $"{player.Name}\n" +
                     $"HP {prevHp} -> {player.Hp}");
