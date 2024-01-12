@@ -17,8 +17,6 @@ namespace RtanTextDungeon
         /// <returns>사용자로부터 입력받은 문자열을 반환합니다.</returns>
         public static string UserInput(string alert="", bool positive=false, string reqMsg= "다음 행동을 입력하세요.")
         {
-            // 입력 : (string)경고문, (bool)긍정적인 경고문인지
-            // 출력 : (string)유저입력
             Console.WriteLine(".──────────────────────────────────────────────────────────────────── .");
             Console.WriteLine($" {reqMsg}");
             Console.WriteLine("");
@@ -34,6 +32,7 @@ namespace RtanTextDungeon
         #region AsciiArt
         public enum AsciiPreset
         {
+            TitleArt,
             MainMenu,
             Battle,
             Status,
@@ -51,19 +50,81 @@ namespace RtanTextDungeon
         /// <param name="preset">표시할 아스키아트의 프리셋을 고릅니다. </param>
         public static void AsciiArt(AsciiPreset preset)
         {
+            ConsoleColor statusColor = ConsoleColor.Yellow;
+
             switch (preset)
             {
+                case AsciiPreset.TitleArt:
+                    Console.WriteLine("");
+                    Console.WriteLine("");
+                    Console.WriteLine("                                      -========-                         ");
+                    Console.WriteLine("                                      %%++++*#@%                         ");
+                    Console.WriteLine("                                      %#++++*#@%                         ");
+                    Console.WriteLine("                                      %%######@%                         ");
+                    Console.WriteLine("                                      %%#%%%%#@%                         ");
+                    Console.WriteLine("                                      %@@%%%@@@%                         ");
+                    Console.WriteLine("                                       .@##%@@                           ");
+                    Console.WriteLine("                                   %@@@@@##%@@@@@@@                      ");
+                    Console.WriteLine("                                .%%########%%%%%%%%%*.                   ");
+                    Console.WriteLine("                              *#%####*###%%%%%%%####%%*+                 ");
+                    Console.WriteLine("                            +######+*###############%%%@#=               ");
+                    Console.WriteLine("                            %@#####################%%%%%@+               ");
+                    Console.WriteLine("                            %@###################%%%%%%%@+               ");
+                    Console.WriteLine("                            %@###%%@@@@%########@@@@@%%%@+               ");
+                    Console.WriteLine("                            %@###%#....-%#####%#....-%%%@+               ");
+                    Console.WriteLine("                            %@###%#:+%%*:*####::%%%:=%%#@*               ");
+                    Console.WriteLine("                         *##@@###%%#-..-#**%%%#*...*#%%%@@##*            ");
+                    Console.WriteLine("                       +@:..%@%##%#+:....====+.....=+%%%@#..:@-          ");
+                    Console.WriteLine("                       +@:..%@%%%%%%#*...........-*%%%%%@#..:@-          ");
+                    Console.WriteLine("                         %*..-@@%%%%%#%+........#%%%%%@@.:.*%            ");
+                    Console.WriteLine("                          :@:..*@%%%%#%+........#%%%@@:..-@.             ");
+                    Console.WriteLine("                            %%...%@@@@@*.......:@@@@#...@@@.             ");
+                    Console.WriteLine("                            %@@=..:###++++++++*###*...#@##@.             ");
+                    Console.WriteLine("                            %@#%@:....**+++++####-..-@####@.             ");
+                    Console.WriteLine("                            %@###@%.................-@%###@.             ");
+                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
+                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
+                    Console.WriteLine("                            %@###@#.................-@%###@.             ");
+                    Console.WriteLine("                            %@###@%===========******#@%##%@.             ");
+                    Console.WriteLine("                            #@###@%+++##############%@%##%@.             ");
+                    Console.WriteLine("");
+                    Console.WriteLine("===============================================================================================");
+                    Console.WriteLine("          ____                   _          ____                                     ");
+                    Console.WriteLine("         / ___| _ __   __ _ _ __| |_ __ _  |  _ \\ _   _ _ __   __ _  ___  ___  _ __  ");
+                    Console.WriteLine("         \\___ \\| '_ \\ / _` | '__| __/ _` | | | | | | | | '_ \\ / _` |/ _ \\/ _ \\| '_ \\ ");
+                    Console.WriteLine("          ___) | |_) | (_| | |  | || (_| | | |_| | |_| | | | | (_| |  __/ (_) | | | |");
+                    Console.WriteLine("         |____/| .__/ \\__,_|_|   \\__\\__,_| |____/ \\__,_|_| |_|\\__, |\\___|\\___/|_| |_|");
+                    Console.WriteLine("               |_|                                            |___/                  ");
+                    Console.WriteLine("");
+                    Console.WriteLine("===============================================================================================");
+                    break;
                 case AsciiPreset.MainMenu:
-                    Console.WriteLine(
-                        "===============================================================================================\r\n" +
-                        " _______                      __            _____                                              \r\n" +
-                        "|     __|.-----..---.-..----.|  |_ .---.-. |     \\ .--.--..-----..-----..-----..-----..-----.  \r\n" +
-                        "|__     ||  _  ||  _  ||   _||   _||  _  | |  --  ||  |  ||     ||  _  ||  -__||  _  ||     |  \r\n" +
-                        "|_______||   __||___._||__|  |____||___._| |_____/ |_____||__|__||___  ||_____||_____||__|__|  \r\n" +
-                        "         |__|                                                    |_____|                       \r\n" +
-                        "===============================================================================================\r\n" +
-                        "                            └ 스파르타 던전에 온 것을 환영합니다 ┘                             \r\n"
-                        );
+
+
+                    Console.WriteLine("===============================================================================================");
+                    Console.WriteLine("");
+                    Console.WriteLine(" _______                      __            _____                                              ");
+                    Console.WriteLine("|     __|.-----..---.-..----.|  |_ .---.-. |     \\ .--.--..-----..-----..-----..-----..-----. ");
+                    Console.WriteLine("|__     ||  _  ||  _  ||   _||   _||  _  | |  --  ||  |  ||     ||  _  ||  -__||  _  ||     |  ");
+                    Console.WriteLine("|_______||   __||___._||__|  |____||___._| |_____/ |_____||__|__||___  ||_____||_____||__|__|  ");
+                    Console.WriteLine("         |__|                                                    |_____|                       ");
+                    Console.WriteLine("");
+                    Console.WriteLine("===============================================================================================");
+                    Console.Write("                         └ [ ");
+
+                    // 랜덤 색으로 문자열 표현
+                    Random random = new Random();
+                    string welcomeText = "스파르타 던전에 오신것을 환영합니다";
+                    foreach (char c in welcomeText)
+                    {
+                        Console.ForegroundColor = (ConsoleColor)random.Next(9, 16);
+                        Console.Write(c);
+                    }
+                    Console.ResetColor();  // 색상을 기본값으로 재설정
+
+                    Console.WriteLine(" ] ┘                           ");
+                    Console.WriteLine("");
+
                     //int rtanX = 42; int rtanY = 11;
                     //Console.SetCursorPosition(rtanX, rtanY); Console.Write("            -*++%-            "); rtanY++;
                     //Console.SetCursorPosition(rtanX, rtanY); Console.Write("            -%%%%-            "); rtanY++;
@@ -85,36 +146,42 @@ namespace RtanTextDungeon
 
                 case AsciiPreset.Battle:
                     Console.Clear();
-                    Console.WriteLine(
-                        "                                                             \r\n" +
-                        "        '||'''|,            ||      ||    '||`               \r\n" +
-                        "         ||   ||            ||      ||     ||                \r\n" +
-                        "         ||;;;;    '''|.  ''||''  ''||''   ||  .|''|,        \r\n" +
-                        "         ||   ||  .|''||    ||      ||     ||  ||..||        \r\n" +
-                        "        .||...|'  `|..||.   `|..'   `|..' .||. `|...         \n\n" +
-                        "===========================[전 투]===========================\r\n"
-                        );
+                    Console.WriteLine("                                                                 ");
+                    Console.WriteLine("          '||'''|,            ||      ||    '||`                 ");
+                    Console.WriteLine("           ||   ||            ||      ||     ||                  ");
+                    Console.WriteLine("           ||;;;;    '''|.  ''||''  ''||''   ||  .|''|,          ");
+                    Console.WriteLine("           ||   ||  .|''||    ||      ||     ||  ||..||          ");
+                    Console.WriteLine("          .||...|'  `|..||.   `|..'   `|..' .||. `|...           ");
+                    Console.WriteLine("                                                                 ");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("-----------------------------[전 투]-----------------------------");
+                    Console.ResetColor();
+                    Console.WriteLine("");
+
                     break;
 
                 case AsciiPreset.Status:
-                    Console.WriteLine(" _______  __           __                 ");
-                    Console.WriteLine("|     __||  |_ .---.-.|  |_ .--.--..-----.");
-                    Console.WriteLine("|__     ||   _||  _  ||   _||  |  ||__ --|");
-                    Console.WriteLine("|_______||____||___._||____||_____||_____|");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("=================[상태 창]=================");
+                    Console.WriteLine("                                                                 ");
+                    Console.WriteLine("            _______  __           __                             ");
+                    Console.WriteLine("           |     __||  |_ .---.-.|  |_ .--.--..-----.            ");
+                    Console.WriteLine("           |__     ||   _||  _  ||   _||  |  ||__ --|            ");
+                    Console.WriteLine("           |_______||____||___._||____||_____||_____|            ");
+                    Console.WriteLine("");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[상태 창]----------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
                     break;
 
                 case AsciiPreset.Inventory:
-                    Console.WriteLine(" _______                              __                       ");
-                    Console.WriteLine("|_     _|.-----..--.--..-----..-----.|  |_ .-----..----..--.--.");
-                    Console.WriteLine(" _|   |_ |     ||  |  ||  -__||     ||   _||  _  ||   _||  |  |");
-                    Console.WriteLine("|_______||__|__| \\___/ |_____||__|__||____||_____||__|  |___  |");
-                    Console.WriteLine("                                                        |_____|");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("============================[인벤토리]============================");
+                    Console.WriteLine("                                                                  ");
+                    Console.WriteLine("   _______                              __                        ");
+                    Console.WriteLine("  |_     _|.-----..--.--..-----..-----.|  |_ .-----..----..--.--. ");
+                    Console.WriteLine("   _|   |_ |     ||  |  ||  -__||     ||   _||  _  ||   _||  |  | ");
+                    Console.WriteLine("  |_______||__|__| \\___/ |_____||__|__||____||_____||__|  |___  | ");
+                    Console.WriteLine("                                                          |_____| ");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[인벤토리]----------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
                     break;
@@ -126,41 +193,43 @@ namespace RtanTextDungeon
                     break;
 
                 case AsciiPreset.PotionInventory:
-                    Console.WriteLine("                                                                   ");
-                    Console.WriteLine("   .-.   p--- .'~`. .-=~=-.   :~:      |~|   .-~~8~~-.  |~|  .-.   ");
-                    Console.WriteLine(" .'__( .'~`.  `. .'  )___(  .'   `.    | |   |~~---~~|  | |  )__`. ");
-                    Console.WriteLine(" | l | | m |  .'n`. (  o  ) |  p  |] .' q `. |   r   | .'s`. | t | ");
-                    Console.WriteLine(" |___| |___|  `._.'  `._.'  |_____|  `.___.' `._____.' `._.' |___| ");
-                    Console.WriteLine("                                                                   ");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("===========================[회복 아이템]===========================");
+                    Console.WriteLine("                                                                     ");
+                    Console.WriteLine("    .-.   p--- .'~`. .-=~=-.   :~:      |~|   .-~~8~~-.  |~|  .-.    ");
+                    Console.WriteLine("  .'__( .'~`.  `. .'  )___(  .'   `.    | |   |~~---~~|  | |  )__`.  ");
+                    Console.WriteLine("  | l | | m |  .'n`. (  o  ) |  p  |] .' q `. |   r   | .'s`. | t |  ");
+                    Console.WriteLine("  |___| |___|  `._.'  `._.'  |_____|  `.___.' `._____.' `._.' |___|  ");
+                    Console.WriteLine("                                                                     ");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[회복 아이템]----------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
                     break;
 
                 case AsciiPreset.Shop:
-                    Console.WriteLine(" _______  __                  ");
-                    Console.WriteLine("|     __||  |--..-----..-----.");
-                    Console.WriteLine("|__     ||     ||  _  ||  _  |");
-                    Console.WriteLine("|_______||__|__||_____||   __|");
-                    Console.WriteLine("                       |__|   ");
-                    Console.WriteLine("                              ");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("============[상   점]============");
+                    Console.WriteLine("                                                                   ");
+                    Console.WriteLine("                    _______  __                                    ");
+                    Console.WriteLine("                   |     __||  |--..-----..-----.                  ");
+                    Console.WriteLine("                   |__     ||     ||  _  ||  _  |                  ");
+                    Console.WriteLine("                   |_______||__|__||_____||   __|                  ");
+                    Console.WriteLine("                                          |__|                     ");
+                    Console.WriteLine("                                                                   ");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("-----------------------------[상   점]-----------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
                     break;
 
                 case AsciiPreset.DungeonEntrance:
 
-                    Console.WriteLine(" _____                                            ");
-                    Console.WriteLine("|     \\ .--.--..-----..-----..-----..-----..-----.");
-                    Console.WriteLine("|  --  ||  |  ||     ||  _  ||  -__||  _  ||     |");
-                    Console.WriteLine("|_____/ |_____||__|__||___  ||_____||_____||__|__|");
-                    Console.WriteLine("                      |_____|                     ");
-                    Console.WriteLine("                                                  ");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("====================[던전 입구]====================");
+                    Console.WriteLine("                                                                   ");
+                    Console.WriteLine("          _____                                                    ");
+                    Console.WriteLine("         |     \\ .--.--..-----..-----..-----..-----..-----.        ");
+                    Console.WriteLine("         |  --  ||  |  ||     ||  _  ||  -__||  _  ||     |        ");
+                    Console.WriteLine("         |_____/ |_____||__|__||___  ||_____||_____||__|__|        ");
+                    Console.WriteLine("                               |_____|                             ");
+                    Console.WriteLine("                                                                   ");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("----------------------------[던전 입구]----------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
                     break;
@@ -168,13 +237,13 @@ namespace RtanTextDungeon
                 case AsciiPreset.Inn:
 
                     Console.WriteLine("");
-                    Console.WriteLine(" __               ");
-                    Console.WriteLine("|__|.-----..-----.");
-                    Console.WriteLine("|  ||     ||     |");
-                    Console.WriteLine("|__||__|__||__|__|");
+                    Console.WriteLine("                           __                                        ");
+                    Console.WriteLine("                          |__|.-----..-----.                         ");
+                    Console.WriteLine("                          |  ||     ||     |                         ");
+                    Console.WriteLine("                          |__||__|__||__|__|                         ");
                     Console.WriteLine("");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("==================[여 관]==================");
+                    Console.ForegroundColor = statusColor;
+                    Console.WriteLine("-------------------------------[여 관]-------------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
 
@@ -187,5 +256,19 @@ namespace RtanTextDungeon
             }
         }
         #endregion
+
+        public void ColoredWriteLine(string s, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(s);
+            Console.ResetColor();
+        }
+        public void ColoredWrite(string s, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.Write(s);
+            Console.ResetColor();
+        }
+
     }
 }
