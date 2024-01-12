@@ -9,7 +9,7 @@ namespace RtanTextDungeon
 {
     internal static class DungeonInfo
     {
-        public static int HighestFloor { get; private set; } = 1;
+        public static int HighestFloor { get; private set; } = 5;
         public static int CurrentFloor { get; private set; }
 
         public static void UpdateInfo()
