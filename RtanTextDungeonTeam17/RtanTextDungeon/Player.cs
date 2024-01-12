@@ -223,14 +223,12 @@ namespace RtanTextDungeon
 
         public virtual void CreateSkills()
         {
-            Skills = new List<Skill>();
-
-            Skill skill_1 = new Skill(this, "힘없는 휘두르기",10, 1, "공격력 * 1 로 하나의 적을 공격합니다.", 1);
-            Skill skill_2 = new Skill(this, "별반 차이 없는 휘두르기", 10, 1, "그냥 때리는게 마나도 안들고 좋아보입니다.", 1);
-
-            Skills.Add(skill_1);
-            Skills.Add(skill_2);
-        }
+            Skills = new List<Skill>()
+            {
+                new Skill(this, "힘없는 휘두르기",10, 1, "공격력 * 1 로 하나의 적을 공격합니다.", 1),
+                new Skill(this, "별반 차이 없는 휘두르기", 10, 1, "그냥 때리는게 마나도 안들고 좋아보입니다.", 1)
+            };
+    }
 
         public void ShowText()
         {
@@ -241,9 +239,9 @@ namespace RtanTextDungeon
         }
 
         public virtual string GetClassName() { return "잘못된 접근"; }
-    }    
+    }
 
-
+    #region 하위 직업들
     internal class Warrior : Player
     {
         public Warrior(string name) : base (1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0)
@@ -253,13 +251,11 @@ namespace RtanTextDungeon
 
         public override void CreateSkills()
         {
-            Skills = new List<Skill>();
-
-            Skill skill_1 = new Skill(this, "알파 스트라이크", 10, 2, "하나의 적을 공격합니다. / 공격력 * 2", 1);
-            Skill skill_2 = new Skill(this, "짱센 스트라이크", 20, 1, "둘의 적을 랜덤으로 공격합니다. / 공격력 * 1", 2);
-
-            Skills.Add(skill_1);
-            Skills.Add(skill_2);
+            Skills = new List<Skill>() 
+            {
+                new Skill(this, "알파 스트라이크", 10, 2, "하나의 적을 공격합니다. / 공격력 * 2", 1),
+                new Skill(this, "짱센 스트라이크", 20, 1, "둘의 적을 랜덤으로 공격합니다. / 공격력 * 1", 2)
+            };
         }
 
         public override string GetClassName() { return "전사"; }
@@ -274,13 +270,11 @@ namespace RtanTextDungeon
 
         public override void CreateSkills()
         {
-            Skills = new List<Skill>();
-
-            Skill skill_1 = new Skill(this, "급소 조준", 10, 2, "급소에 화살을 꽂습니다. / 공격력 * 2", 1);
-            Skill skill_2 = new Skill(this, "몰아치는 화살", 20, 1, "3명의 적을 공격합니다. / 공격력 * 1", 3);
-
-            Skills.Add(skill_1);
-            Skills.Add(skill_2);
+            Skills = new List<Skill>()
+            {
+                new Skill(this, "급소 조준", 10, 2, "급소에 화살을 꽂습니다. / 공격력 * 2", 1),
+                new Skill(this, "몰아치는 화살", 20, 1, "3명의 적을 공격합니다. / 공격력 * 1", 3)
+            };
         }
 
         public override string GetClassName() { return "궁수"; }
@@ -295,13 +289,11 @@ namespace RtanTextDungeon
 
         public override void CreateSkills()
         {
-            Skills = new List<Skill>();
-
-            Skill skill_1 = new Skill(this, "마법 화살", 10, 2, "마력 화살 하나를 날립니다. / 공격력 * 2", 1);
-            Skill skill_2 = new Skill(this, "번개 사슬", 35, 2, "3명의 적에게 전기 피해룰 줍니다. / 공격력 * 2", 3);
-
-            Skills.Add(skill_1);
-            Skills.Add(skill_2);
+            Skills = new List<Skill>()
+            {
+                new Skill(this, "마법 화살", 10, 2, "마력 화살 하나를 날립니다. / 공격력 * 2", 1),
+                new Skill(this, "번개 사슬", 35, 2, "3명의 적에게 전기 피해룰 줍니다. / 공격력 * 2", 3)
+            };
         }
 
         public override string GetClassName() { return "마법사"; }
@@ -316,14 +308,12 @@ namespace RtanTextDungeon
 
         public override void CreateSkills()
         {
-            Skills = new List<Skill>();
-
-            Skill skill_1 = new Skill(this, "힘줄 자르기", 10, 2, "강하게 공격합니다. / 공격력 *2", 1);
-            Skill skill_2 = new Skill(this, "암습", 30, 4, "뒤에서 급소를 공격합니다. / 공격력 * 4", 1);
-
-            Skills.Add(skill_1);
-            Skills.Add(skill_2);
-        }
+            Skills = new List<Skill>()
+            {
+                new Skill(this, "힘줄 자르기", 10, 2, "강하게 공격합니다. / 공격력 *2", 1),
+                new Skill(this, "암습", 30, 4, "뒤에서 급소를 공격합니다. / 공격력 * 4", 1)
+            };
+    }
 
         public override string GetClassName() { return "도둑"; }
     }
@@ -337,4 +327,5 @@ namespace RtanTextDungeon
 
         public override string GetClassName() { return "무직백수"; }
     }
+    #endregion
 }
