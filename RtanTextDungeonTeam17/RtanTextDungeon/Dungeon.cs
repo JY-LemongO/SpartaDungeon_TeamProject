@@ -250,10 +250,7 @@ namespace RtanTextDungeon
             while (true)
             {
                 UI.AsciiArt(UI.AsciiPreset.Inventory);
-
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine(" [아이템 목록]\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine(" [아이템 목록]\n", ConsoleColor.DarkGreen);
                 // 아이템 목록은 아이템 리스트에 있는 아이템들을 전부 불러와야겠지?
 
                 int index = 1;
@@ -328,11 +325,7 @@ namespace RtanTextDungeon
             while (true)
             {
                 UI.AsciiArt(UI.AsciiPreset.Shop);
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"[보유 골드 : {player.Gold:N0} G]");
-                Console.WriteLine("");
-                Console.ResetColor();
+                UI.ColoredWriteLine($"[보유 골드 : {player.Gold:N0} G]\n", ConsoleColor.Yellow);                
 
                 Console.WriteLine("[아이템 목록]\t[능력]\t\t\t\t[가격]\t\t[이름]\t\t[설명]\n");
                 int index = 1;
@@ -354,9 +347,7 @@ namespace RtanTextDungeon
                 }
 
                 Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("아이템 번호를 입력하시면 구매/판매가 가능합니다.\n");
-                Console.ResetColor();
+                UI.ColoredWriteLine("아이템 번호를 입력하시면 구매/판매가 가능합니다.\n", ConsoleColor.Yellow);
                 Console.WriteLine();
 
                 Console.WriteLine("  (E) : [상태]\n\n  (I) : [인벤토리]\n\n  (B) : [마을로 돌아가기]\n");
