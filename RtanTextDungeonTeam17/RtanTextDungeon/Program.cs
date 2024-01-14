@@ -20,8 +20,7 @@ namespace RtanTextDungeon
             Console.Clear();
             
             // 인 게임 Dungeon클래스
-            Dungeon dungeon = new Dungeon();
-            // EnterGame 메서드로 게임에 입장한다. 들고갈 정보는 Player와 Shop
+            Dungeon dungeon = new Dungeon();            
             dungeon.EnterGame();            
         }
     }
