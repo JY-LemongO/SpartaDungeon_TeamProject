@@ -11,6 +11,7 @@ namespace RtanTextDungeon
     {
         public int      ID              { get; protected set; }        
         public string   Name            { get; protected set; }
+        public string   TypeName        { get; protected set; }
         public string   AdditionalATK   { get; protected set; }
         public string   AdditionalDEF   { get; protected set; }        
         public string   AbilityName     { get; }
@@ -19,13 +20,16 @@ namespace RtanTextDungeon
         public bool     IsEquip         { get; protected set; } = false;
         public bool     IsBuy           { get; protected set; } = false;
 
-        public Item(int id, string name, string abilityName, string desc, int price)
+        public Item(int id, string name, string abilityName, string desc, int price, string typeName, bool isEquip = false, bool isBuy = false)
         {
             ID = id;
             Name = name;
             AbilityName = abilityName;
             Desc = desc;
-            Price = price;            
+            Price = price;
+            TypeName = typeName;
+            IsEquip = isEquip;
+            IsBuy = isBuy;
         }
 
         public void GetItem() => IsBuy = true;
@@ -62,9 +66,9 @@ namespace RtanTextDungeon
             base.UnequipItem();
         }
 
-        public Weapon(int id, string name, string desc, int price, int damage) : base(id, name, "공격력", desc, price)
+        public Weapon(int id, string name, string desc, int price, int damage, bool isEquip = false, bool isBuy = false) : base(id, name, "공격력", desc, price, "Weapon", isEquip, isBuy)
         {           
-            this.damage = damage;            
+            this.damage = damage;                        
         }
     }
 
@@ -82,7 +86,7 @@ namespace RtanTextDungeon
             base.UnequipItem();
         }
 
-        public Armor(int id, string name, string desc, int price, int defense) : base(id, name, "방어력", desc, price)
+        public Armor(int id, string name, string desc, int price, int defense, bool isEquip = false, bool isBuy = false) : base(id, name, "방어력", desc, price, "Armor", isEquip, isBuy)
         {
             this.defense = defense;            
         }
@@ -106,7 +110,7 @@ namespace RtanTextDungeon
             base.UnequipItem();
         }
 
-        public Amulet(int id, string name, string desc, int price, int damage, int defense) : base(id, name, "공격력/방어력", desc, price)
+        public Amulet(int id, string name, string desc, int price, int damage, int defense, bool isEquip = false, bool isBuy = false) : base(id, name, "공격력/방어력", desc, price, "Amulet", isEquip, isBuy)
         {
             this.damage = damage;
             this.defense = defense;
@@ -117,7 +121,7 @@ namespace RtanTextDungeon
     {
         public int heal { get; private set; }
         public int count { get; private set; }
-        public Potion(int id, string name, string desc, int price, int heal) : base(id, name, "체력회복", desc, price)
+        public Potion(int id, string name, string desc, int price, int heal, bool isEquip = false, bool isBuy = false) : base(id, name, "체력회복", desc, price, "Potion", isEquip, isBuy)
         {
             this.heal = heal;
             this.count = 3;
