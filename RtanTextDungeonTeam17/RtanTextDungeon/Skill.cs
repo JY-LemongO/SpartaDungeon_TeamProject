@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RtanTextDungeon
 {
     internal class Skill
     {
+        [JsonIgnore]
         public Player Owner             { get; set; }
         public int OriginNumber         { get; set; }
         public string Name              { get; set; }
@@ -19,9 +21,9 @@ namespace RtanTextDungeon
 
         static private int tempNumber = 1; //정적 변수 증가시켜 넘버링
 
-        public Skill(Player player,string name, int cost, int atkMultiplier, string description, int numberTargets)
+        public Skill(Player owner,string name, int cost, int atkMultiplier, string description, int numberTargets)
         {
-            Owner = player;
+            Owner = owner;
             Name = name;
             Cost = cost;
             AtkMultiplier = atkMultiplier;

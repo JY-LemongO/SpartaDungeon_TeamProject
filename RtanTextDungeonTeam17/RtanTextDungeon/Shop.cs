@@ -51,10 +51,20 @@ namespace RtanTextDungeon
             player.BuyOrSell((int)(item.Price * 0.85f), item, true);
         }
 
-        public void Restore(Player player, Item item)
+        public void Restore(Player player)
         {
-            item.GetItem();
-            player.BuyOrSell(0, item);
+            foreach(Item shopItem in items)
+            {
+                foreach(int playerItem in player.Items)
+                    if (playerItem == shopItem.ID)
+                        items[shopItem.ID].GetItem();
+                foreach (int equippedItem in player.EquippedItemsIndex)
+                    if (equippedItem == shopItem.ID)
+                    {
+                        items[shopItem.ID].EquipItem();
+                        player.equippedItems[shopItem.TypeName] = shopItem;
+                    }                        
+            }
         }
     }
 }
