@@ -13,7 +13,7 @@ namespace RtanTextDungeon
     {
         public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
-        public PlayerClass m_Class          { get; private set; }
+        public PlayerClass MyClass          { get; private set; }
         public float Atk                    { get; private set; }
         public int Def                      { get; private set; }
         public int Hp                       { get; private set; }
@@ -30,11 +30,11 @@ namespace RtanTextDungeon
         // 런타임에서 가지고 있을 장착 아이템 정보들
         public Dictionary<string, Item>       equippedItems = new Dictionary<string, Item>();
 
-        public Player(int Lv, string Name, PlayerClass m_Class, float Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
+        public Player(int Lv, string Name, PlayerClass MyClass, float Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
         {
             this.Lv = Lv;
             this.Name = Name;
-            this.m_Class = m_Class;
+            this.MyClass = MyClass;
             this.Atk = Atk;
             this.Def = Def;
             this.Hp = MaxHp;
@@ -51,7 +51,7 @@ namespace RtanTextDungeon
                 this.Items = new List<int>();
             if (this.EquippedItemsIndex == null)
                 this.EquippedItemsIndex = new List<int>();
-        }        
+        }   
 
         public void BuyOrSell(int price, Item item, bool isSell = false)
         {            
@@ -218,7 +218,7 @@ namespace RtanTextDungeon
     #region 하위 직업들
     internal class Warrior : Player
     {
-        public Warrior(string name) : base (1, name, PlayerClass.Worrior, 10, 5, 100, 100, 1500, 0)
+        public Warrior(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Warrior, 10, 5, 100, 100, 1500, 0, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }
@@ -237,7 +237,7 @@ namespace RtanTextDungeon
 
     internal class Archer : Player
     {
-        public Archer(string name) : base(1, name, PlayerClass.Archer, 12, 3, 90, 100, 1500, 0)
+        public Archer(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Archer, 12, 3, 90, 100, 1500, 0, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }
@@ -256,7 +256,7 @@ namespace RtanTextDungeon
 
     internal class Magic : Player
     {
-        public Magic(string name) : base(1, name, PlayerClass.Magic, 10, 4, 80, 120, 1500, 0)
+        public Magic(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Magic, 10, 4, 80, 120, 1500, 0, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }
@@ -275,7 +275,7 @@ namespace RtanTextDungeon
 
     internal class Thief : Player
     {
-        public Thief(string name) : base(1, name, PlayerClass.Thief, 11, 4, 80, 100, 1500, 0)
+        public Thief(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Thief, 11, 4, 80, 100, 1500, 0, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }
@@ -294,7 +294,7 @@ namespace RtanTextDungeon
 
     internal class Deadbeat : Player
     {
-        public Deadbeat(string name) : base(1, name, PlayerClass.Deadbeat, 6, 5, 100, 100, 500, 0)
+        public Deadbeat(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Deadbeat, 6, 5, 100, 100, 500, 0, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }

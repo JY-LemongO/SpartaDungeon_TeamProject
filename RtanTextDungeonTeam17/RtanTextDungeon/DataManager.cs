@@ -18,13 +18,13 @@ namespace RtanTextDungeon
         #region Save
         // 게임 세이브 - T 타입 정보 저장
         public static void SaveGame<T>(T data, string fileName)
-        {            
+        {
             string savePath = Path.Combine(DIRECTORY_NAME, fileName);
             string dataFile = JsonSerializer.Serialize(data, new JsonSerializerOptions() { WriteIndented = true });
             dataFile = Regex.Unescape(dataFile);
 
             File.WriteAllText(savePath, dataFile);
-        }
+        }       
         #endregion
 
         #region Load
