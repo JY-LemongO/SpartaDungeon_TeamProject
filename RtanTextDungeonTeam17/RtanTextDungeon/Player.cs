@@ -219,7 +219,8 @@ namespace RtanTextDungeon
     #region 하위 직업들
     internal class Warrior : Player
     {
-        public Warrior(string name, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null) : base(1, name, PlayerClass.Warrior, 10, 5, 100, 100, 1500, 0, Skills, Items, EquippedItemsIndex)
+        public Warrior(int Lv, string Name, PlayerClass MyClass, float Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
+            : base(Lv, Name, MyClass, Atk, Def, MaxHp, MaxMp, Gold, point, Skills, Items, EquippedItemsIndex)
         {
             CreateSkills();
         }

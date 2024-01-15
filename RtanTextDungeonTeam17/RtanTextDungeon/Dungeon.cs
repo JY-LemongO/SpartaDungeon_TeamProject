@@ -179,8 +179,8 @@ namespace RtanTextDungeon
                 Console.Clear();// 콘솔 화면 한 번 지우기
                 switch (input)
                 {
-                    case "1":                        
-                        player = new Warrior(name);
+                    case "1":
+                        player = new Warrior(1, name, PlayerClass.Warrior, 10, 5, 100, 100, 1500, 0);
                         break;
                     case "2":
                         player = new Archer(name);
@@ -619,9 +619,11 @@ namespace RtanTextDungeon
                     $"  [ 내 정보 ]\n" +
                     $"  Lv.{player.Lv}\t{player.Name}\n" +
                     $"  HP \t{player.Hp}/{player.MaxHp}\n" +
-                    $"  MP \t{player.Mp}/{player.MaxMp}\n\n");
-                
-                if(!(isSkillShow||isUseItem))
+                    $"  MP \t{player.Mp}/{player.MaxMp}\n" +
+                    $"  공격력   {player.Atk}\n" +
+                    $"  방어력   {player.Def}\n\n");
+
+                if (!(isSkillShow||isUseItem))
                 {
                     Console.WriteLine("  1. 공격\n");
                     Console.WriteLine("  2. 스킬\n");
@@ -786,7 +788,9 @@ namespace RtanTextDungeon
                     $"  [ 내 정보 ]\n" +
                     $"  Lv.{player.Lv}\t{player.Name}\n" +
                     $"  HP \t{player.Hp}/{player.MaxHp}\n" +
-                    $"  MP \t{player.Mp}/{player.MaxMp}\n\n");
+                    $"  MP \t{player.Mp}/{player.MaxMp}\n" +
+                    $"  공격력   {player.Atk}\n" +
+                    $"  방어력   {player.Def}\n\n");
 
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
@@ -1013,7 +1017,7 @@ namespace RtanTextDungeon
 
                     float damage = monster.Atk;
                     int reduceDmg = (int)(player.Def * 0.5f) >= damage ? (int)damage - 1 : (int)(player.Def * 0.5f);
-                    int applyDmg = damage - reduceDmg <= 0 ? 1 : (int)(damage - reduceDmg);
+                    int applyDmg = damage - reduceDmg < 1 ? 1 : (int)(damage - reduceDmg);
 
                     player.GetDamage(applyDmg);
 
