@@ -345,8 +345,8 @@ namespace RtanTextDungeon
 
         // !!! 이 아래는 정말 마이너한 용도 !!!
         // 1. InitializeScreenBuffer() - 장면 내용 보관(콘솔 내용을 끌어오는 것은 불가능. 직접 문자열을 전달해야함)
-        // 2. UpdateEffect() - 특정 직사각형 범위에 딜레이마다 파티클을 표시.
-        // 3. IsFullWidth() - 
+        // 2. UpdateEffect() - 특정 직사각형 범위에 딜레이마다 파티클을 표시
+        // 3. IsFullWidth() - 문자가 전각인지 확인
         static void InitializeScreenBuffer(string s, int top = 0, int left = 0) // 복원이 필요한 내용을 버퍼에 저장하기
         {
             // 콘솔 크기만큼 저장공간을 할당. 복원 목적이라면 콘솔크기 밖을 벗어나는 일은 없음.
