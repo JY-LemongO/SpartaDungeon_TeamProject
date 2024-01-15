@@ -14,7 +14,7 @@ namespace RtanTextDungeon
         public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
         public PlayerClass m_Class          { get; private set; }
-        public int Atk                      { get; private set; }
+        public float Atk                    { get; private set; }
         public int Def                      { get; private set; }
         public int Hp                       { get; private set; }
         public int MaxHp                    { get; private set; }
@@ -23,19 +23,14 @@ namespace RtanTextDungeon
         public int Gold                     { get; private set; }
         public int EXP                      { get; private set; }        
         public List<Skill> Skills           { get; protected set; }
-        public int Point                    { get; set; }
-
-        // 런타임에서 가지고 있을 아이템 정보들
-        public Dictionary<Type, Item>   equippedItems       = new Dictionary<Type, Item>();        
-        public List<Item>               items               = new List<Item>();
-
-        // 저장시 가지고 있을 아이템 ID
-        public Dictionary<string, int>  equippedItemIndex   = new Dictionary<string, int>();
-        public List<int>                hasItems            = new List<int>();
-
-        public int NeedEXP { get; private set; } = 10;
+        public List<int> Items              { get; private set; }
+        public List<int> EquippedItemsIndex { get; private set; }
+        public int Point                    { get; set; }        
         
-        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int MaxHp, int MaxMp, int Gold, int point)
+        // 런타임에서 가지고 있을 장착 아이템 정보들
+        public Dictionary<string, Item>       equippedItems = new Dictionary<string, Item>();
+
+        public Player(int Lv, string Name, PlayerClass m_Class, float Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
         {
             this.Lv = Lv;
             this.Name = Name;
@@ -48,48 +43,48 @@ namespace RtanTextDungeon
             this.MaxMp = MaxMp;
             this.Gold = Gold;
             this.Point = Point;
+            this.Skills = Skills;
+            this.Items = Items;
+            this.EquippedItemsIndex = EquippedItemsIndex;
 
-        }
-        
+            if (this.Items == null)
+                this.Items = new List<int>();
+            if (this.EquippedItemsIndex == null)
+                this.EquippedItemsIndex = new List<int>();
+        }        
+
         public void BuyOrSell(int price, Item item, bool isSell = false)
         {            
             Gold += price;
             // 구매 시
             if (!isSell)
             {
-                // 불러오기 시 hasItems에 포함된 ID인지 체크없이 Add 하게되면 무한루프에 빠지게된다.
-                if (!hasItems.Contains(item.ID))
-                    // 아이템의 ID를 리스트에 추가
-                    hasItems.Add(item.ID);
-                // 플레이어 아이템 리스트에 추가
-                items.Add(item);
+                Items.Add(item.ID);
             }
             else
             {
-                // 해당 아이템의 ID를 리스트에서 제거
-                hasItems.Remove(item.ID);
                 // 만약 판매하는 아이템이 장착 중이면 장착해제를 먼저 한다.
                 if (item.IsEquip)
                     EquipOrUnequipItem(item);
                 // 플레이어 아이템 리스트에서 제거한다.
-                items.Remove(item);
+                Items.Remove(item.ID);
             }
         }
 
         public void EquipOrUnequipItem(Item item)
         {
             // item의 Type이(Weapon or Armor) 이미 있을 때 = 뭔가 장착 중일 때
-            if (equippedItems.ContainsKey(item.GetType()))
+            if (equippedItems.ContainsKey(item.TypeName))
             {
                 // 동일 아이템이면
                 // 단순 장착해제
-                if (equippedItems[item.GetType()].ID == item.ID)
+                if (equippedItems[item.TypeName].ID == item.ID)
                     UnequipItem(item);
                 // 동일 아이템이 아니면
                 // 현재 아이템 장착해제 후 선택한 아이템 장착
                 else
                 {
-                    UnequipItem(equippedItems[item.GetType()]);
+                    UnequipItem(equippedItems[item.TypeName]);
                     EquipItem(item);
                 }
             }
@@ -118,11 +113,8 @@ namespace RtanTextDungeon
                     break;
             }
 
-            // 불러오기 시 장착중인 아이템이 저장 되어있으면 키 중복으로 에러발생.
-            if (!equippedItemIndex.ContainsKey(item.GetType().Name))
-                // 장착중인 아이템 인덱스 딕셔너리에 ID 추가 (예 : 키 = "Weapon", 값 = 1)
-                equippedItemIndex.Add(item.GetType().Name, item.ID);
-            equippedItems[item.GetType()] = item;            
+            EquippedItemsIndex.Add(item.ID);
+            equippedItems[item.TypeName] = item;
         }
 
         private void UnequipItem(Item item)
@@ -144,11 +136,11 @@ namespace RtanTextDungeon
                     break;
             }
 
-            equippedItemIndex.Remove(item.GetType().Name);
-            equippedItems.Remove(item.GetType());
+            EquippedItemsIndex.Remove(item.ID);
+            equippedItems.Remove(item.TypeName);
         }
 
-        public (bool, bool, int) CalculateExDamage(int originDamage, bool isSkill)
+        public (bool, bool, float) CalculateExDamage(float originDamage, bool isSkill)
         {
             // 입력: 원래의 데미지, 스킬사용여부
             // 반환: 치명타 성공 여부, 회피 여부, 실 데미지
@@ -156,7 +148,7 @@ namespace RtanTextDungeon
             // 반환값 목록 선언 및 초기화
             bool isCritical = false;
             bool isDodged = false;
-            int calculatedDamage = originDamage;
+            float calculatedDamage = originDamage;
 
             // 치명타 계산
             Random random = new Random();
@@ -186,6 +178,8 @@ namespace RtanTextDungeon
 
         public void Rest() => Hp = MaxHp;
 
+        public void Meditate() => Mp = MaxMp;
+
         public void SetHp(int hp) => Hp = hp;
 
         public void GetDamage(float damage)
@@ -193,32 +187,12 @@ namespace RtanTextDungeon
             Hp -= (int)damage;
             if(Hp < 0)
                 Hp = 0;
-        }        
-
-        // 레벨업 체크
-        public bool IsLevelUp(int exp)
-        {
-            // 매개변수로 받은 경험치 만큼 플레이어 경험치 증가.
-            EXP += exp;
-            if(EXP >= NeedEXP)
-            {
-                // 레벨업에 필요한 경험치 보다 크거나 같으면 레벨업
-                // 레벨업 시 남은 경험치를 매개변수로 재귀호출, 다중레벨업 가능                
-                LevelUp();
-                int remainExp = EXP - NeedEXP;
-                NeedEXP *= 2;
-                EXP = 0;
-                IsLevelUp(remainExp);
-                return true;
-            }
-            return false;
         }
 
-        private void LevelUp()
-        {            
-            Lv++;
-            Atk += 3;
-            Def += 1;            
+        public void StatUp()
+        {
+            Atk += 0.5f;
+            Def += 1;
         }
 
         public virtual void CreateSkills()
@@ -263,7 +237,7 @@ namespace RtanTextDungeon
 
     internal class Archer : Player
     {
-        public Archer(string name) : base(1, name, PlayerClass.Worrior, 12, 3, 90, 100, 1500, 0)
+        public Archer(string name) : base(1, name, PlayerClass.Archer, 12, 3, 90, 100, 1500, 0)
         {
             CreateSkills();
         }
@@ -282,7 +256,7 @@ namespace RtanTextDungeon
 
     internal class Magic : Player
     {
-        public Magic(string name) : base(1, name, PlayerClass.Worrior, 10, 4, 80, 120, 1500, 0)
+        public Magic(string name) : base(1, name, PlayerClass.Magic, 10, 4, 80, 120, 1500, 0)
         {
             CreateSkills();
         }
@@ -301,7 +275,7 @@ namespace RtanTextDungeon
 
     internal class Thief : Player
     {
-        public Thief(string name) : base(1, name, PlayerClass.Worrior, 11, 4, 80, 100, 1500, 0)
+        public Thief(string name) : base(1, name, PlayerClass.Thief, 11, 4, 80, 100, 1500, 0)
         {
             CreateSkills();
         }

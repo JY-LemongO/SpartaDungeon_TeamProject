@@ -8,27 +8,31 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static RtanTextDungeon.Define;
+using static RtanTextDungeon.DataManager;
 
 namespace RtanTextDungeon
 {    
     internal class Dungeon
     {
         // 인게임에서 사용될 Player
-        private Player player = null;
+        private Player player = null;        
         // 인게임에서 상점 이용에 쓰일 아이템 목록을 가지고 있는 Shop 필드
-        private Shop shop = null;
+        private Shop shop = new Shop();
 
         private int chooseFloor = 0;
 
         int startHp;
+        int startMp;
 
         #region 게임시작
-        public void EnterGame(Shop shop)
+        public void EnterGame()
         {
-            if (this.player == null)
+            player = LoadGame<Player>("PlayerData.json");
+
+            if (player == null)
                 CharacterCreation();
-            if (this.shop == null)
-                this.shop = shop;
+            else
+                shop.Restore(player);
 
             string alertMsg = "";
 
@@ -70,7 +74,8 @@ namespace RtanTextDungeon
                         break;
                     case "X":
                     case "x":
-                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);
+                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);                        
+                        SaveGame(player, "PlayerData.json");                        
                         return;
                     default:
                         alertMsg="잘못된 입력입니다!";
@@ -209,10 +214,10 @@ namespace RtanTextDungeon
         #region 상태창
         private void Status()
         {
-            string weaponStatus = player.equippedItems.ContainsKey(typeof(Weapon)) ? $"{player.equippedItems[typeof(Weapon)].AdditionalATK}" : "";
-            string armorStatus  = player.equippedItems.ContainsKey(typeof(Armor)) ? player.equippedItems[typeof(Armor)].AdditionalDEF : "";
-            string amuletATK    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalATK : "";
-            string amuletDEF    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalDEF : "";
+            string weaponStatus = player.equippedItems.ContainsKey("Weapon") ? $"{player.equippedItems["Weapon"].AdditionalATK}" : "";
+            string armorStatus  = player.equippedItems.ContainsKey("Armor") ? player.equippedItems["Armor"].AdditionalDEF : "";
+            string amuletATK    = player.equippedItems.ContainsKey("Amulet") ? player.equippedItems["Amulet"].AdditionalATK : "";
+            string amuletDEF    = player.equippedItems.ContainsKey("Amulet") ? player.equippedItems["Amulet"].AdditionalDEF : "";
 
             string alertMsg = "";
 
@@ -226,11 +231,12 @@ namespace RtanTextDungeon
                 Console.WriteLine("  .=================================.\n");
                 Console.WriteLine("");
                 Console.WriteLine($"    Lv. {player.Lv.ToString("00")}\n\n" +
-                                $"    이름\t:  {player.Name}({player.m_Class})\n\n" +
+                                $"    이름\t:  {player.Name}({player.GetClassName()})\n\n" +
                                 //$"    레벨\t:  Lv. {player.Lv.ToString("00")}\n" +
                                 $"    공격력\t:  {player.Atk} {weaponStatus + amuletATK}\n" +
                                 $"    방어력\t:  {player.Def} {armorStatus + amuletDEF}\n" +
-                                $"    체  력\t:  {player.Hp} / {player.MaxHp}\n\n" +
+                                $"    체  력\t:  {player.Hp} / {player.MaxHp}\n" +
+                                $"    마  나\t:  {player.Mp} / {player.MaxMp}\n\n" +
                                 $"    Gold\t:  {player.Gold:N0} G\n");
 
                 Console.WriteLine("");
@@ -278,10 +284,12 @@ namespace RtanTextDungeon
                 // 아이템 목록은 아이템 리스트에 있는 아이템들을 전부 불러와야겠지?
 
                 int index = 1;
-                if (player.items.Count == 0)
+                if (player.Items.Count == 0)
                     Console.WriteLine($" ㄴ 비어있음");
-                foreach (Item item in player.items)
+                foreach (int Itemindex in player.Items)
                 {
+                    Item item = shop.items[Itemindex];
+
                     if (item.IsEquip)
                         Console.ForegroundColor = ConsoleColor.Magenta;
                     if (item is Weapon weapon)
@@ -320,15 +328,10 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
-                        if (int.TryParse(input, out itemIndex) && itemIndex <= player.items.Count && itemIndex > 0)
+                        if (int.TryParse(input, out itemIndex) && itemIndex <= player.Items.Count && itemIndex > 0)
                         {
                             itemIndex--;
-                            if (player.items[itemIndex] is Weapon weapon)
-                                player.EquipOrUnequipItem(weapon);
-                            else if (player.items[itemIndex] is Armor armor)
-                                player.EquipOrUnequipItem(armor);
-                            else if (player.items[itemIndex] is Amulet amulet)
-                                player.EquipOrUnequipItem(amulet);
+                            player.EquipOrUnequipItem(shop.items[player.Items[itemIndex]]);
                         }
                         else
                         {
@@ -444,6 +447,7 @@ namespace RtanTextDungeon
                                 $"    공격력\t:  {player.Atk}\n" +
                                 $"    방어력\t:  {player.Def}\n" +
                                 $"    체  력\t:  {player.Hp}\n" +
+                                $"    마  나\t:  {player.Mp}\n" +
                                 $"    Gold\t:  {player.Gold:N0} G\n");
                 }
                 Console.ResetColor();
@@ -475,6 +479,8 @@ namespace RtanTextDungeon
                 Console.Clear();
 
                 startHp = player.Hp;
+                startMp = player.Mp;
+
                 switch (input)
                 {
                     case "1":
@@ -484,7 +490,7 @@ namespace RtanTextDungeon
                             chooseFloor = DungeonInfo.HighestFloor;
                         if (player.Hp > 0)
                         {
-                            EnterDungeon(startHp);
+                            EnterDungeon(startHp, startMp);
                             choiceFloorPanel = false;
                         }                            
                         else
@@ -501,7 +507,7 @@ namespace RtanTextDungeon
 
                         if (player.Hp > 0)
                         {
-                            EnterDungeon(startHp);
+                            EnterDungeon(startHp, startMp);
                             choiceFloorPanel = false;
                         }
                         else
@@ -532,7 +538,7 @@ namespace RtanTextDungeon
                                 chooseFloor = inputNum;
                                 if (player.Hp > 0)
                                 {
-                                    EnterDungeon(startHp);
+                                    EnterDungeon(startHp, startMp);
                                     choiceFloorPanel = false;
                                     break;
                                 }
@@ -551,7 +557,7 @@ namespace RtanTextDungeon
         #endregion
 
         #region 배틀
-        private void EnterDungeon(int startHp)
+        private void EnterDungeon(int startHp, int startMp)
         {
             #region 몬스터 스폰
             Monster[] monsters = DungeonInfo.MonsterSpawn(chooseFloor); 
@@ -601,7 +607,7 @@ namespace RtanTextDungeon
                     switch (input)
                     {
                         case "1":
-                            Fight(monsters, startHp, 0);
+                            Fight(monsters, startHp, startMp, 0);
                             invalid = false;
                             break;
                         case "2":
@@ -631,8 +637,8 @@ namespace RtanTextDungeon
 
                     if (invalid)
                         Console.WriteLine("잘못된 입력입니다.");
-                    if(isManaLack)
-                        Console.WriteLine("마나가 부족합니다.");
+                    if (isManaLack)
+                        UI.ColoredWriteLine("마나가 부족합니다.", ConsoleColor.Red);
                     invalid = false;
                     isManaLack = false;
 
@@ -659,7 +665,7 @@ namespace RtanTextDungeon
                                 }
                                     
                                 // Fight 메서드에 스킬 넘버(1~N) 전달
-                                Fight(monsters, startHp, skillNum);
+                                Fight(monsters, startHp, startMp, skillNum);
                                 isSkillShow = false;
                                 break;
                             }
@@ -711,7 +717,7 @@ namespace RtanTextDungeon
             }                   
         }
 
-        private void Fight(Monster[] monsters, int startHp, int skillNum)
+        private void Fight(Monster[] monsters, int startHp, int startMp, int skillNum)
         {            
             bool invalid = false;    
 
@@ -740,12 +746,12 @@ namespace RtanTextDungeon
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
                 {
-                    Victory(monsters.Length, startHp, monsters);   
+                    Victory(monsters.Length, startHp, startMp, monsters);   
                     return;
                 }                        
                 else if (player.Hp <= 0)
                 {
-                    Lose(startHp);
+                    Lose(startHp, startMp);
                     return;
                 }
 
@@ -805,7 +811,7 @@ namespace RtanTextDungeon
                 MonsterPhase(monsters);
                 
                 if (monsters.All(x => x.IsDead))
-                    Victory(monsters.Length, startHp, monsters);                
+                    Victory(monsters.Length, startHp, startMp, monsters);                
 
                 return;
             }            
@@ -844,7 +850,7 @@ namespace RtanTextDungeon
         private void PlayerPhase(Monster monster, int skillNum)
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            int damage;
+            float damage;
             if (skillNum <= 0)
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
@@ -877,7 +883,7 @@ namespace RtanTextDungeon
 
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             
-            int damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
+            float damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
 
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
@@ -971,7 +977,7 @@ namespace RtanTextDungeon
             }
 
             if (player.Hp <= 0)
-                Lose(startHp);
+                Lose(startHp, startMp);
         }
         #endregion
 
@@ -988,22 +994,26 @@ namespace RtanTextDungeon
             if (player.Point >= 10 && player.Point < 35)
             {
                 player.Lv = 2;
+                player.StatUp();
             }
             else if (player.Point >= 35 && player.Point < 65)
             {
                 player.Lv = 3;
+                player.StatUp();
             } 
             else if (player.Point >= 65 && player.Point < 100)
             {
                 player.Lv = 4;
+                player.StatUp();
             }
             else if (player.Point >= 100)
             {
                 player.Lv = 5;
+                player.StatUp();
             }            
         }
 
-        private void Victory(int monsterCount, int startHp, Monster[] monsters)
+        private void Victory(int monsterCount, int startHp, int startMp, Monster[] monsters)
         {
             // Potion 드랍 획득. 드랍 기능의 확장이 필요하다면, 이후 따로 클래스나 메서드를 두는 것을 추천.
             int nPotionDrop = 0;
@@ -1029,6 +1039,7 @@ namespace RtanTextDungeon
                 $"\n" +
                 $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
+                $"HP {startMp} -> {player.Mp}\n" +
                 $"\n" +
                 $"\n" +
                 $"{addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
@@ -1040,7 +1051,7 @@ namespace RtanTextDungeon
             Console.ReadLine();
         }
 
-        private void Lose(int startHp)
+        private void Lose(int startHp, int startMp)
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
             Console.WriteLine("Result\n");
@@ -1049,6 +1060,7 @@ namespace RtanTextDungeon
             Console.WriteLine(
                 $"Lv.{player.Lv} {player.Name}\n" +
                 $"HP {startHp} -> {player.Hp}\n" +
+                $"HP {startMp} -> {player.Mp}\n" +
                 $"\n" +
                 $">>> 계속");
 
@@ -1142,6 +1154,7 @@ namespace RtanTextDungeon
         {
             bool canRest = player.Gold >= 500;
             bool rest = false;
+            bool isMeditated = false;
             bool fullCondition = player.Hp == player.MaxHp;
 
             string alertMsg = "";
@@ -1154,10 +1167,13 @@ namespace RtanTextDungeon
 
                 Console.WriteLine($"  500 G 를 지불하시면 체력을 회복할 수 있습니다.");
                 Console.WriteLine();
+                Console.WriteLine( "  명상을 통해 마나를 회복하세요. (무료)");
+                Console.WriteLine();
                 Console.WriteLine();
                 UI.ColoredWriteLine($"  [ 보유골드 : {player.Gold} G ]",ConsoleColor.Yellow);
                 Console.WriteLine();
                 UI.ColoredWriteLine($"  [ 현재 체력 : {player.Hp} / {player.MaxHp} ]\n", ConsoleColor.Green);
+                UI.ColoredWriteLine($"  [ 현재 마나 : {player.Mp} / {player.MaxMp} ]\n", ConsoleColor.Blue);
                 Console.WriteLine();
                 Console.WriteLine();
                 if (rest)
@@ -1183,8 +1199,14 @@ namespace RtanTextDungeon
                         }
                     }
                 }
+                else if(isMeditated)
+                {
+                    alertMsg = "마나가 회복됐습니다.";
+                    isAlertPositive = true;
+                    isMeditated = false;
+                }    
 
-                Console.WriteLine("  (R) : [휴식]\n\n  (B) : [마을로 돌아가기]\n");
+                Console.WriteLine("  (R) : [휴식]\n\n  (M) : [명상]\n\n  (B) : [마을로 돌아가기]\n");
 
                 string input = UI.UserInput(alertMsg, isAlertPositive);
                 alertMsg = "";
@@ -1206,6 +1228,11 @@ namespace RtanTextDungeon
                     case "B":
                     case "b":
                         return;
+                    case "M":
+                    case "m":
+                        player.Meditate();
+                        isMeditated = true;
+                        break;
                     default:
                         alertMsg = "잘못된 입력입니다!";
                         break;
