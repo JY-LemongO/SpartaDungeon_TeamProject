@@ -60,10 +60,7 @@ namespace RtanTextDungeon
                         items[shopItem.ID].GetItem();
                 foreach (int equippedItem in player.EquippedItemsIndex)
                     if (equippedItem == shopItem.ID)
-                    {
-                        items[shopItem.ID].EquipItem();
-                        player.equippedItems[shopItem.TypeName] = shopItem;
-                    }                        
+                        player.EquipOrUnequipItem(items[shopItem.ID]);
             }
         }
     }
