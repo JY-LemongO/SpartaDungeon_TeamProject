@@ -186,6 +186,8 @@ namespace RtanTextDungeon
 
         public void Rest() => Hp = MaxHp;
 
+        public void Meditate() => Mp = MaxHp;
+
         public void SetHp(int hp) => Hp = hp;
 
         public void GetDamage(float damage)
@@ -263,7 +265,7 @@ namespace RtanTextDungeon
 
     internal class Archer : Player
     {
-        public Archer(string name) : base(1, name, PlayerClass.Worrior, 12, 3, 90, 100, 1500, 0)
+        public Archer(string name) : base(1, name, PlayerClass.Archer, 12, 3, 90, 100, 1500, 0)
         {
             CreateSkills();
         }
@@ -282,7 +284,7 @@ namespace RtanTextDungeon
 
     internal class Magic : Player
     {
-        public Magic(string name) : base(1, name, PlayerClass.Worrior, 10, 4, 80, 120, 1500, 0)
+        public Magic(string name) : base(1, name, PlayerClass.Magic, 10, 4, 80, 120, 1500, 0)
         {
             CreateSkills();
         }
@@ -301,7 +303,7 @@ namespace RtanTextDungeon
 
     internal class Thief : Player
     {
-        public Thief(string name) : base(1, name, PlayerClass.Worrior, 11, 4, 80, 100, 1500, 0)
+        public Thief(string name) : base(1, name, PlayerClass.Thief, 11, 4, 80, 100, 1500, 0)
         {
             CreateSkills();
         }
