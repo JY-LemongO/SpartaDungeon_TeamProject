@@ -27,7 +27,8 @@ namespace RtanTextDungeon
         }
         #endregion
 
-        #region Load  
+        #region Load
+        // 게임 로드 - T타입 정보 로드
         public static T? LoadGame<T>(string fileName)
         {
             string savePath = Path.Combine(DIRECTORY_NAME, fileName);

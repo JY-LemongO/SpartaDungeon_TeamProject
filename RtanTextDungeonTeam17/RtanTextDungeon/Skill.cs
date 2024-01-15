@@ -37,7 +37,7 @@ namespace RtanTextDungeon
 
         
 
-        public int UseSkill(int originDamage)
+        public float UseSkill(float originDamage)
         {
             Owner.Mp -= Cost;                       // 마나 소모
             return originDamage * AtkMultiplier;    // 스킬 배수 계산 반영 데미지 반환
