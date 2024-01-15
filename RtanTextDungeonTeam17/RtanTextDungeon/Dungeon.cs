@@ -59,6 +59,7 @@ namespace RtanTextDungeon
             while (true)
             {
                 UI.AsciiArt(UI.AsciiPreset.MainMenu);
+                UI.AsciiArt(UI.AsciiPreset.MainMenu2);
 
                 Console.WriteLine("  (E) : [상태]\n\n  (I) : [인벤토리]\n\n  (S) : [상점]\n\n  (D) : [던전입장]\n\n  (P) : [회복아이템]\n\n  (R) : [휴식]\n\n  (X) : [게임종료]\n");
                 
@@ -1090,7 +1091,7 @@ namespace RtanTextDungeon
             Console.WriteLine(
                 $"  스파르타의 괴물 {monsterCount} 마리 조차 당신을\n  막을 순 없었습니다.\n" +
                 $"\n" +
-                $"  {player.m_Class} {player.Name}\n" +
+                $"  {player.GetClassName()} {player.Name}\n" +
                 $"  Lv.  {preLv}   \t-> {player.Lv}\n" +
                 $"  EXP  {preExp}  \t-> {player.Point}\n" +
                 $"  HP   {startHp} \t-> {player.Hp}\n" +
@@ -1107,11 +1108,14 @@ namespace RtanTextDungeon
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
             UI.AsciiArt(UI.AsciiPreset.DungeonFail);
-            Console.WriteLine("  Result\n");
-            UI.ColoredWriteLine("  스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
+
+            Console.WriteLine("  [ 결과 확인 ]\n\n");
+            Console.WriteLine($"  현재 도전 : {DungeonInfo.CurrentFloor} 층\n");
+            UI.ColoredWriteLine("  전투 결과 : 패배\n", ConsoleColor.Red);
+            Console.WriteLine($"  스파르타의 힘 앞에 굴복했습니다.\n");
 
             Console.WriteLine(
-                $"  {player.m_Class} {player.Name}\n" +
+                $"  {player.GetClassName()} {player.Name}\n" +
                 $"  Lv.  {player.Lv} \n" +
                 $"  HP   {startHp} \t-> {player.Hp}\n" +
                 $"  MP   {startMp} \t-> {player.Mp}\n" +

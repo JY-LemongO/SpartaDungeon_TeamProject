@@ -40,6 +40,7 @@ namespace RtanTextDungeon
             CreateCharacter,
             SelectClass,
             MainMenu,
+            MainMenu2,
             Battle,
             Status,
             PotionInventory,
@@ -130,20 +131,36 @@ namespace RtanTextDungeon
                     break;
 
                 case AsciiPreset.MainMenu:
-                    Console.WriteLine("===============================================================================================");
-                    Console.WriteLine("");
-                    Console.WriteLine(" _______                      __            _____                                              ");
-                    Console.WriteLine("|     __|.-----..---.-..----.|  |_ .---.-. |     \\ .--.--..-----..-----..-----..-----..-----. ");
-                    Console.WriteLine("|__     ||  _  ||  _  ||   _||   _||  _  | |  --  ||  |  ||     ||  _  ||  -__||  _  ||     |  ");
-                    Console.WriteLine("|_______||   __||___._||__|  |____||___._| |_____/ |_____||__|__||___  ||_____||_____||__|__|  ");
-                    Console.WriteLine("         |__|                                                    |_____|                       ");
-                    Console.WriteLine("");
-                    Console.WriteLine("===============================================================================================");
-                    Console.Write("                         └ [ ");
+                    Console.WriteLine("=======================================================================");
+                    Console.WriteLine("               _   ____  ____   _    ____ _____  _      _              ");
+                    Console.WriteLine("              | | / ___||  _ \\ / \\  |  _ \\_   _|/ \\    | |             ");
+                    Console.WriteLine("              | | \\___ \\| |_) / _ \\ | |_) || | / _ \\   | |             ");
+                    Console.WriteLine("              |_|  ___) |  __/ ___ \\|  _ < | |/ ___ \\  |_|             ");
+                    Console.WriteLine("              (_) |____/|_| /_/   \\_\\_| \\_\\|_/_/   \\_\\ (_)             ");
+                    Console.WriteLine("                                                                       ");
+                    Console.WriteLine("=======================================================================");
+                    Console.Write("              └ [ ");
                     RandomColoredWrite("스파르타 던전에 오신것을 환영합니다");// 랜덤 색으로 문자열 표현
-                    Console.WriteLine(" ] ┘                           ");
+                    Console.WriteLine(" ] ┘              ");
                     Console.WriteLine("");
                     Console.WriteLine("");
+                    break;
+
+                case AsciiPreset.MainMenu2:
+                    x = 36; y = 13;
+                    DrawOnSpecificPos("" +
+                        "~         ~~          __\n" +
+                        "       _T      .,,.    ~--~ ^^\n" +
+                        " ^^   // \\                    ~\n" +
+                        "      ][O]    ^^      ,-~ ~\n" +
+                        "   /''-I_I         _II____\n" +
+                        "__/_  /   \\ ______/ ''   /'\\_,__\n" +
+                        "  | II--'''' \\,--:--..,_/,.-{ },\n" +
+                        "; '/__\\,.--';|   |[] .-.| O{ _ }\n" +
+                        ":' |  | []  -|   ''--:.;[,.'\\,/\n" +
+                        "'  |[]|,.--'' '',   ''-,.    |\n" +
+                        "  ..    ..-''    ;       ''. '",
+                        (x, y));
                     break;
 
                 case AsciiPreset.CreateCharacter:
@@ -305,7 +322,7 @@ namespace RtanTextDungeon
                     break;
 
                 case AsciiPreset.DungeonFail:
-                    x = 44; y = 10;
+                    x = 45; y = 15;
                     DrawOnSpecificPos("" +
                         "  <=======]}======\n" +
                         "    --.   /|\n" +
