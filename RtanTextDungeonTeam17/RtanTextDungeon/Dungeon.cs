@@ -767,7 +767,7 @@ namespace RtanTextDungeon
                 for (int i = 0; i < monsters.Length; i++)
                 {
                     Console.Write("    ");
-                    monsters[i].ShowText();
+                    monsters[i].ShowText(i + 1);
                     Console.WriteLine("");
                 }
                 Console.WriteLine("  ===================================================================\n");
