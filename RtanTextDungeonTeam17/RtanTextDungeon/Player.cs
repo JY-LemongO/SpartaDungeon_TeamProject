@@ -199,8 +199,8 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>()
             {
-                new Skill(this, "힘없는 휘두르기",10, 1, "공격력 * 1 로 하나의 적을 공격합니다.", 1),
-                new Skill(this, "별반 차이 없는 휘두르기", 10, 1, "그냥 때리는게 마나도 안들고 좋아보입니다.", 1)
+                new Skill("힘없는 휘두르기",10, 1, "공격력 * 1 로 하나의 적을 공격합니다.", 1),
+                new Skill("별반 차이 없는 휘두르기", 10, 1, "그냥 때리는게 마나도 안들고 좋아보입니다.", 1)
             };
     }
 
@@ -227,8 +227,8 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>() 
             {
-                new Skill(this, "알파 스트라이크", 10, 2, "하나의 적을 공격합니다. / 공격력 * 2", 1),
-                new Skill(this, "짱센 스트라이크", 20, 1, "둘의 적을 랜덤으로 공격합니다. / 공격력 * 1", 2)
+                new Skill("알파 스트라이크", 10, 2, "하나의 적을 공격합니다. / 공격력 * 2", 1),
+                new Skill("짱센 스트라이크", 20, 1, "둘의 적을 랜덤으로 공격합니다. / 공격력 * 1", 2)
             };
         }
 
@@ -246,8 +246,8 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>()
             {
-                new Skill(this, "급소 조준", 10, 2, "급소에 화살을 꽂습니다. / 공격력 * 2", 1),
-                new Skill(this, "몰아치는 화살", 20, 1, "3명의 적을 공격합니다. / 공격력 * 1", 3)
+                new Skill("급소 조준", 10, 2, "급소에 화살을 꽂습니다. / 공격력 * 2", 1),
+                new Skill("몰아치는 화살", 20, 1, "3명의 적을 공격합니다. / 공격력 * 1", 3)
             };
         }
 
@@ -265,8 +265,8 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>()
             {
-                new Skill(this, "마법 화살", 10, 2, "마력 화살 하나를 날립니다. / 공격력 * 2", 1),
-                new Skill(this, "번개 사슬", 35, 2, "3명의 적에게 전기 피해룰 줍니다. / 공격력 * 2", 3)
+                new Skill("마법 화살", 10, 2, "마력 화살 하나를 날립니다. / 공격력 * 2", 1),
+                new Skill("번개 사슬", 35, 2, "3명의 적에게 전기 피해룰 줍니다. / 공격력 * 2", 3)
             };
         }
 
@@ -284,8 +284,8 @@ namespace RtanTextDungeon
         {
             Skills = new List<Skill>()
             {
-                new Skill(this, "힘줄 자르기", 10, 2, "강하게 공격합니다. / 공격력 *2", 1),
-                new Skill(this, "암습", 30, 4, "뒤에서 급소를 공격합니다. / 공격력 * 4", 1)
+                new Skill("힘줄 자르기", 10, 2, "강하게 공격합니다. / 공격력 *2", 1),
+                new Skill("암습", 30, 4, "뒤에서 급소를 공격합니다. / 공격력 * 4", 1)
             };
     }
 

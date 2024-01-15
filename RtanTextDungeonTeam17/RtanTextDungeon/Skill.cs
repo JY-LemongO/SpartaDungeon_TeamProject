@@ -10,8 +10,6 @@ namespace RtanTextDungeon
 {
     internal class Skill
     {
-        [JsonIgnore]
-        public Player Owner             { get; set; }
         public int OriginNumber         { get; set; }
         public string Name              { get; set; }
         public int Cost                 { get; set; }
@@ -21,9 +19,8 @@ namespace RtanTextDungeon
 
         static private int tempNumber = 1; //정적 변수 증가시켜 넘버링
 
-        public Skill(Player owner,string name, int cost, int atkMultiplier, string description, int numberTargets)
+        public Skill(string name, int cost, int atkMultiplier, string description, int numberTargets)
         {
-            Owner = owner;
             Name = name;
             Cost = cost;
             AtkMultiplier = atkMultiplier;
@@ -32,20 +29,19 @@ namespace RtanTextDungeon
             NumberTargets = numberTargets;
             if (NumberTargets < 1) NumberTargets = 1;
             if (NumberTargets > 5) NumberTargets = 5;
-
         }
 
         
 
-        public float UseSkill(float originDamage)
+        public float UseSkill(Player player, float originDamage)
         {
-            Owner.Mp -= Cost;                       // 마나 소모
+            player.Mp -= Cost;                       // 마나 소모
             return originDamage * AtkMultiplier;    // 스킬 배수 계산 반영 데미지 반환
         }
 
-        public bool IsAvailable()                   // 마나 잔여량으로 사용 가능 체크
+        public bool IsAvailable(Player player)                   // 마나 잔여량으로 사용 가능 체크
         {
-            return Owner.Mp >= Cost;
+            return player.Mp >= Cost;
         }
 
         public void ShowText() // 스킬 정보 출력

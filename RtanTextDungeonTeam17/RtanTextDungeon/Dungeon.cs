@@ -658,7 +658,7 @@ namespace RtanTextDungeon
                             //입력 값이 (숫자 and 1 이상 and 스킬 개수 이하) 인 경우
                             if (int.TryParse(input,out skillNum) && skillNum >= 1 && (skillNum - 1) < player.Skills.Count)
                             {
-                                if (!player.Skills[skillNum-1].IsAvailable())
+                                if (!player.Skills[skillNum-1].IsAvailable(player))
                                 {
                                     isManaLack = true;
                                     continue;
@@ -854,7 +854,7 @@ namespace RtanTextDungeon
             if (skillNum <= 0)
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
-                damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1)); 
+                damage = player.Skills[skillNum - 1].UseSkill(player, player.Atk + new Random().Next(-error, error + 1)); 
             
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
@@ -883,7 +883,7 @@ namespace RtanTextDungeon
 
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             
-            float damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
+            float damage = player.Skills[skillNum - 1].UseSkill(player, player.Atk + new Random().Next(-error, error + 1));
 
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
