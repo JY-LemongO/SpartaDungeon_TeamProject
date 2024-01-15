@@ -1090,7 +1090,7 @@ namespace RtanTextDungeon
                 $"\n" +
                 $"  Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
                 $"  HP {startHp} -> {player.Hp}\n" +
-                $"  HP {startMp} -> {player.Mp}\n" +
+                $"  MP {startMp} -> {player.Mp}\n" +
                 $"\n" +
                 $"\n" +
                 $"  {addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
@@ -1263,6 +1263,7 @@ namespace RtanTextDungeon
                     case "R":
                     case "r":
                         rest = true;
+                        isMeditated = false;
                         canRest = player.Gold >= 500;
                         if (!fullCondition && canRest)
                         {
@@ -1276,6 +1277,7 @@ namespace RtanTextDungeon
                     case "M":
                     case "m":
                         player.Meditate();
+                        rest = false;
                         isMeditated = true;
                         break;
                     default:

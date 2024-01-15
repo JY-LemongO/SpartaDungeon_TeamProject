@@ -113,7 +113,8 @@ namespace RtanTextDungeon
                     break;
             }
 
-            EquippedItemsIndex.Add(item.ID);
+            if (!EquippedItemsIndex.Any(x => x == item.ID))
+                EquippedItemsIndex.Add(item.ID);
             equippedItems[item.TypeName] = item;
         }
 
