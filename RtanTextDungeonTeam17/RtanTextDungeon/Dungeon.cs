@@ -845,7 +845,7 @@ namespace RtanTextDungeon
         private void PlayerPhase(Monster monster, int skillNum)
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            int damage;
+            float damage;
             if (skillNum <= 0)
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
@@ -878,7 +878,7 @@ namespace RtanTextDungeon
 
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             
-            int damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
+            float damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
 
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
@@ -989,18 +989,22 @@ namespace RtanTextDungeon
             if (player.Point >= 10 && player.Point < 35)
             {
                 player.Lv = 2;
+                player.StatUp();
             }
             else if (player.Point >= 35 && player.Point < 65)
             {
                 player.Lv = 3;
+                player.StatUp();
             } 
             else if (player.Point >= 65 && player.Point < 100)
             {
                 player.Lv = 4;
+                player.StatUp();
             }
             else if (player.Point >= 100)
             {
                 player.Lv = 5;
+                player.StatUp();
             }            
         }
 

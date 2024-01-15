@@ -14,7 +14,7 @@ namespace RtanTextDungeon
         public int Lv                       { get; set; }
         public string Name                  { get; private set; }        
         public PlayerClass m_Class          { get; private set; }
-        public int Atk                      { get; private set; }
+        public float Atk                    { get; private set; }
         public int Def                      { get; private set; }
         public int Hp                       { get; private set; }
         public int MaxHp                    { get; private set; }
@@ -30,7 +30,7 @@ namespace RtanTextDungeon
         // 런타임에서 가지고 있을 장착 아이템 정보들
         public Dictionary<string, Item>       equippedItems = new Dictionary<string, Item>();
 
-        public Player(int Lv, string Name, PlayerClass m_Class, int Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
+        public Player(int Lv, string Name, PlayerClass m_Class, float Atk, int Def, int MaxHp, int MaxMp, int Gold, int point, List<Skill> Skills = null, List<int> Items = null, List<int> EquippedItemsIndex = null)
         {
             this.Lv = Lv;
             this.Name = Name;
@@ -140,7 +140,7 @@ namespace RtanTextDungeon
             equippedItems.Remove(item.TypeName);
         }
 
-        public (bool, bool, int) CalculateExDamage(int originDamage, bool isSkill)
+        public (bool, bool, float) CalculateExDamage(float originDamage, bool isSkill)
         {
             // 입력: 원래의 데미지, 스킬사용여부
             // 반환: 치명타 성공 여부, 회피 여부, 실 데미지
@@ -148,7 +148,7 @@ namespace RtanTextDungeon
             // 반환값 목록 선언 및 초기화
             bool isCritical = false;
             bool isDodged = false;
-            int calculatedDamage = originDamage;
+            float calculatedDamage = originDamage;
 
             // 치명타 계산
             Random random = new Random();
@@ -185,6 +185,12 @@ namespace RtanTextDungeon
             Hp -= (int)damage;
             if(Hp < 0)
                 Hp = 0;
+        }
+
+        public void StatUp()
+        {
+            Atk += 0.5f;
+            Def += 1;
         }
 
         public virtual void CreateSkills()
