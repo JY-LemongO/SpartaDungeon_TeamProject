@@ -27,7 +27,27 @@ namespace RtanTextDungeon
         #region 게임시작
         public void EnterGame()
         {
-            player = LoadGame<Player>("PlayerData.json");
+            if (LoadGame<Player>("PlayerData.json") != null)
+            {
+                switch (LoadGame<Player>("PlayerData.json").MyClass)
+                {
+                    case PlayerClass.Warrior:
+                        player = LoadGame<Warrior>("PlayerData.json");
+                        break;
+                    case PlayerClass.Archer:
+                        player = LoadGame<Archer>("PlayerData.json");
+                        break;
+                    case PlayerClass.Magic:
+                        player = LoadGame<Magic>("PlayerData.json");
+                        break;
+                    case PlayerClass.Thief:
+                        player = LoadGame<Thief>("PlayerData.json");
+                        break;
+                    case PlayerClass.Deadbeat:
+                        player = LoadGame<Deadbeat>("PlayerData.json");
+                        break;
+                }
+            }
 
             if (player == null)
                 CharacterCreation();
@@ -159,7 +179,7 @@ namespace RtanTextDungeon
                 Console.Clear();// 콘솔 화면 한 번 지우기
                 switch (input)
                 {
-                    case "1":
+                    case "1":                        
                         player = new Warrior(name);
                         break;
                     case "2":
@@ -575,29 +595,38 @@ namespace RtanTextDungeon
             {
                 UI.AsciiArt(UI.AsciiPreset.Battle);
 
-                Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
-                Console.WriteLine($"" +
-                    $"====================\n" +
-                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
-                    $"====================\n");
 
-                Console.WriteLine("=============[몬스터 목록]============\n");
+                Console.WriteLine("  ===========================[몬스터 목록]===========================\n");
                 for (int i = 0; i < monsters.Length; i++)
+                {
+                    Console.Write("    ");
                     monsters[i].ShowText();
-                Console.WriteLine("\n======================================\n");
+                    Console.WriteLine("");
+                }
+                Console.WriteLine("  ===================================================================\n");
+                Console.WriteLine("");
 
-                Console.WriteLine($"\n" +
-                    $"[내정보]\n" +
-                    $"Lv.{player.Lv}\t{player.Name}\n" +
-                    $"HP {player.Hp}/{player.MaxHp}\n" +
-                    $"MP {player.Mp}/{player.MaxMp}\n\n");
+
+                string floorStatus = $"" +
+                    $".-------------------.\n\n" +
+                    $"  최고 층수 : {DungeonInfo.HighestFloor} 층\n\n" +
+                    $"  현재 도전 : {DungeonInfo.CurrentFloor} 층\n\n" +
+                    $"'-------------------'";
+
+                UI.DrawOnSpecificPos(floorStatus, (Console.CursorLeft + 48, Console.CursorTop));
+
+                Console.WriteLine($"" +
+                    $"  [ 내 정보 ]\n" +
+                    $"  Lv.{player.Lv}\t{player.Name}\n" +
+                    $"  HP \t{player.Hp}/{player.MaxHp}\n" +
+                    $"  MP \t{player.Mp}/{player.MaxMp}\n\n");
                 
                 if(!(isSkillShow||isUseItem))
                 {
-                    Console.WriteLine("1. 공격\n");
-                    Console.WriteLine("2. 스킬\n");
-                    Console.WriteLine("3. 회복\n");
-                    Console.WriteLine("0. 도망친다!\n");
+                    Console.WriteLine("  1. 공격\n");
+                    Console.WriteLine("  2. 스킬\n");
+                    Console.WriteLine("  3. 회복\n");
+                    Console.WriteLine("  0. 도망친다!\n");
 
                     string input = UI.UserInput(alertMsg, isAlertPositive);
                     alertMsg = "";
@@ -632,13 +661,13 @@ namespace RtanTextDungeon
                     {
                         player.Skills[i].ShowText();
                     }
-                    Console.WriteLine("0. 취소\n");
-                    Console.WriteLine("원하시는 행동을 입력해주세요.\n");
+                    Console.WriteLine("  0. 취소\n");
+                    Console.WriteLine("  원하시는 행동을 입력해주세요.\n");
 
                     if (invalid)
-                        Console.WriteLine("잘못된 입력입니다.");
+                        Console.WriteLine("  잘못된 입력입니다.");
                     if (isManaLack)
-                        UI.ColoredWriteLine("마나가 부족합니다.", ConsoleColor.Red);
+                        UI.ColoredWriteLine("  마나가 부족합니다.", ConsoleColor.Red);
                     invalid = false;
                     isManaLack = false;
 
@@ -677,8 +706,8 @@ namespace RtanTextDungeon
                 else if (isUseItem)
                 {
                     Potion? potion = shop.items.OfType<Potion>().FirstOrDefault(p => p.ID == 1000);
-                    Console.WriteLine($"1. {potion.Name}을 사용 ( 남은 수량 : {potion.count} )\n");
-                    Console.WriteLine("0. 취소\n");
+                    Console.WriteLine($"  1. {potion.Name}을 사용 ( 남은 수량 : {potion.count} )\n");
+                    Console.WriteLine("  0. 취소\n");
                     Console.WriteLine("");
                     Console.WriteLine("");
 
@@ -733,15 +762,31 @@ namespace RtanTextDungeon
 
                 UI.AsciiArt(UI.AsciiPreset.Battle);
 
-                Console.WriteLine($"" +
-                    $"====================\n" +
-                    $"현재 던전 : {DungeonInfo.CurrentFloor}층\n" +
-                    $"====================\n");
 
-                Console.WriteLine("=============[몬스터 목록]============\n");
+                Console.WriteLine("  ===========================[몬스터 목록]===========================\n");
                 for (int i = 0; i < monsters.Length; i++)
-                    monsters[i].ShowText(i + 1);
-                Console.WriteLine("\n======================================\n");
+                {
+                    Console.Write("    ");
+                    monsters[i].ShowText();
+                    Console.WriteLine("");
+                }
+                Console.WriteLine("  ===================================================================\n");
+                Console.WriteLine("");
+
+
+                string floorStatus = $"" +
+                    $".-------------------.\n\n" +
+                    $"  최고 층수 : {DungeonInfo.HighestFloor} 층\n\n" +
+                    $"  현재 도전 : {DungeonInfo.CurrentFloor} 층\n\n" +
+                    $"'-------------------'";
+
+                UI.DrawOnSpecificPos(floorStatus, (Console.CursorLeft + 48, Console.CursorTop));
+
+                Console.WriteLine($"" +
+                    $"  [ 내 정보 ]\n" +
+                    $"  Lv.{player.Lv}\t{player.Name}\n" +
+                    $"  HP \t{player.Hp}/{player.MaxHp}\n" +
+                    $"  MP \t{player.Mp}/{player.MaxMp}\n\n");
 
                 // 전투 종료
                 if (monsters.All(x => x.IsDead))
@@ -758,13 +803,14 @@ namespace RtanTextDungeon
                 // 단일 타겟인 경우
                 if (!isMultiTarget)
                 {
-                    Console.WriteLine($"\n" +
-                    $"[내정보]\n" +
-                    $"Lv.{player.Lv}\t{player.Name}\n" +
-                    $"HP {player.Hp}/{player.MaxHp}\n\n");
+                    //Console.WriteLine($"" +
+                    //    $"  [ 내 정보 ]\n" +
+                    //    $"  Lv.{player.Lv}\t{player.Name}\n" +
+                    //    $"  HP \t{player.Hp}/{player.MaxHp}\n" +
+                    //    $"  MP \t{player.Mp}/{player.MaxMp}\n\n");
 
-                    Console.WriteLine("0. 취소\n");
-                    Console.WriteLine("대상을 선택해주세요.\n");
+                    Console.WriteLine("  0. 취소\n");
+                    Console.WriteLine("  대상을 선택해주세요.\n");
 
                     if (invalid)
                         alertMsg = "잘못된 입력입니다!";
@@ -822,6 +868,11 @@ namespace RtanTextDungeon
         /// </summary>        
         private bool TryRun(Monster[] monsters)
         {
+            UI.AsciiArt(UI.AsciiPreset.Battle);
+            Console.WriteLine("");
+            Console.WriteLine("  도망치기를 시도합니다!");
+            Console.WriteLine("");
+            Console.Write("  ");
             for (int i = 0; i < 3; i++)
             {
                 Console.Write(".");
@@ -831,13 +882,13 @@ namespace RtanTextDungeon
             int randRun = new Random().Next(0, 10);
             if (randRun < 6)
             {
-                UI.ColoredWriteLine("\n스파르타 교육을 뿌리칠 수 없었습니다... [몬스터의 턴으로 넘어갑니다]", ConsoleColor.DarkRed);
+                UI.ColoredWriteLine("\n\n  스파르타 교육을 뿌리칠 수 없었습니다... [몬스터의 턴으로 넘어갑니다]", ConsoleColor.DarkRed);
                 UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
                 MonsterPhase(monsters);
             }
             else
             {
-                UI.ColoredWriteLine("\n뒤도 돌아보지 않고 도망쳤습니다. [잠시 후 던전입구에 도착합니다]",ConsoleColor.Green);
+                UI.ColoredWriteLine("\n\n  뒤도 돌아보지 않고 도망쳤습니다. [잠시 후 던전입구에 도착합니다]", ConsoleColor.Green);
                 UI.UserInput(reqMsg: "아무 키나 입력해주세요.");
                 return true;
             }                
@@ -865,12 +916,12 @@ namespace RtanTextDungeon
 
             UI.AsciiArt(UI.AsciiPreset.Battle);
 
-            Console.WriteLine($"{player.Name} 의 공격!\n" +
+            Console.WriteLine($"  {player.Name} 의 공격!\n" +
             $"\n" +
-            $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
+            $"  {monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
             $"\n" +
-            $"{monster.Name}\n");
-            UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+            $"  {monster.Name}\n");
+            UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
             Console.WriteLine("\n계속\n");
 
             Console.ReadLine();
@@ -903,13 +954,13 @@ namespace RtanTextDungeon
                     monster.GetDamage(damage);
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
 
-                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                    Console.WriteLine($"  {player.Name} 의 공격!\n" +
                         $"\n" +
-                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
+                        $"  {monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
-                        $"{monster.Name}\n");
-                    UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
-                    Console.WriteLine("\n계속\n");
+                        $"  {monster.Name}\n");
+                    UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+                    Console.WriteLine("\n  계속\n");
 
                     Console.ReadLine();
                 }
@@ -937,13 +988,13 @@ namespace RtanTextDungeon
                     monster.GetDamage(damage);
                     string currentHp = monster.IsDead ? "Dead" : monster.Hp.ToString();
 
-                    Console.WriteLine($"{player.Name} 의 공격!\n" +
+                    Console.WriteLine($"  {player.Name} 의 공격!\n" +
                         $"\n" +
-                        $"{monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
+                        $"  {monster.Name} {(isDodged ? "은(는) 공격을 피했습니다!" : "을(를) 맞췄습니다.")} [데미지{(isCritical ? "(크리티컬!!)" : "")} : {damage}]\n" +
                         $"\n" +
-                        $"{monster.Name}\n");
-                    UI.ColoredWriteLine($"HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
-                    Console.WriteLine("\n계속\n");
+                        $"  {monster.Name}\n");
+                    UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
+                    Console.WriteLine("\n  계속\n");
 
                     Console.ReadLine();
                 }
@@ -966,11 +1017,11 @@ namespace RtanTextDungeon
 
                     player.GetDamage(applyDmg);
 
-                    Console.WriteLine($"{monster.Name} 의 공격!\n" +
-                    $"{player.Name} 을(를) 맞췄습니다. [받은 데미지 : {applyDmg}] [데미지 경감 : {reduceDmg}]\n" +
+                    Console.WriteLine($"  {monster.Name} 의 공격!\n" +
+                    $"  {player.Name} 을(를) 맞췄습니다. [받은 데미지 : {applyDmg}] [데미지 경감 : {reduceDmg}]\n" +
                     $"\n" +
-                    $"{player.Name}\n");
-                    UI.ColoredWriteLine($"HP {prevHp} -> {player.Hp}",ConsoleColor.Red);
+                    $"  {player.Name}\n");
+                    UI.ColoredWriteLine($"  HP {prevHp} -> {player.Hp}",ConsoleColor.Red);
                     
                     Console.ReadLine();
                 }                    
@@ -1028,43 +1079,39 @@ namespace RtanTextDungeon
             UI.AsciiArt(UI.AsciiPreset.Battle);
 
             DungeonInfo.UpdateInfo();
-            Console.WriteLine($"현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
-            Console.WriteLine("Result\n");
+            Console.WriteLine($"  현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
+            Console.WriteLine("  Result\n");
 
-            UI.ColoredWriteLine("Victory\n", ConsoleColor.Green);
+            UI.ColoredWriteLine("  Victory\n", ConsoleColor.Green);
             int preLv = player.Lv;
             LevelCal(monsters, player); 
             Console.WriteLine(
-                $"스파르타의 괴물 {monsterCount} 마리 조차 당신을 막을 순 없었습니다.\n" +
+                $"  스파르타의 괴물 {monsterCount} 마리 조차 당신을 막을 순 없었습니다.\n" +
                 $"\n" +
-                $"Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
-                $"HP {startHp} -> {player.Hp}\n" +
-                $"HP {startMp} -> {player.Mp}\n" +
-                $"\n" +
-                $"\n" +
-                $"{addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
-                (nPotionDrop!=0?$"\n{potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
+                $"  Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
+                $"  HP {startHp} -> {player.Hp}\n" +
+                $"  HP {startMp} -> {player.Mp}\n" +
                 $"\n" +
                 $"\n" +
-                $">>> 계속");
-             
-            Console.ReadLine();
+                $"  {addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
+                (nPotionDrop!=0?$"\n  {potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
+                $"\n" +
+                $"\n");
+            string input = UI.UserInput(reqMsg: "(다음으로...)");
         }
 
         private void Lose(int startHp, int startMp)
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
-            Console.WriteLine("Result\n");
-            UI.ColoredWriteLine("스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
+            Console.WriteLine("  Result\n");
+            UI.ColoredWriteLine("  스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
 
             Console.WriteLine(
-                $"Lv.{player.Lv} {player.Name}\n" +
-                $"HP {startHp} -> {player.Hp}\n" +
-                $"HP {startMp} -> {player.Mp}\n" +
-                $"\n" +
-                $">>> 계속");
-
-            Console.ReadLine();
+                $"  Lv.{player.Lv} {player.Name}\n" +
+                $"  HP {startHp} -> {player.Hp}\n" +
+                $"  HP {startMp} -> {player.Mp}\n" +
+                $"\n");
+            string input = UI.UserInput(reqMsg: "(다음으로...)");
         }
         #endregion
 
@@ -1180,7 +1227,6 @@ namespace RtanTextDungeon
                 {
                     if (fullCondition)
                     {
-                        //UI.ColoredWriteLine($"  이미 컨디션이 최상입니다!\n", ConsoleColor.Green);
                         alertMsg = "이미 컨디션이 최상입니다!";
                         isAlertPositive = true;
                     }
@@ -1188,13 +1234,12 @@ namespace RtanTextDungeon
                     {
                         if (canRest)
                         {
-                            //UI.ColoredWriteLine($"  회복되었습니다!\n", ConsoleColor.Green);
                             alertMsg = "회복되었습니다!";
+                            isAlertPositive = true;
                             fullCondition = true;
                         }
                         else
                         {
-                            //UI.ColoredWriteLine($"  숙박 비용이 모자랍니다!\n", ConsoleColor.DarkRed);
                             alertMsg = "숙박 비용이 모자랍니다!";
                         }
                     }

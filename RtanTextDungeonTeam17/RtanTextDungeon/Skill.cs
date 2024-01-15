@@ -46,8 +46,8 @@ namespace RtanTextDungeon
 
         public void ShowText() // 스킬 정보 출력
         {
-            Console.WriteLine($"{OriginNumber}. {Name} - MP {Cost}");
-            Console.WriteLine($"    {Description}\n");
+            Console.WriteLine($"  {OriginNumber}. {Name} - MP {Cost}");
+            Console.WriteLine($"     {Description}\n");
         }
     }
 }
