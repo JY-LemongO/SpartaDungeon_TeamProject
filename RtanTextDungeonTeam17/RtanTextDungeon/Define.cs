@@ -10,7 +10,7 @@ namespace RtanTextDungeon
     {
         public enum PlayerClass
         {
-            Worrior,
+            Warrior,
             Archer,
             Magic,
             Thief,

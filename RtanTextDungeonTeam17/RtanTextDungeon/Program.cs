@@ -9,8 +9,11 @@ namespace RtanTextDungeon
     {
         static void Main(string[] args)
         {
-            Console.WindowWidth = 144;
-            Console.WindowHeight = 48;
+            //Console.WindowWidth = 144;
+            //Console.WindowHeight = 48;
+
+            Console.WindowWidth = 200;
+            Console.WindowHeight = 70;
 
             // 타이틀 화면
             UI.AsciiArt(UI.AsciiPreset.TitleArt);
