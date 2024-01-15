@@ -49,6 +49,8 @@ namespace RtanTextDungeon
             DungeonEntrance2,
             DungeonEntrance3,
             Inn,
+            DungeonVictory,
+            DungeonFail,
 
         }
 
@@ -64,6 +66,7 @@ namespace RtanTextDungeon
         /// <param name="preset">표시할 아스키아트의 프리셋을 고릅니다. </param>
         public static void AsciiArt(AsciiPreset preset)
         {
+            // https://www.asciiart.eu/mythology/centaurs
             ConsoleColor statusColor = ConsoleColor.Gray;
 
             int x, y;
@@ -277,6 +280,43 @@ namespace RtanTextDungeon
                         "ZZZzz /,`.-'`'    -.  ;-;;,_\n" +
                         "     |,4-  ) )-,_. ,\\ (  `'-'\n" +
                         "    '---''(_/--'  `-'\\_)\n",
+                        (x, y));
+                    break;
+
+                case AsciiPreset.DungeonVictory:
+                    x = 42; y = 13;
+                    DrawOnSpecificPos("" +
+                        "   |\\                     /)\n" +
+                        " /\\_\\\\__               (_//\n" +
+                        "|   `>\\-`     _._       //`)\n" +
+                        " \\ /` \\\\  _.-`:::`-._  //\n" +
+                        "  `    \\|`    :::    `|/\n" +
+                        "        |     :::     |\n" +
+                        "        |.....:::.....|\n" +
+                        "        |:::::::::::::|\n" +
+                        "        |     :::     |\n" +
+                        "        \\     :::     /\n" +
+                        "         \\    :::    /\n" +
+                        "          `-. ::: .-'\n" +
+                        "           //`:::`\\\\\n" +
+                        "          //   '   \\\\\n" +
+                        "         |/         \\\\",
+                        (x, y));
+                    break;
+
+                case AsciiPreset.DungeonFail:
+                    x = 44; y = 10;
+                    DrawOnSpecificPos("" +
+                        "  <=======]}======\n" +
+                        "    --.   /|\n" +
+                        "   _\\' / _.'/\n"+
+                        " .'._._,.'\n" +
+                        " :/ \\{}/\n" +
+                        "(L  /--',----._\n" +
+                        "    |          \\\\\n" +
+                        "   : /-\\ .'-'\\ / |\n" +
+                        "    \\\\, ||    \\|\n" +
+                        "     \\/ ||    ||",
                         (x, y));
                     break;
 

@@ -463,8 +463,8 @@ namespace RtanTextDungeon
                 else
                 {                    
                     for (int i = 1; i <= DungeonInfo.HighestFloor; i++)
-                        Console.WriteLine($"({i}) {i}층 진입");
-                    Console.WriteLine("(0) 취소\n");
+                        Console.WriteLine($"  ({i}) {i}층 진입");
+                    Console.WriteLine("  (0) 취소\n");
                 }
 
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -902,9 +902,9 @@ namespace RtanTextDungeon
             $"\n" +
             $"  {monster.Name}\n");
             UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
-            Console.WriteLine("\n계속\n");
+            Console.WriteLine("\n  >>> (계속 진행하기...)\n");
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         //다중 공격 스킬 사용 시 호출 (오버로드)
@@ -940,9 +940,9 @@ namespace RtanTextDungeon
                         $"\n" +
                         $"  {monster.Name}\n");
                     UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
-                    Console.WriteLine("\n  계속\n");
+                    Console.WriteLine("\n  >>> (계속 진행하기...)\n");
 
-                    Console.ReadLine();
+                    Console.ReadKey();
                 }
             }
             else // 다중 공격 타겟 수가 살아있는 몬스터 수 미만일 때
@@ -974,9 +974,9 @@ namespace RtanTextDungeon
                         $"\n" +
                         $"  {monster.Name}\n");
                     UI.ColoredWriteLine($"  HP {prevHp} -> {currentHp}\n", ConsoleColor.Red);
-                    Console.WriteLine("\n  계속\n");
+                    Console.WriteLine("\n  >>> (계속 진행하기...)\n");
 
-                    Console.ReadLine();
+                    Console.ReadKey();
                 }
             }
         }
@@ -1057,41 +1057,46 @@ namespace RtanTextDungeon
 
 
             UI.AsciiArt(UI.AsciiPreset.Battle);
+            UI.AsciiArt(UI.AsciiPreset.DungeonVictory);
 
             DungeonInfo.UpdateInfo();
-            Console.WriteLine($"  현재 층 : {DungeonInfo.CurrentFloor} / 최고 층 : {DungeonInfo.HighestFloor}");
-            Console.WriteLine("  Result\n");
-
-            UI.ColoredWriteLine("  Victory\n", ConsoleColor.Green);
             int preLv = player.Lv;
-            LevelCal(monsters, player); 
+            int preExp = player.Point;
+            LevelCal(monsters, player);
+
+            Console.WriteLine("  [ 결과 확인 ]\n\n");
+            UI.ColoredWriteLine("  전투 결과 : 승리\n", ConsoleColor.Green);
+            Console.WriteLine($"  현재 도전 : {DungeonInfo.CurrentFloor} 층 | 최고 층수 : {DungeonInfo.HighestFloor} 층\n");
             Console.WriteLine(
-                $"  스파르타의 괴물 {monsterCount} 마리 조차 당신을 막을 순 없었습니다.\n" +
+                $"  스파르타의 괴물 {monsterCount} 마리 조차 당신을\n  막을 순 없었습니다.\n" +
                 $"\n" +
-                $"  Lv.{preLv} {player.Name} -> Lv.{player.Lv} {player.Name}\n" +
-                $"  HP {startHp} -> {player.Hp}\n" +
-                $"  HP {startMp} -> {player.Mp}\n" +
+                $"  {player.m_Class} {player.Name}\n" +
+                $"  Lv.  {preLv}   \t-> {player.Lv}\n" +
+                $"  EXP  {preExp}  \t-> {player.Point}\n" +
+                $"  HP   {startHp} \t-> {player.Hp}\n" +
+                $"  MP   {startMp} \t-> {player.Mp}\n" +
                 $"\n" +
-                $"\n" +
-                $"  {addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
-                (nPotionDrop!=0?$"\n  {potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
-                $"\n" +
+                $"  [ 보상 획득 ]\n\n" +
+                $"  ▷ {addGold} G 를 획득했습니다. [ {player.Gold} G ]\n" +
+                (nPotionDrop!=0?$"\n  ▷ {potion.Name}을 {nPotionDrop} 개 획득했습니다. [ {potion.count} 개 ]\n":"") +
                 $"\n");
-            string input = UI.UserInput(reqMsg: "(다음으로...)");
+            string input = UI.UserInput(reqMsg: "(아무 키나 눌러 다음으로 진행...)");
         }
 
         private void Lose(int startHp, int startMp)
         {
             UI.AsciiArt(UI.AsciiPreset.Battle);
+            UI.AsciiArt(UI.AsciiPreset.DungeonFail);
             Console.WriteLine("  Result\n");
             UI.ColoredWriteLine("  스파르타의 힘 앞에 굴복했습니다.\n", ConsoleColor.DarkRed);
 
             Console.WriteLine(
-                $"  Lv.{player.Lv} {player.Name}\n" +
-                $"  HP {startHp} -> {player.Hp}\n" +
-                $"  HP {startMp} -> {player.Mp}\n" +
+                $"  {player.m_Class} {player.Name}\n" +
+                $"  Lv.  {player.Lv} \n" +
+                $"  HP   {startHp} \t-> {player.Hp}\n" +
+                $"  MP   {startMp} \t-> {player.Mp}\n" +
                 $"\n");
-            string input = UI.UserInput(reqMsg: "(다음으로...)");
+            string input = UI.UserInput(reqMsg: "(아무 키나 눌러 다음으로 진행...)");
         }
         #endregion
 
