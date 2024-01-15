@@ -27,7 +27,27 @@ namespace RtanTextDungeon
         #region 게임시작
         public void EnterGame()
         {
-            player = LoadGame<Player>("PlayerData.json");
+            if (LoadGame<Player>("PlayerData.json") != null)
+            {
+                switch (LoadGame<Player>("PlayerData.json").MyClass)
+                {
+                    case PlayerClass.Warrior:
+                        player = LoadGame<Warrior>("PlayerData.json");
+                        break;
+                    case PlayerClass.Archer:
+                        player = LoadGame<Archer>("PlayerData.json");
+                        break;
+                    case PlayerClass.Magic:
+                        player = LoadGame<Magic>("PlayerData.json");
+                        break;
+                    case PlayerClass.Thief:
+                        player = LoadGame<Thief>("PlayerData.json");
+                        break;
+                    case PlayerClass.Deadbeat:
+                        player = LoadGame<Deadbeat>("PlayerData.json");
+                        break;
+                }
+            }
 
             if (player == null)
                 CharacterCreation();
@@ -159,7 +179,7 @@ namespace RtanTextDungeon
                 Console.Clear();// 콘솔 화면 한 번 지우기
                 switch (input)
                 {
-                    case "1":
+                    case "1":                        
                         player = new Warrior(name);
                         break;
                     case "2":
