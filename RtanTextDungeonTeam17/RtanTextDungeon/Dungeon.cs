@@ -8,15 +8,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static RtanTextDungeon.Define;
+using static RtanTextDungeon.DataManager;
 
 namespace RtanTextDungeon
 {    
     internal class Dungeon
     {
         // 인게임에서 사용될 Player
-        private Player player = null;
+        private Player player = null;        
         // 인게임에서 상점 이용에 쓰일 아이템 목록을 가지고 있는 Shop 필드
-        private Shop shop = null;
+        private Shop shop = new Shop();
 
         private int chooseFloor = 0;
 
@@ -24,12 +25,14 @@ namespace RtanTextDungeon
         int startMp;
 
         #region 게임시작
-        public void EnterGame(Shop shop)
+        public void EnterGame()
         {
-            if (this.player == null)
+            player = LoadGame<Player>("PlayerData.json");
+
+            if (player == null)
                 CharacterCreation();
-            if (this.shop == null)
-                this.shop = shop;
+            else
+                shop.Restore(player);
 
             string alertMsg = "";
 
@@ -71,7 +74,8 @@ namespace RtanTextDungeon
                         break;
                     case "X":
                     case "x":
-                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);
+                        UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);                        
+                        SaveGame(player, "PlayerData.json");                        
                         return;
                     default:
                         alertMsg="잘못된 입력입니다!";
@@ -210,10 +214,10 @@ namespace RtanTextDungeon
         #region 상태창
         private void Status()
         {
-            string weaponStatus = player.equippedItems.ContainsKey(typeof(Weapon)) ? $"{player.equippedItems[typeof(Weapon)].AdditionalATK}" : "";
-            string armorStatus  = player.equippedItems.ContainsKey(typeof(Armor)) ? player.equippedItems[typeof(Armor)].AdditionalDEF : "";
-            string amuletATK    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalATK : "";
-            string amuletDEF    = player.equippedItems.ContainsKey(typeof(Amulet)) ? player.equippedItems[typeof(Amulet)].AdditionalDEF : "";
+            string weaponStatus = player.equippedItems.ContainsKey("Weapon") ? $"{player.equippedItems["Weapon"].AdditionalATK}" : "";
+            string armorStatus  = player.equippedItems.ContainsKey("Armor") ? player.equippedItems["Armor"].AdditionalDEF : "";
+            string amuletATK    = player.equippedItems.ContainsKey("Amulet") ? player.equippedItems["Amulet"].AdditionalATK : "";
+            string amuletDEF    = player.equippedItems.ContainsKey("Amulet") ? player.equippedItems["Amulet"].AdditionalDEF : "";
 
             string alertMsg = "";
 
@@ -280,10 +284,12 @@ namespace RtanTextDungeon
                 // 아이템 목록은 아이템 리스트에 있는 아이템들을 전부 불러와야겠지?
 
                 int index = 1;
-                if (player.items.Count == 0)
+                if (player.Items.Count == 0)
                     Console.WriteLine($" ㄴ 비어있음");
-                foreach (Item item in player.items)
+                foreach (int Itemindex in player.Items)
                 {
+                    Item item = shop.items[Itemindex];
+
                     if (item.IsEquip)
                         Console.ForegroundColor = ConsoleColor.Magenta;
                     if (item is Weapon weapon)
@@ -322,15 +328,10 @@ namespace RtanTextDungeon
                     case "b":
                         return;
                     default:
-                        if (int.TryParse(input, out itemIndex) && itemIndex <= player.items.Count && itemIndex > 0)
+                        if (int.TryParse(input, out itemIndex) && itemIndex <= player.Items.Count && itemIndex > 0)
                         {
                             itemIndex--;
-                            if (player.items[itemIndex] is Weapon weapon)
-                                player.EquipOrUnequipItem(weapon);
-                            else if (player.items[itemIndex] is Armor armor)
-                                player.EquipOrUnequipItem(armor);
-                            else if (player.items[itemIndex] is Amulet amulet)
-                                player.EquipOrUnequipItem(amulet);
+                            player.EquipOrUnequipItem(shop.items[player.Items[itemIndex]]);
                         }
                         else
                         {
@@ -849,7 +850,7 @@ namespace RtanTextDungeon
         private void PlayerPhase(Monster monster, int skillNum)
         {
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
-            int damage;
+            float damage;
             if (skillNum <= 0)
                 damage = player.Atk + new Random().Next(-error, error + 1);
             else//skillNum(선택한 스킬 번호)가 1 이상이면 데미지에 스킬 배수 곱해주기
@@ -882,7 +883,7 @@ namespace RtanTextDungeon
 
             int error = player.Atk * 0.1f % 1 != 0 ? (int)(player.Atk * 0.1f) + 1 : (int)(player.Atk * 0.1f);
             
-            int damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
+            float damage = player.Skills[skillNum - 1].UseSkill(player.Atk + new Random().Next(-error, error + 1));
 
             // 크리티컬, 몬스터 회피, 실데미지 계산
             (bool isCritical, bool isDodged, damage) = player.CalculateExDamage(damage, skillNum > 0);
@@ -993,18 +994,22 @@ namespace RtanTextDungeon
             if (player.Point >= 10 && player.Point < 35)
             {
                 player.Lv = 2;
+                player.StatUp();
             }
             else if (player.Point >= 35 && player.Point < 65)
             {
                 player.Lv = 3;
+                player.StatUp();
             } 
             else if (player.Point >= 65 && player.Point < 100)
             {
                 player.Lv = 4;
+                player.StatUp();
             }
             else if (player.Point >= 100)
             {
                 player.Lv = 5;
+                player.StatUp();
             }            
         }
 
