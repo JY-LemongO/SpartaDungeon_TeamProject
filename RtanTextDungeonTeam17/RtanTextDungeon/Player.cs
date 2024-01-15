@@ -178,7 +178,7 @@ namespace RtanTextDungeon
 
         public void Rest() => Hp = MaxHp;
 
-        public void Meditate() => Mp = MaxHp;
+        public void Meditate() => Mp = MaxMp;
 
         public void SetHp(int hp) => Hp = hp;
 
