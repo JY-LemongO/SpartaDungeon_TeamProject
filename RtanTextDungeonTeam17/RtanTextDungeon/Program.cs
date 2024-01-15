@@ -16,7 +16,6 @@ namespace RtanTextDungeon
             Shop shop = new Shop();
             // 타이틀 화면
             UI.AsciiArt(UI.AsciiPreset.TitleArt);
-            Console.ReadKey();
             // 플레이어를 불러오기를 통해 생성한다.
             Console.SetCursorPosition(72, 30);
             Console.WriteLine("데이터를 불러오는중...");

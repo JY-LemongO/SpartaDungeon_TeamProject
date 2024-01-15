@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RtanTextDungeon
@@ -48,6 +51,13 @@ namespace RtanTextDungeon
             Inn,
 
         }
+
+        // volatile: 멀티스레드 환경에서 변수의 값이 예기치 않게 변경될 수 있음을 컴파일러와 실행 환경에 알리는 데 사용
+        //           여러 스레드에 의해 동시에 접근될 수 있고, 이러한 변수의 값을 읽고 쓸 때, 메모리에서 직접 읽거나 쓰도록 강제
+        // 스레드를 사용하여 파티클 이펙트의 갱신을 하도록 하고, 메인 스레드에서는 키 입력을 받을 수 있도록 함.
+        static volatile bool keepRunning = true; // 키 입력을 받으면 keepRunning을 false로 만들어, 스레드의 종료 요청을 보냄.
+        static char[,] screenBuffer;
+
         /// <summary>
         /// 아스키아트를 콘솔에 표시합니다.
         /// </summary>
@@ -61,61 +71,62 @@ namespace RtanTextDungeon
             switch (preset)
             {
                 case AsciiPreset.TitleArt:
-                    Console.WriteLine("");
-                    Console.WriteLine("");
-                    Console.WriteLine("          +                           -========-                                      +        ");
-                    Console.WriteLine("                                      %%++++*#@%                  +                            ");
-                    Console.WriteLine("                         +            %#++++*#@%                                               ");
-                    Console.WriteLine("                                      %%######@%                                               ");
-                    Console.WriteLine("                  *                   %%#%%%%#@%                                               ");
-                    Console.WriteLine("                                      %@@%%%@@@%                                   +           ");
-                    Console.WriteLine("                                       .@##%@@                                                 ");
-                    Console.WriteLine("                                   %@@@@@##%@@@@@@@                                            ");
-                    Console.WriteLine("      +                         .%%########%%%%%%%%%*.                       *                 ");
-                    Console.WriteLine("                              *#%####*###%%%%%%%####%%*+                                       ");
-                    Console.WriteLine("              +             +######+*###############%%%@#=       +                          +  ");
-                    Console.WriteLine("                            %@#####################%%%%%@+                                     ");
-                    Console.WriteLine("                            %@###################%%%%%%%@+                                     ");
-                    Console.WriteLine("                            %@###%%@@@@%########@@@@@%%%@+                                     ");
-                    Console.WriteLine("                            %@###%#....-%#####%#....-%%%@+                                     ");
-                    Console.WriteLine("                            %@###%#:+%%*:*####::%%%:=%%#@*                                     ");
-                    Console.WriteLine("                         *##@@###%%#-..-#**%%%#*...*#%%%@@##*                +                 ");
-                    Console.WriteLine("                       +@:..%@%##%#+:....====+.....=+%%%@#..:@-                                ");
-                    Console.WriteLine("                       +@:..%@%%%%%%#*...........-*%%%%%@#..:@-                                ");
-                    Console.WriteLine("                         %*..-@@%%%%%#%+........#%%%%%@@.:.*%                                  ");
-                    Console.WriteLine("            *             :@:..*@%%%%#%+........#%%%@@:..-@.                                   ");
-                    Console.WriteLine("                            %%...%@@@@@*.......:@@@@#...@@@.                                   ");
-                    Console.WriteLine("     +                      %@@=..:###++++++++*###*...#@##@.                                   ");
-                    Console.WriteLine("                            %@#%@:....**+++++####-..-@####@.         +                         ");
-                    Console.WriteLine("                            %@###@%.................-@%###@.                                   ");
-                    Console.WriteLine("              +             %@###@#.................-@%###@.             [아무 키나 눌러 ]     ");
-                    Console.WriteLine("                            %@###@#.................-@%###@.             [게임을 시작하기]     ");
-                    Console.WriteLine("                            %@###@#.................-@%###@.                                   ");
-                    Console.WriteLine("                            %@###@%===========******#@%##%@.                                   ");
-                    Console.WriteLine("                            #@###@%+++##############%@%##%@.       +                           ");
-                    Console.WriteLine("");
-                    Console.WriteLine("===============================================================================================");
-                    Console.WriteLine("          ____       *           _          ____                                          +    ");
-                    Console.WriteLine("         / ___| _ __   __ _ _ __| |_ __ _  |  _ \\ _   _ _ __   __ _  ___  ___  _ __  ");
-                    Console.WriteLine("    *    \\___ \\| '_ \\ / _` | '__| __/ _` | | | | | | | | '_ \\ / _` |/ _ \\/ _ \\| '_ \\ ");
-                    Console.WriteLine("          ___) | |_) | (_| | |  | || (_| | | |_| | |_| | | | | (_| |  __/ (_) | | | |");
-                    Console.WriteLine("         |____/| .__/ \\__,_|_|   \\__\\__,_| |____/ \\__,_|_| |_|\\__, |\\___|\\___/|_| |_|");
-                    Console.WriteLine("               |_|   +                                        |___/           +                ");
-                    Console.WriteLine("                                     +                                                         ");
-                    Console.WriteLine("===============================================================================================");
+                    string titleArt =
+                        "                                                                                               \n" +
+                        "                                                                                               \n" +
+                        "                                      -========-                                               \n" +
+                        "                                      %%++++*#@%                                               \n" +
+                        "                                      %#++++*#@%                                               \n" +
+                        "                                      %%######@%                                               \n" +
+                        "                                      %%#%%%%#@%                                               \n" +
+                        "                                      %@@%%%@@@%                                               \n" +
+                        "                                       .@##%@@                                                 \n" +
+                        "                                   %@@@@@##%@@@@@@@                                            \n" +
+                        "                                .%%########%%%%%%%%%*.                                         \n" +
+                        "                              *#%####*###%%%%%%%####%%*+                                       \n" +
+                        "                            +######+*###############%%%@#=                                     \n" +
+                        "                            %@#####################%%%%%@+                                     \n" +
+                        "                            %@###################%%%%%%%@+                                     \n" +
+                        "                            %@###%%@@@@%########@@@@@%%%@+                                     \n" +
+                        "                            %@###%#....-%#####%#....-%%%@+                                     \n" +
+                        "                            %@###%#:+%%*:*####::%%%:=%%#@*                                     \n" +
+                        "                         *##@@###%%#-..-#**%%%#*...*#%%%@@##*                                  \n" +
+                        "                       +@:..%@%##%#+:....====+.....=+%%%@#..:@-                                \n" +
+                        "                       +@:..%@%%%%%%#*...........-*%%%%%@#..:@-                                \n" +
+                        "                         %*..-@@%%%%%#%+........#%%%%%@@.:.*%                                  \n" +
+                        "                          :@:..*@%%%%#%+........#%%%@@:..-@.                                   \n" +
+                        "                            %%...%@@@@@*.......:@@@@#...@@@.                                   \n" +
+                        "                            %@@=..:###++++++++*###*...#@##@.                                   \n" +
+                        "                            %@#%@:....**+++++####-..-@####@.                                   \n" +
+                        "                            %@###@%.................-@%###@.                                   \n" +
+                        "                            %@###@#.................-@%###@.             [아무 키나 눌러 ]            \n" +
+                        "                            %@###@#.................-@%###@.             [게임을 시작하기]            \n" +
+                        "                            %@###@#.................-@%###@.                                   \n" +
+                        "                            %@###@%===========******#@%##%@.                                   \n" +
+                        "                            #@###@%+++##############%@%##%@.                                   \n" +
+                        "                                                                                               \n" +
+                        "===============================================================================================\n" +
+                        "          ____                   _          ____                                               \n" +
+                        "         / ___| _ __   __ _ _ __| |_ __ _  |  _ \\ _   _ _ __   __ _  ___  ___  _ __            \n" +
+                        "         \\___ \\| '_ \\ / _` | '__| __/ _` | | | | | | | | '_ \\ / _` |/ _ \\/ _ \\| '_ \\           \n" +
+                        "          ___) | |_) | (_| | |  | || (_| | | |_| | |_| | | | | (_| |  __/ (_) | | | |          \n" +
+                        "         |____/| .__/ \\__,_|_|   \\__\\__,_| |____/ \\__,_|_| |_|\\__, |\\___|\\___/|_| |_|          \n" +
+                        "               |_|                                            |___/                            \n" +
+                        "                                                                                               \n" +
+                        "===============================================================================================";
+                    InitializeScreenBuffer(titleArt); // 위 내용을 저장 해 둔다
+                    Console.WriteLine(titleArt);
 
-                    Random random = new Random();
-                    for(int i= 0; i < 1; i++)
-                    {
-                        Console.SetCursorPosition(random.Next(0, 85), random.Next(0, 41));
-                        RandomColoredWrite("*");// 랜덤 색으로 문자열 표현
-                    }
-                    Console.SetCursorPosition(0, 42);
+                    int xEnd = 95; int yEnd = 41; int particleQuantity = 15; int delay = 800;
+                    Thread effectThread;
+                    effectThread = new Thread(() => UpdateEffect((0,0), (xEnd, yEnd), '+', particleQuantity, delay, useSavedBuffer:true)); effectThread.Start();
 
+                    Console.ReadKey();
+                    keepRunning = false; // 스레드 내 종료 조건을 활성화
+                    effectThread.Join(); // 스레드가 종료될 때까지 대기
                     break;
 
                 case AsciiPreset.MainMenu:
-
                     Console.WriteLine("===============================================================================================");
                     Console.WriteLine("");
                     Console.WriteLine(" _______                      __            _____                                              ");
@@ -130,24 +141,6 @@ namespace RtanTextDungeon
                     Console.WriteLine(" ] ┘                           ");
                     Console.WriteLine("");
                     Console.WriteLine("");
-
-                    //int rtanX = 42; int rtanY = 11;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("            -*++%-            "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("            -%%%%-            "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("             +%%+             "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("          %####%%%%#          "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        *%#*##%%%###%*        "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %#########%%%@        "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %##:-+###=-:%@        "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("     :+*%#%=.-#%#:.+%@*=:     "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("     %:-@%%#=.....*%%@-:%     "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("       *.*%%%:...-%%*.#       "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        @+:+++++*#+:+%@       "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %#%........:@#@       "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %#%........:@#@       "); rtanY++;
-                    //Console.SetCursorPosition(rtanX, rtanY); Console.Write("        %#%+++++*###@#@       ");
-                    //Console.SetCursorPosition(0, 9);
-
                     break;
 
                 case AsciiPreset.CreateCharacter:
@@ -192,7 +185,6 @@ namespace RtanTextDungeon
                     Console.WriteLine("-------------------------------[전 투]-------------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
-
                     break;
 
                 case AsciiPreset.Status:
@@ -289,7 +281,6 @@ namespace RtanTextDungeon
                     break;
 
                 case AsciiPreset.Inn:
-
                     Console.WriteLine("");
                     Console.WriteLine("                           __                                        ");
                     Console.WriteLine("                          |__|.-----..-----.                         ");
@@ -300,7 +291,6 @@ namespace RtanTextDungeon
                     Console.WriteLine("-------------------------------[여 관]-------------------------------");
                     Console.ResetColor();
                     Console.WriteLine("");
-
                     break;
 
                 default:
@@ -351,6 +341,147 @@ namespace RtanTextDungeon
                 y++;
             }
             Console.SetCursorPosition(xSave, ySave);
+        }
+
+        // !!! 이 아래는 정말 마이너한 용도 !!!
+        // 1. InitializeScreenBuffer() - 장면 내용 보관(콘솔 내용을 끌어오는 것은 불가능. 직접 문자열을 전달해야함)
+        // 2. UpdateEffect() - 특정 직사각형 범위에 딜레이마다 파티클을 표시.
+        // 3. IsFullWidth() - 
+        static void InitializeScreenBuffer(string s, int top = 0, int left = 0) // 복원이 필요한 내용을 버퍼에 저장하기
+        {
+            // 콘솔 크기만큼 저장공간을 할당. 복원 목적이라면 콘솔크기 밖을 벗어나는 일은 없음.
+            // 저장할 내용이 폭과 높이를 벗어나지 않도록 주의.
+            int width = Console.WindowWidth;
+            int height = Console.WindowHeight;
+            screenBuffer = new char[height, width]; // screenBuffer는 메서드 밖에 전역변수로 선언을 미리 해두었음
+
+            // 내용 s를 screenBuffer에 저장
+            using (var reader = new StringReader(s))
+            {
+                string line;
+                int y = top;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    int bufferX = 0; // 버퍼 내의 X 좌표 추적
+                    for (int x = left; x < line.Length; x++)
+                    {
+                        char currentChar = line[x];
+                        screenBuffer[y, bufferX] = currentChar;
+
+                        if (IsFullWidth(currentChar)) // 전각 문자인 경우 다음 칸을 비워둠
+                        {
+                            bufferX++;
+                        }
+
+                        bufferX++;
+                    }
+                    y++;
+                }
+            }
+        }
+
+        static void UpdateEffect( (int x, int y) startPosition, (int x, int y) endPosition, char c, int particleQuantity, int delayMs, bool useSavedBuffer=false)
+        {   // 직사각형범위 시작(좌상)좌표, 직사각형범위 끝(우하)좌표, 파티클문자, 파티클갯수, 딜레이(밀리세컨드)
+            Random random = new Random();
+            List<Tuple<int, int>> positions = new List<Tuple<int, int>>();
+
+            while (keepRunning)
+            {
+                // 파티클 위치 선정
+                for (int i = 0; i < particleQuantity; i++)
+                {
+                    int x = random.Next(startPosition.x, endPosition.x);
+                    int y = random.Next(startPosition.y, endPosition.y);
+                    positions.Add(Tuple.Create(x, y));
+                }
+
+                // 파티클 문자 그리기
+                foreach (var pos in positions)
+                {
+                    if (pos.Item1 > 0 && IsFullWidth(screenBuffer[pos.Item2, pos.Item1 - 1]))
+                    {
+                        // 현재 위치가 전각 문자의 두 번째 칸이면 x위치를 하나 줄여서 공백과 'c'를 함께 출력
+                        Console.SetCursorPosition(pos.Item1 - 1, pos.Item2);
+                        Console.Write($" {c}");
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(pos.Item1, pos.Item2);
+                        if (IsFullWidth(screenBuffer[pos.Item2, pos.Item1]))
+                        {
+                            // 현재 위치가 전각 문자의 첫 번째 칸이면 'c'와 공백을 함께 출력
+                            Console.Write($"{c} ");
+                        }
+                        else
+                        {
+                            // 그렇지 않으면 그냥 'c'만 출력
+                            Console.Write(c);
+                        }
+                    }
+                }
+                Console.SetCursorPosition(0, 42);
+
+                // {delayMs}ms 대기
+                Thread.Sleep(delayMs);
+
+                // 이전에 그려진 'c' 문자들을 지움
+                foreach (var pos in positions)
+                {
+                    Console.SetCursorPosition(pos.Item1, pos.Item2);
+                    if (useSavedBuffer)
+                    {
+                        try
+                        {
+                            char charToRestore = screenBuffer[pos.Item2, pos.Item1];
+                            if (charToRestore == '\0' && pos.Item1 > 0) // 현재 위치가 비어있는 경우, 이전 위치 확인
+                            {
+                                char prevChar = screenBuffer[pos.Item2, pos.Item1 - 1];
+                                if (IsFullWidth(prevChar)) // 이전 문자가 전각 문자인 경우
+                                {
+                                    Console.SetCursorPosition(pos.Item1 - 1, pos.Item2);
+                                    Console.Write(prevChar); // 전각 문자 복원
+                                    continue;
+                                }
+                            }
+                            Console.Write(charToRestore);
+                        }
+                        catch
+                        {
+                            Console.Write(" ");
+                        }
+                    }
+                    else Console.Write(" ");
+                }
+                // 리스트 비우기
+                positions.Clear();
+
+                Console.SetCursorPosition(0, 42);
+            }
+        }
+        static bool IsFullWidth(char c) // 전각문자인지 판별
+        {
+            int[] ranges = { 
+                0x1100, 0x115F, // 한글 자음과 모음
+                0x2E80, 0x2EFF, // CJK(중국, 일본, 한국) 급진 부호
+                0x3000, 0x303F, // CJK 심볼 및 구두점
+                0x3200, 0x32FF, // CJK 호환성 음절
+                0x3400, 0x4DBF, // CJK 통합 한자 확장
+                0x4E00, 0x9FFF, // CJK 통합 한자
+                0xAC00, 0xD7AF, // 한글 음절
+                0xF900, 0xFAFF, // CJK 호환성 한자
+                0xFE30, 0xFE4F, // CJK 호환성 형태
+                0xFF01, 0xFFEF, // 하프와이드 및 풀와이드 형태
+            };
+            int code = (int)c;
+
+            for (int i = 0; i < ranges.Length; i += 2)
+            {
+                if (code >= ranges[i] && code <= ranges[i + 1])
+                {
+                    return true; // 전각
+                }
+            }
+            return false; // 반각
         }
     }
 }
