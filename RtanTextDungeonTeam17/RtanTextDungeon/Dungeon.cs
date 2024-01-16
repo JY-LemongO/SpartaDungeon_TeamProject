@@ -96,6 +96,7 @@ namespace RtanTextDungeon
                     case "X":
                     case "x":
                         UI.ColoredWriteLine("※※※게임을 종료합니다※※※", ConsoleColor.Yellow);
+                        player.RemoveAbilityBeforeSave();
                         SaveGame(player, "PlayerData.json");
                         return;
                     default:

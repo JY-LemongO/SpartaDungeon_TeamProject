@@ -53,6 +53,26 @@ namespace RtanTextDungeon
                 this.EquippedItemsIndex = new List<int>();
         }   
 
+        public void RemoveAbilityBeforeSave()
+        {
+            if (equippedItems["Weapon"] != null)
+            {
+                Weapon weapon = equippedItems["Weapon"] as Weapon;
+                Atk -= weapon.damage;
+            }
+            if (equippedItems["Armor"] != null)
+            {
+                Armor armor = equippedItems["Armor"] as Armor;
+                Def -= armor.defense;
+            }
+            if (equippedItems["Amulet"] != null)
+            {
+                Amulet amulet = equippedItems["Amulet"] as Amulet;
+                Atk -= amulet.damage;
+                Def -= amulet.defense;
+            }
+        }
+
         public void BuyOrSell(int price, Item item, bool isSell = false)
         {            
             Gold += price;
